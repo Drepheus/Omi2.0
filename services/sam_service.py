@@ -11,14 +11,15 @@ def get_relevant_data(query):
         }
         
         params = {
-            'q': query,
             'page': 0,
-            'size': 10,
-            'api_key': os.environ.get('SAM_API_KEY')
+            'size': 3,  # Get last 3 entries
+            'api_key': os.environ.get('SAM_API_KEY'),
+            'postedFrom': datetime.now().strftime("%Y-%m-%d"),
+            'limit': 3
         }
         
         response = requests.get(
-            'https://api.sam.gov/entity-information/v3/entities',
+            'https://api.sam.gov/opportunities/v2/search',
             headers=headers,
             params=params
         )
@@ -36,17 +37,16 @@ def get_relevant_data(query):
 
 def format_sam_data(data):
     formatted_data = []
-    entities = data.get('entityData', []) or data.get('entities', [])
+    opportunities = data.get('opportunitiesData', [])
     
-    if not entities and not isinstance(entities, list):
+    if not opportunities and not isinstance(opportunities, list):
         return []
         
-    for entity in entities:
-        reg = entity.get('coreData', {}).get('entityRegistration', {}) or entity.get('entityRegistration', {})
+    for opp in opportunities:
         formatted_data.append({
-            'entity_name': reg.get('legalBusinessName', 'N/A'),
-            'duns': reg.get('ueiSAM', 'N/A') or reg.get('ueiDUNS', 'N/A'),
-            'status': reg.get('registrationStatus', 'N/A'),
-            'expiration_date': reg.get('registrationExpirationDate', 'N/A')
+            'entity_name': opp.get('title', 'N/A'),
+            'duns': opp.get('solicitationNumber', 'N/A'),
+            'status': opp.get('status', 'N/A'),
+            'expiration_date': opp.get('responseDeadLine', 'N/A')
         })
     return formatted_data
