@@ -54,7 +54,7 @@ def get_ai_response(query):
 
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0125",  # Latest GPT-3.5 model
             messages=[
                 {
                     "role": "system",
@@ -74,45 +74,6 @@ def get_ai_response(query):
         # Fall back to local processing for any API errors
         logger.info("Falling back to local processing")
         return get_local_response(query)
-
-
-# The following code is removed because it is no longer needed.
-#POE_EMAIL = os.environ.get("POE_EMAIL")
-#POE_PASSWORD = os.environ.get("POE_PASSWORD")
-#client = None
-#
-#def init_poe_client():
-#    global client
-#    if not POE_EMAIL or not POE_PASSWORD:
-#        logger.error("POE_EMAIL or POE_PASSWORD environment variables are not set")
-#        return False
-#    try:
-#        client = PoeApi(POE_EMAIL, POE_PASSWORD)
-#        logger.debug("Poe client initialized successfully")
-#        return True
-#    except Exception as e:
-#        logger.error(f"Failed to initialize Poe client: {e}")
-#        return False
-#
-#def get_ai_response(query):
-#    if not client and not init_poe_client():
-#        return "Error: Poe API is not properly configured. Please try again later."
-#
-#    try:
-#        response = client.send_message("chatgpt", query)
-#        logger.debug("Successfully received response from Poe API")
-#        return response
-#    except Exception as e:
-#        error_msg = str(e)
-#        if "auth" in error_msg.lower():
-#            logger.error(f"Poe API authentication error: {e}")
-#            return "Authentication error. Please check your Poe credentials or contact support."
-#        elif "rate" in error_msg.lower():
-#            logger.error(f"Poe API rate limit exceeded: {e}")
-#            return "We're processing too many requests right now. Please try again in a few moments."
-#        else:
-#            logger.error(f"Error processing query: {e}")
-#            return f"An unexpected error occurred. Please try again later. Error: {str(e)}"
 
 # Initialize the client when the module is imported
 init_openai_client()
