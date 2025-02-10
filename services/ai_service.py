@@ -41,9 +41,17 @@ def get_ai_response(query):
         logger.debug("Successfully received response from OpenAI API")
         return response.choices[0].message.content
     except Exception as e:
-        error_msg = f"Error processing query: {str(e)}"
-        logger.error(error_msg)
-        return error_msg
+        error_msg = str(e)
+        if "insufficient_quota" in error_msg:
+            logger.error(f"OpenAI API quota exceeded: {e}")
+            return ("We're currently experiencing high demand. Please try again later or contact support "
+                   "if this persists. Error: API quota exceeded")
+        elif "rate_limit_exceeded" in error_msg:
+            logger.error(f"OpenAI API rate limit exceeded: {e}")
+            return "We're processing too many requests right now. Please try again in a few moments."
+        else:
+            logger.error(f"Error processing query: {e}")
+            return f"An unexpected error occurred. Please try again later. Error: {str(e)}"
 
 # Initialize the client when the module is imported
 init_openai_client()
