@@ -59,7 +59,7 @@ def get_ai_response(query):
     try:
         logger.debug(f"Sending request to OpenAI API with query: {query[:50]}...")
         response = client.chat.completions.create(
-            model="gpt-4-0125-preview",
+            model="gpt-4-turbo-preview",
             messages=[
                 {
                     "role": "system",
