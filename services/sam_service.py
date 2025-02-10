@@ -36,13 +36,16 @@ def get_relevant_data(query):
 
 def format_sam_data(data):
     formatted_data = []
-    entities = data.get('entityData', [])
+    entities = data.get('entityData', []) or data.get('entities', [])
     
+    if not entities and not isinstance(entities, list):
+        return []
+        
     for entity in entities:
-        reg = entity.get('coreData', {}).get('entityRegistration', {})
+        reg = entity.get('coreData', {}).get('entityRegistration', {}) or entity.get('entityRegistration', {})
         formatted_data.append({
             'entity_name': reg.get('legalBusinessName', 'N/A'),
-            'duns': reg.get('ueiSAM', 'N/A'),
+            'duns': reg.get('ueiSAM', 'N/A') or reg.get('ueiDUNS', 'N/A'),
             'status': reg.get('registrationStatus', 'N/A'),
             'expiration_date': reg.get('registrationExpirationDate', 'N/A')
         })
