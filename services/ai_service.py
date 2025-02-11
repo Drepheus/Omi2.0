@@ -3,6 +3,7 @@ import logging
 from openai import OpenAI
 import json
 from services.web_service import process_web_content
+from services.sam_service import get_relevant_data, get_awarded_contracts
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -23,27 +24,33 @@ def init_openai_client():
         logger.error(f"Failed to initialize OpenAI client: {e}")
         return False
 
-def get_local_response(query):
-    """Fallback function for when API calls fail"""
-    keywords = {
-        "sam": "SAM.gov is the official site for registering to do business with the federal government.",
-        "registration": "To bid on government contracts, businesses must register in SAM.gov and obtain a DUNS number.",
-        "duns": "A DUNS number is a unique nine-digit identifier for businesses, required for federal government contracting.",
-        "contract": "Government contracts are agreements between federal agencies and private businesses for goods or services.",
-        "bid": "Government contract bids must be submitted according to the specific requirements in the solicitation.",
-    }
+def get_sam_context(query):
+    """Get relevant SAM.gov data as context"""
+    try:
+        relevant_data = get_relevant_data(query)
+        awarded_contracts = get_awarded_contracts()
 
-    response_parts = []
-    query_lower = query.lower()
+        sam_context = "\nRecent SAM.gov Data:\n"
 
-    for keyword, info in keywords.items():
-        if keyword in query_lower:
-            response_parts.append(info)
+        if relevant_data and not isinstance(relevant_data, dict):  # Check if it's not an error response
+            sam_context += "\nRelevant Opportunities:\n"
+            for opp in relevant_data:
+                sam_context += f"- Title: {opp.get('entity_name')}\n"
+                sam_context += f"  Solicitation Number: {opp.get('duns')}\n"
+                sam_context += f"  Status: {opp.get('status')}\n"
+                sam_context += f"  Expiration: {opp.get('expiration_date')}\n\n"
 
-    if not response_parts:
-        return "I can provide basic information about government contracting. Please ask about specific topics like SAM registration, DUNS numbers, or bidding processes."
+        if awarded_contracts:
+            sam_context += "\nRecent Contract Awards:\n"
+            for award in awarded_contracts:
+                sam_context += f"- Title: {award.get('title')}\n"
+                sam_context += f"  Amount: {award.get('award_amount')}\n"
+                sam_context += f"  Awardee: {award.get('awardee')}\n\n"
 
-    return " ".join(response_parts)
+        return sam_context
+    except Exception as e:
+        logger.error(f"Error getting SAM.gov context: {e}")
+        return "\nNote: SAM.gov data currently unavailable\n"
 
 def get_ai_response(query):
     if not OPENAI_API_KEY:
@@ -55,28 +62,37 @@ def get_ai_response(query):
         return "Error: Could not initialize OpenAI client. Please check your API key."
 
     try:
-        # Process any web content in the query
+        # Process web content and get SAM.gov data
         web_contents = process_web_content(query)
+        sam_context = get_sam_context(query)
 
         messages = [
             {
                 "role": "system",
-                "content": """You are BidBot, an AI assistant specialized in government contracting, business strategy, and compliance. You can now browse the internet to provide up-to-date information.
+                "content": """You are BidBot, an AI assistant specialized in government contracting, business strategy, and compliance. You have direct access to SAM.gov data and can browse the internet.
 
 ✅ **Key Capabilities:**
-1. Web Browsing: You can read and analyze web content when URLs are provided
-2. Real-time Information: You can access current information from websites
-3. Source Citation: You always cite your sources when using external information
+1. SAM.gov Integration: Direct access to opportunity and award data
+2. Web Browsing: Can read and analyze web content when URLs are provided
+3. Real-time Information: Access to current contracting information
+4. Source Citation: Always cite sources when using external information
 
 ### **🚀 Enhanced Behaviors:**
-1️⃣ When URLs are provided, analyze their content and incorporate relevant insights
-2️⃣ Always mention when you're using information from provided web sources
-3️⃣ If no URLs are provided, respond based on your core knowledge
-4️⃣ Maintain your helpful, professional tone while providing accurate information
+1️⃣ Provide specific SAM.gov opportunities when relevant
+2️⃣ Include direct references to contract opportunities
+3️⃣ Analyze web content when URLs are provided
+4️⃣ Maintain helpful, professional tone while providing accurate information
 
-Keep responses engaging, well-structured, and backed by sources when available."""
+Keep responses engaging, well-structured, and backed by real data when available."""
             }
         ]
+
+        # Add SAM.gov context
+        if sam_context:
+            messages.append({
+                "role": "system",
+                "content": f"Here is relevant SAM.gov data to consider in your response:{sam_context}"
+            })
 
         # Add web content context if available
         if web_contents:
