@@ -63,13 +63,21 @@ def get_sam_solicitations(query=None):
 
             solicitations = []
             for opp in opportunities[:3]:  # Only return top 3
+                # Construct the correct SAM.gov opportunity URL
+                notice_id = opp.get('noticeId', '')
+                # Ensure the notice ID is properly formatted
+                if notice_id:
+                    opportunity_url = f"https://sam.gov/opportunity/{notice_id}"
+                else:
+                    opportunity_url = "https://sam.gov/search/opportunities/active"
+
                 solicitation = {
                     'title': opp.get('title', 'N/A'),
                     'agency': opp.get('organizationName', 'N/A'),
                     'posted_date': opp.get('postedDate', 'N/A'),
                     'due_date': opp.get('responseDeadLine', 'N/A'),
                     'solicitation_number': opp.get('solicitationNumber', 'N/A'),
-                    'url': f"https://sam.gov/opp/{opp.get('noticeId')}/view"
+                    'url': opportunity_url
                 }
                 solicitations.append(solicitation)
 
@@ -116,7 +124,7 @@ def process_web_content(query):
                         f"Solicitation Number: {sol['solicitation_number']}\n"
                         f"Posted Date: {sol['posted_date']}\n"
                         f"Response Due: {sol['due_date']}\n"
-                        f"Direct Link: {sol['url']}"
+                        f"View on SAM.gov: {sol['url']}"
                     )
                     web_contents.append({
                         'url': sol['url'],
