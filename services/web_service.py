@@ -36,16 +36,16 @@ def get_sam_solicitations(query=None):
         }
 
         today = datetime.now()
-        past = today - timedelta(days=30)
         future = today + timedelta(days=30)
 
         params = {
             'page': 0,
-            'size': 3,  # Get last 3 entries
+            'size': 3,
             'api_key': os.environ.get('SAM_API_KEY'),
-            'postedFrom': past.strftime("%Y-%m-%d"),
+            'postedFrom': today.strftime("%Y-%m-%d"),
             'postedTo': future.strftime("%Y-%m-%d"),
-            'limit': 3
+            'limit': 3,
+            'isActive': 'true'
         }
 
         if query:
