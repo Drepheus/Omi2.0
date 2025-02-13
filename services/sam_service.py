@@ -5,6 +5,7 @@ import logging
 from time import sleep
 import json
 from functools import lru_cache
+from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ def _cached_sam_request(endpoint, query_params_str):
 
     # Convert query_params_str back to dict
     params = json.loads(query_params_str)
+    logger.debug(f"Making SAM.gov API request to {endpoint} with params: {params}")
 
     # Implement exponential backoff
     max_retries = 5
@@ -32,6 +34,7 @@ def _cached_sam_request(endpoint, query_params_str):
                 timeout=10
             )
 
+            logger.debug(f"SAM.gov API response status: {response.status_code}")
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 429:
@@ -71,10 +74,12 @@ def get_relevant_data(query):
         }
 
         if query:
-            params['q'] = query
+            # Properly encode the keywords parameter
+            params['keywords'] = quote(query)
 
         # Convert params to string for caching
         params_str = json.dumps(params, sort_keys=True)
+        logger.debug(f"Querying SAM.gov with parameters: {params_str}")
 
         data = _cached_sam_request('search', params_str)
         if data:
