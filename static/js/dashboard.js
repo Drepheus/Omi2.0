@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
 
             if (!fileInput.files.length) {
-                displayError('Please select a file to upload');
+                displayError('Please select at least one file to upload');
                 return;
             }
 
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 responseArea.innerHTML = createTypingCard();
 
-                console.log('Uploading document:', fileInput.files[0].name); // Debug log
+                console.log('Uploading documents:', fileInput.files.length, 'files'); // Debug log
 
                 const response = await fetch('/api/document/upload', {
                     method: 'POST',
@@ -282,20 +282,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Upload response data:', data); // Debug log
 
                 if (response.ok) {
-                    const formattedResponse = data.ai_response
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+                    let statusMessage = '';
+                    if (data.uploaded_documents.length > 0) {
+                        statusMessage = `Successfully processed ${data.uploaded_documents.length} documents:\n`;
+                        data.uploaded_documents.forEach(doc => {
+                            statusMessage += `- ${doc.filename}\n`;
+                        });
+                    }
+                    if (data.failed_documents.length > 0) {
+                        statusMessage += `\nFailed to process ${data.failed_documents.length} documents:\n`;
+                        data.failed_documents.forEach(doc => {
+                            statusMessage += `- ${doc.filename}: ${doc.error}\n`;
+                        });
+                    }
 
-                    await displayResponseWithTyping(data.ai_response);
+                    const formattedResponse = (data.ai_response + '\n\n' + statusMessage)
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+                        .replace(/\n/g, '<br>');
+
+                    await displayResponseWithTyping(data.ai_response + '\n\n' + statusMessage);
                     updateQueryHistory(
-                        `Document Analysis: ${fileInput.files[0].name}`,
+                        `Document Analysis: ${fileInput.files.length} files`,
                         formattedResponse
                     );
 
                     // Reset form
                     documentUploadForm.reset();
                 } else {
-                    throw new Error(data.error || 'Failed to process document');
+                    throw new Error(data.error || 'Failed to process documents');
                 }
             } catch (error) {
                 console.error('Document upload error:', error); // Debug log

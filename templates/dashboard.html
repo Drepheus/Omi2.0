@@ -32,15 +32,15 @@
                     </h3>
                     <form id="documentUploadForm" enctype="multipart/form-data">
                         <div class="mb-3">
-                            <label for="documentFile" class="form-label">Upload a document for analysis (PDF, DOC, DOCX, or TXT)</label>
-                            <input type="file" class="form-control" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required>
+                            <label for="documentFile" class="form-label">Upload documents for analysis (PDF, DOC, DOCX, or TXT)</label>
+                            <input type="file" class="form-control" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required multiple>
                         </div>
                         <div class="mb-3">
-                            <label for="documentQuery" class="form-label">What would you like to know about this document?</label>
-                            <textarea class="form-control" id="documentQuery" name="query" rows="2" placeholder="e.g., Summarize the key points of this contract"></textarea>
+                            <label for="documentQuery" class="form-label">What would you like to know about these documents?</label>
+                            <textarea class="form-control" id="documentQuery" name="query" rows="2" placeholder="e.g., Summarize the key points of these contracts"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-robot me-2"></i>Analyze Document
+                            <i class="fas fa-robot me-2"></i>Analyze Documents
                         </button>
                     </form>
                 </div>
