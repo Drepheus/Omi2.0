@@ -15,8 +15,39 @@ logger = logging.getLogger(__name__)
 class Base(DeclarativeBase):
     pass
 
+from sqlalchemy import event
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.engine import Engine
+import time
+
 db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
+
+@event.listens_for(Engine, "engine_connect")
+def ping_connection(connection, branch):
+    if branch:
+        return
+
+    try:
+        connection.scalar(db.select(1))
+    except Exception:
+        connection.connection.close()
+        raise
+
+def retry_on_disconnect(func):
+    max_retries = 3
+    retry_delay = 1
+
+    def wrapper(*args, **kwargs):
+        for attempt in range(max_retries):
+            try:
+                return func(*args, **kwargs)
+            except OperationalError as e:
+                if attempt == max_retries - 1:
+                    raise
+                time.sleep(retry_delay)
+        return None
+    return wrapper
 
 def create_app():
     app = Flask(__name__)
@@ -55,6 +86,7 @@ from models import User, Query, Payment, Document # Added Document model import
 from services import ai_service, sam_service, stripe_service, document_service
 
 @login_manager.user_loader
+@retry_on_disconnect
 def load_user(id):
     return User.query.get(int(id))
 
