@@ -40,16 +40,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({ query })
                 });
 
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response. Please try again.');
+                }
+
                 const data = await response.json();
 
                 if (response.ok) {
+                    if (!data.ai_response) {
+                        throw new Error('Invalid response format from server');
+                    }
+
                     const formattedResponse = data.ai_response
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+                        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+                        .replace(/\n/g, '<br>');
 
                     await displayResponseWithTyping(data.ai_response);
                     if (!shouldStopTyping) {
@@ -59,7 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(data.error || 'Failed to process query');
                 }
             } catch (error) {
-                displayError(error.message);
+                console.error('Query error:', error);
+                displayError(error.message || 'An unexpected error occurred. Please try again.');
             } finally {
                 submitBtn.disabled = false;
                 stopBtn.classList.add('d-none');
