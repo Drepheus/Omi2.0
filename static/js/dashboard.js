@@ -50,9 +50,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
-                            const content = line.slice(6);
-                            currentStreamResponse += content;
-                            updateResponseContent(currentStreamResponse);
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                if (data.error) {
+                                    displayError(data.error);
+                                } else if (data.content) {
+                                    currentStreamResponse += data.content;
+                                    updateResponseContent(currentStreamResponse);
+                                }
+                            } catch (parseError) {
+                                console.error('Error parsing stream data:', parseError);
+                            }
                         }
                     }
                 }

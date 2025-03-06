@@ -5,6 +5,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from app import db
 from services import ai_service, sam_service
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -233,11 +234,11 @@ def register_routes(app):
             def generate():
                 response_chunks = []
                 for chunk in ai_service.get_ai_streaming_response(query_text):
-                    response_chunks.append(chunk)
-                    yield f"data: {chunk}\n\n"
+                    response_chunks.append(json.loads(chunk))
+                    yield f"data: {json.dumps({'content': chunk})}\n\n"
 
                 # Save the complete response to the database
-                complete_response = ''.join(response_chunks)
+                complete_response = ''.join([chunk.get('content', '') for chunk in response_chunks if 'content' in chunk])
                 query = Query(
                     user_id=current_user.id,
                     query_text=query_text,
