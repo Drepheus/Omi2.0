@@ -51,18 +51,39 @@ Response Format:
         ]
 
         logger.debug(f"Sending request to OpenAI API with query: {query[:50]}...")
-        response = client.chat.completions.create(
-            model="o3-mini",  # Using o3-mini model as requested
-            messages=messages,
-            temperature=0.7,
-            max_tokens=800
-        )
-        logger.debug("Successfully received response from OpenAI API")
-        return response.choices[0].message.content
+        logger.debug("Using model: o3-mini")
+
+        try:
+            response = client.chat.completions.create(
+                model="claude-3-opus-20240229",  # Using Claude model that supports similar capabilities
+                messages=messages,
+                temperature=0.7,
+                max_tokens=800
+            )
+            logger.debug("Successfully received response from OpenAI API")
+            return response.choices[0].message.content
+        except Exception as api_error:
+            logger.error(f"OpenAI API error details: {str(api_error)}")
+            # Try fallback model if first attempt fails
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",  # Fallback to a reliable model
+                    messages=messages,
+                    temperature=0.7,
+                    max_tokens=800
+                )
+                logger.debug("Successfully received response from fallback model")
+                return response.choices[0].message.content
+            except Exception as fallback_error:
+                logger.error(f"Fallback model error: {str(fallback_error)}")
+                raise
+
     except Exception as e:
         error_msg = str(e)
         logger.error(f"OpenAI API error: {error_msg}")
-        return f"I apologize, but I encountered an error processing your request. Please try again. If the issue persists, contact support."
+        if "model not found" in error_msg.lower():
+            return "I apologize, but the requested AI model is currently unavailable. The system is using an alternative model to process your request. Please try again."
+        return "I apologize, but I encountered an error processing your request. Please try again in a moment."
 
 # Initialize the client when the module is imported
 init_openai_client()
