@@ -1,12 +1,13 @@
 import logging
-from services.sam_service import get_relevant_data
+import re
+import trafilatura
+import requests
 from urllib.parse import urlparse, quote
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import os
-import re
-import trafilatura
-import requests
+from time import sleep
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 
@@ -14,16 +15,74 @@ def is_valid_url(url):
     """Check if the provided string is a valid URL"""
     try:
         result = urlparse(url)
-        return all([result.scheme, result.netloc])
+        return all([result.scheme, result.netloc]) and result.scheme in ['http', 'https']
     except Exception as e:
         logger.error(f"Error validating URL: {str(e)}")
         return False
+
+@lru_cache(maxsize=100)
+def get_webpage_content(url, max_retries=3):
+    """Fetch and extract main content from a webpage with retry logic"""
+    try:
+        for attempt in range(max_retries):
+            try:
+                downloaded = trafilatura.fetch_url(url)
+                if downloaded is None:
+                    logger.warning(f"Failed to download content from {url}")
+                    continue
+
+                # Extract main content with metadata
+                content = trafilatura.extract(
+                    downloaded,
+                    include_links=True,
+                    include_images=True,
+                    include_tables=True,
+                    output_format='text',
+                    with_metadata=True
+                )
+
+                if content:
+                    metadata = {}
+                    if isinstance(content, dict):
+                        metadata = {
+                            'title': content.get('title', ''),
+                            'author': content.get('author', ''),
+                            'date': content.get('date', ''),
+                            'description': content.get('description', ''),
+                            'text': content.get('text', content)  # Fallback to full content if not dict
+                        }
+                        content = metadata['text']
+
+                    logger.info(f"Successfully extracted content from {url}")
+                    return {
+                        'content': content,
+                        'metadata': metadata,
+                        'url': url,
+                        'timestamp': datetime.now().isoformat()
+                    }
+
+                if attempt < max_retries - 1:
+                    sleep(2 ** attempt)  # Exponential backoff
+                continue
+
+            except Exception as e:
+                logger.error(f"Error during attempt {attempt + 1} for {url}: {str(e)}")
+                if attempt < max_retries - 1:
+                    sleep(2 ** attempt)
+                continue
+
+        return None
+
+    except Exception as e:
+        logger.error(f"Error processing webpage {url}: {str(e)}")
+        return None
 
 def extract_urls(text):
     """Extract URLs from text using regex"""
     try:
         url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-        return re.findall(url_pattern, text)
+        urls = re.findall(url_pattern, text)
+        return [url for url in urls if is_valid_url(url)]
     except Exception as e:
         logger.error(f"Error extracting URLs: {str(e)}")
         return []
@@ -36,7 +95,7 @@ def get_sam_solicitations(query=None):
         if not api_key:
             logger.error("SAM_API_KEY environment variable is not set")
             return []
-            
+
         headers = {
             'X-Api-Key': api_key,
             'Accept': 'application/json'
@@ -68,7 +127,7 @@ def get_sam_solicitations(query=None):
 
         # Log the attempt with query
         logger.info(f"Querying SAM.gov with search terms: {search_terms if query else 'None'}")
-        
+
         response = requests.get(
             'https://api.sam.gov/opportunities/v2/search',
             headers=headers,
@@ -108,37 +167,20 @@ def get_sam_solicitations(query=None):
         logger.error(f"Error fetching SAM.gov solicitations: {str(e)}")
         return []
 
-def get_webpage_content(url):
-    """Fetch and extract main content from a webpage"""
-    try:
-        downloaded = trafilatura.fetch_url(url)
-        if downloaded is None:
-            return None
-
-        content = trafilatura.extract(downloaded, include_links=True, include_images=True)
-        if content is None:
-            return None
-
-        return content
-    except Exception as e:
-        logger.error(f"Error fetching webpage content: {str(e)}")
-        return None
-
 def process_web_content(query):
     """Process query for web content and return relevant information"""
     try:
-        # Check for SAM.gov related queries
-        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'rfp', 'rfq', 
-                       'proposal', 'federal', 'government contract']
-
+        # Check for SAM.gov related queries first
+        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'rfp', 'rfq']
         is_sam_query = any(keyword in query.lower() for keyword in sam_keywords)
 
-        if is_sam_query:
-            logger.info(f"Processing SAM.gov query: {query}")
-            opportunities = get_relevant_data(query)
+        web_contents = []
 
+        # Handle SAM.gov queries
+        if is_sam_query:
+            from services.sam_service import get_relevant_data
+            opportunities = get_relevant_data(query)
             if opportunities:
-                web_contents = []
                 for opp in opportunities:
                     content = (
                         f"Title: {opp['title']}\n"
@@ -151,16 +193,29 @@ def process_web_content(query):
                     )
                     web_contents.append({
                         'url': opp['url'],
-                        'content': content
+                        'content': content,
+                        'source': 'SAM.gov'
                     })
 
-                logger.info(f"Found {len(web_contents)} opportunities from SAM.gov")
-                return web_contents
-            else:
-                logger.warning(f"No opportunities found for query: {query}")
-                return []
+        # Extract and process URLs from the query
+        urls = extract_urls(query)
+        for url in urls:
+            result = get_webpage_content(url)
+            if result:
+                web_contents.append({
+                    'url': url,
+                    'content': result['content'],
+                    'metadata': result.get('metadata', {}),
+                    'source': 'Web Scraping',
+                    'timestamp': result['timestamp']
+                })
 
-        return []
+        if web_contents:
+            logger.info(f"Successfully processed {len(web_contents)} sources")
+            return web_contents
+        else:
+            logger.warning(f"No content found for query: {query}")
+            return []
 
     except Exception as e:
         logger.error(f"Error processing web content: {str(e)}")

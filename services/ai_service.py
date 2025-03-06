@@ -2,6 +2,7 @@ import os
 import logging
 from openai import OpenAI
 from datetime import datetime
+from services.web_service import process_web_content
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -70,21 +71,25 @@ Keep responses professional, concise, and immediately actionable."""
             {"role": "user", "content": query}
         ]
 
-        # Check if this is a SAM.gov related query
-        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'fetch', 'rfp', 'rfq']
-        is_sam_query = any(keyword in query.lower() for keyword in sam_keywords)
-        
-        if is_sam_query:
-            # Try to get SAM.gov data
-            from services.web_service import process_web_content
-            sam_results = process_web_content(query)
-            if sam_results:
-                sam_data = "\n\nSAM.GOV DATA RETRIEVED:\n"
-                for result in sam_results:
-                    sam_data += f"\n{result['content']}\n"
-                # Add SAM data to user query
-                messages.append({"role": "system", "content": f"Here is real-time SAM.gov data that might be relevant: {sam_data}"})
-        
+        # Check if this is a query that needs web content
+        web_keywords = ['fetch', 'search', 'find', 'look up', 'get', 'download']
+        needs_web_content = any(keyword in query.lower() for keyword in web_keywords)
+
+        if needs_web_content:
+            # Try to get web content
+            web_results = process_web_content(query)
+            if web_results:
+                web_data = "\n\nRELEVANT DATA RETRIEVED:\n"
+                for result in web_results:
+                    source_type = result.get('source', 'Web')
+                    web_data += f"\nSource ({source_type}): {result['url']}\n"
+                    if source_type == 'SAM.gov':
+                        web_data += f"Content:\n{result['content']}\n"
+                    else:
+                        web_data += f"Content Summary:\n{result['content'][:1000]}...\n"
+                # Add web data to user query
+                messages.append({"role": "system", "content": f"Here is relevant live data that might help: {web_data}"})
+
         logger.debug(f"Sending request to OpenAI API with query: {query[:50]}...")
         logger.debug("Using model: gpt-4o-2024-11-20")
 
