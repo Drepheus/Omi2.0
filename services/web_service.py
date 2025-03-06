@@ -42,7 +42,6 @@ def get_sam_solicitations(query=None):
         formatted_future = future.strftime("%m/%d/%Y")
 
         params = {
-            'api_key': api_key,
             'postedFrom': formatted_today,
             'postedTo': formatted_future,
             'limit': 5,  # Increased limit
@@ -59,47 +58,53 @@ def get_sam_solicitations(query=None):
             if search_terms:
                 params['keywords'] = quote(search_terms)
 
-        # Log the attempt with query
-        logger.info(f"Querying SAM.gov with search terms: {search_terms if query else 'None'}")
+        # Log request details for debugging
+        logger.info(f"Making SAM.gov API request with params: {params}")
+        logger.info(f"SAM.gov API URL: https://api.sam.gov/opportunities/v2/search")
 
         response = requests.get(
             'https://api.sam.gov/opportunities/v2/search',
             headers=headers,
             params=params,
-            timeout=15  # Adding a timeout
+            timeout=30  # Increased timeout
         )
 
-        if response.status_code == 200:
-            data = response.json()
-            opportunities = data.get('opportunitiesData', [])
-
-            solicitations = []
-            for opp in opportunities:
-                notice_id = opp.get('noticeId', '')
-                if not notice_id:
-                    continue
-
-                # Construct the proper SAM.gov opportunity URL
-                opportunity_url = f"https://sam.gov/opp/{notice_id}/view"
-
-                solicitation = {
-                    'title': opp.get('title', 'N/A'),
-                    'agency': opp.get('organizationName', 'N/A'),
-                    'posted_date': opp.get('postedDate', 'N/A'),
-                    'due_date': opp.get('responseDeadLine', 'N/A'),
-                    'description': opp.get('description', 'N/A')[:500] + '...' if opp.get('description') else 'N/A',
-                    'solicitation_number': opp.get('solicitationNumber', 'N/A'),
-                    'url': opportunity_url
-                }
-                solicitations.append(solicitation)
-
-            return solicitations
-        else:
-            logger.error(f"SAM.gov API error: {response.status_code} - {response.text}")
+        # Log the response details
+        logger.info(f"SAM.gov API response status code: {response.status_code}")
+        if response.status_code != 200:
+            logger.error(f"SAM.gov API error response: {response.text}")
             return []
+
+        data = response.json()
+        opportunities = data.get('opportunitiesData', [])
+
+        logger.info(f"Retrieved {len(opportunities)} opportunities from SAM.gov")
+
+        solicitations = []
+        for opp in opportunities:
+            notice_id = opp.get('noticeId', '')
+            if not notice_id:
+                continue
+
+            # Construct the proper SAM.gov opportunity URL
+            opportunity_url = f"https://sam.gov/opp/{notice_id}/view"
+
+            solicitation = {
+                'title': opp.get('title', 'N/A'),
+                'agency': opp.get('organizationName', 'N/A'),
+                'posted_date': opp.get('postedDate', 'N/A'),
+                'due_date': opp.get('responseDeadLine', 'N/A'),
+                'description': opp.get('description', 'N/A')[:500] + '...' if opp.get('description') else 'N/A',
+                'solicitation_number': opp.get('solicitationNumber', 'N/A'),
+                'url': opportunity_url
+            }
+            solicitations.append(solicitation)
+
+        return solicitations
 
     except Exception as e:
         logger.error(f"Error fetching SAM.gov solicitations: {str(e)}")
+        logger.exception("Full traceback:")  # This will log the full stack trace
         return []
 
 @lru_cache(maxsize=100)

@@ -141,19 +141,38 @@
             <!-- Recent Queries Card -->
             <div class="card dashboard-card">
                 <div class="card-body">
-                    <h4 class="card-title mb-3">Recent Queries</h4>
-                    <div id="queryHistory" class="query-history">
-                        {% for query in queries %}
-                            <div class="card dashboard-card mb-3">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted">Query:</h6>
-                                    <p>{{ query.query_text }}</p>
-                                    <h6 class="card-subtitle mb-2 text-muted">Response:</h6>
-                                    <p>{{ query.response }}</p>
-                                    <small class="text-muted">{{ query.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0">Recent Queries</h4>
+                        <button class="btn btn-link text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#queryHistory" aria-expanded="false" aria-controls="queryHistory">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div id="queryHistory" class="collapse show query-history">
+                        <div class="accordion">
+                            {% for query in queries %}
+                                <div class="accordion-item bg-dark border-0 mb-2">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#query-{{ loop.index }}">
+                                            {{ query.query_text[:50] }}{% if query.query_text|length > 50 %}...{% endif %}
+                                        </button>
+                                    </h2>
+                                    <div id="query-{{ loop.index }}" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <div class="query-details">
+                                                <h6 class="text-muted mb-2">Query:</h6>
+                                                <p>{{ query.query_text }}</p>
+                                                <h6 class="text-muted mb-2">Response:</h6>
+                                                <p>{{ query.response }}</p>
+                                                <small class="text-muted d-block mt-2">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ query.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -54,6 +54,59 @@ body {
     border-left: 4px solid var(--gov-red);
 }
 
+.query-history .accordion-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: none;
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+.query-history .accordion-button:not(.collapsed) {
+    background: var(--card-hover) !important;
+    box-shadow: none;
+}
+
+.query-history .accordion-button::after {
+    filter: invert(1);
+}
+
+.query-history .accordion-item {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.query-history .accordion-body {
+    padding: 1rem;
+    background: var(--card-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.query-details p {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.query-history .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.query-history .btn-link {
+    text-decoration: none;
+    padding: 0;
+    color: var(--text-secondary);
+}
+
+.query-history .btn-link:hover {
+    color: var(--text-primary);
+}
+
+
 .query-history {
     max-height: 400px;
     overflow-y: auto;
@@ -178,7 +231,6 @@ body {
     color: #fca5a5;
 }
 
-/* Add to the end of the existing CSS file */
 .typing-cursor {
     display: inline-block;
     width: 3px;
@@ -193,7 +245,6 @@ body {
     50% { opacity: 0; }
 }
 
-/* Add to the existing CSS file */
 .response-section {
     margin: 1.2rem 0;
     padding: 1rem;
