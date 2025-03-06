@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 import os
 from time import sleep
 from functools import lru_cache
-from services.sam_service import get_sam_solicitations
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +19,88 @@ def is_valid_url(url):
     except Exception as e:
         logger.error(f"Error validating URL: {str(e)}")
         return False
+
+def get_sam_solicitations(query=None):
+    """Fetch recent solicitations from SAM.gov API"""
+    try:
+        # Make sure we have the API key
+        api_key = os.environ.get('SAM_API_KEY')
+        if not api_key:
+            logger.error("SAM_API_KEY environment variable is not set")
+            return []
+
+        headers = {
+            'X-Api-Key': api_key,
+            'Accept': 'application/json'
+        }
+
+        today = datetime.now()
+        future = today + timedelta(days=30)
+
+        # Format dates in MM/dd/yyyy as required by SAM API
+        formatted_today = today.strftime("%m/%d/%Y")
+        formatted_future = future.strftime("%m/%d/%Y")
+
+        params = {
+            'api_key': api_key,
+            'postedFrom': formatted_today,
+            'postedTo': formatted_future,
+            'limit': 5,  # Increased limit
+            'isActive': 'true'
+        }
+
+        # Clean and format the query for the search
+        if query:
+            # Extract only the relevant search terms
+            search_terms = query.lower()
+            for term in ['fetch', 'get', 'find', 'search for', 'solicitation for', 'contract for']:
+                search_terms = search_terms.replace(term, '')
+            search_terms = search_terms.strip()
+            if search_terms:
+                params['keywords'] = quote(search_terms)
+
+        # Log the attempt with query
+        logger.info(f"Querying SAM.gov with search terms: {search_terms if query else 'None'}")
+
+        response = requests.get(
+            'https://api.sam.gov/opportunities/v2/search',
+            headers=headers,
+            params=params,
+            timeout=15  # Adding a timeout
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            opportunities = data.get('opportunitiesData', [])
+
+            solicitations = []
+            for opp in opportunities:
+                notice_id = opp.get('noticeId', '')
+                if not notice_id:
+                    continue
+
+                # Construct the proper SAM.gov opportunity URL
+                opportunity_url = f"https://sam.gov/opp/{notice_id}/view"
+
+                solicitation = {
+                    'title': opp.get('title', 'N/A'),
+                    'agency': opp.get('organizationName', 'N/A'),
+                    'posted_date': opp.get('postedDate', 'N/A'),
+                    'due_date': opp.get('responseDeadLine', 'N/A'),
+                    'description': opp.get('description', 'N/A')[:500] + '...' if opp.get('description') else 'N/A',
+                    'solicitation_number': opp.get('solicitationNumber', 'N/A'),
+                    'url': opportunity_url
+                }
+                solicitations.append(solicitation)
+
+            return solicitations
+        else:
+            logger.error(f"SAM.gov API error: {response.status_code} - {response.text}")
+            return []
+
+    except Exception as e:
+        logger.error(f"Error fetching SAM.gov solicitations: {str(e)}")
+        return []
 
 @lru_cache(maxsize=100)
 def get_webpage_content(url, max_retries=3):
@@ -111,7 +192,7 @@ def process_web_content(query):
                         f"Solicitation Number: {sol['solicitation_number']}\n"
                         f"Posted Date: {sol['posted_date']}\n"
                         f"Response Deadline: {sol['due_date']}\n"
-                        f"Description: {sol['description'] if 'description' in sol else 'N/A'}\n"
+                        f"Description: {sol['description']}\n"
                         f"View on SAM.gov: {sol['url']}"
                     )
                     web_contents.append({
@@ -147,84 +228,4 @@ def process_web_content(query):
 
     except Exception as e:
         logger.error(f"Error processing web content: {str(e)}")
-        return []
-
-def get_sam_solicitations(query=None):
-    """Fetch recent solicitations from SAM.gov API"""
-    try:
-        # Make sure we have the API key
-        api_key = os.environ.get('SAM_API_KEY')
-        if not api_key:
-            logger.error("SAM_API_KEY environment variable is not set")
-            return []
-
-        headers = {
-            'X-Api-Key': api_key,
-            'Accept': 'application/json'
-        }
-
-        today = datetime.now()
-        future = today + timedelta(days=30)
-
-        # Format dates in MM/dd/yyyy as required by SAM API
-        formatted_today = today.strftime("%m/%d/%Y")
-        formatted_future = future.strftime("%m/%d/%Y")
-
-        params = {
-            'api_key': api_key,
-            'postedFrom': formatted_today,
-            'postedTo': formatted_future,
-            'limit': 5,  # Increased limit
-            'isActive': 'true'
-        }
-
-        # Clean and format the query for the search
-        if query:
-            # Extract only the relevant search terms
-            search_terms = query.lower()
-            for term in ['fetch', 'get', 'find', 'search for', 'solicitation for', 'contract for']:
-                search_terms = search_terms.replace(term, '')
-            search_terms = search_terms.strip()
-            params['keywords'] = quote(search_terms)
-
-        # Log the attempt with query
-        logger.info(f"Querying SAM.gov with search terms: {search_terms if query else 'None'}")
-
-        response = requests.get(
-            'https://api.sam.gov/opportunities/v2/search',
-            headers=headers,
-            params=params,
-            timeout=15  # Adding a timeout
-        )
-
-        if response.status_code == 200:
-            data = response.json()
-            opportunities = data.get('opportunitiesData', [])
-
-            solicitations = []
-            for opp in opportunities[:3]:  # Only return top 3
-                notice_id = opp.get('noticeId', '')
-                if not notice_id:
-                    continue
-
-                # Construct the proper SAM.gov opportunity URL
-                opportunity_url = f"https://sam.gov/opp/{notice_id}/view"
-
-                solicitation = {
-                    'title': opp.get('title', 'N/A'),
-                    'agency': opp.get('organizationName', 'N/A'),
-                    'posted_date': opp.get('postedDate', 'N/A'),
-                    'due_date': opp.get('responseDeadLine', 'N/A'),
-                    'solicitation_number': opp.get('solicitationNumber', 'N/A'),
-                    'url': opportunity_url
-                }
-                solicitations.append(solicitation)
-
-            return solicitations
-        else:
-            logger.error(f"SAM.gov API error: {response.status_code} - {response.text}")
-            return []
-
-    except Exception as e:
-        logger.error(f"Error fetching SAM.gov solicitations: {str(e)}")
         return []
