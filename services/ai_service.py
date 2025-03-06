@@ -279,4 +279,26 @@ def get_sam_solicitations(query=None):
                 if not notice_id:
                     continue
 
-                opportunity_url = f"https://sam
+                opportunity_url = f"https://sam.gov/opportunity/{notice_id}"
+
+                solicitations.append({
+                    'title': opp.get('title', 'No Title'),
+                    'agency': opp.get('department', 'Unknown Agency'),
+                    'solicitation_number': opp.get('solicitationNumber', 'N/A'),
+                    'posted_date': opp.get('postedDate', 'Unknown'),
+                    'due_date': opp.get('responseDeadLine', 'Unknown'),
+                    'description': opp.get('description', 'No description available'),
+                    'url': opportunity_url
+                })
+
+            logger.info(f"Found {len(solicitations)} solicitations from SAM.gov")
+            return solicitations
+        else:
+            logger.error(f"SAM.gov API request failed with status code: {response.status_code}")
+            logger.error(f"Response: {response.text}")
+            return []
+
+    except Exception as e:
+        logger.error(f"Error fetching SAM.gov solicitations: {str(e)}")
+        return []
+
