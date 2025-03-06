@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatResponse(text) {
         if (!text) return '<p>No response received. Please try again.</p>';
-        
+
         return text
             .split('\n\n')
             .map(para => {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Format bullet points
                 para = para.replace(/•\s/g, '<span class="bullet-point">•</span> ');
-                
+
                 // Format URLs to be clickable
                 para = para.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
 
@@ -367,4 +367,87 @@ document.addEventListener('DOMContentLoaded', function() {
         `).join('');
     }
 
+    const samSearchForm = document.getElementById('samSearchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    if (samSearchForm) {
+        samSearchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+
+            try {
+                // Show loading state
+                submitBtn.disabled = true;
+                searchResults.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Searching...</span>
+                        </div>
+                        <p class="mt-2">Searching SAM.gov...</p>
+                    </div>
+                `;
+
+                const response = await fetch('/api/sam/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'success' && data.results.length > 0) {
+                    const resultsHtml = data.results.map(result => `
+                        <div class="card dashboard-card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${result.title}</h5>
+                                <p class="card-text">
+                                    <strong>Agency:</strong> ${result.agency}<br>
+                                    <strong>Solicitation #:</strong> ${result.solicitation_number}<br>
+                                    <strong>Posted:</strong> ${result.posted_date}<br>
+                                    <strong>Due:</strong> ${result.due_date}
+                                </p>
+                                <a href="${result.url}" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt me-2"></i>View on SAM.gov
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    searchResults.innerHTML = `
+                        <h4 class="mb-3">Found ${data.count} solicitation${data.count !== 1 ? 's' : ''}</h4>
+                        ${resultsHtml}
+                    `;
+                } else {
+                    searchResults.innerHTML = `
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${data.message || 'No solicitations found matching your search criteria.'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Failed to search SAM.gov. Please try again later.
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    }
 });

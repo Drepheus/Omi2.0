@@ -5,7 +5,30 @@
     <div class="row">
         <!-- Left Column -->
         <div class="col-md-8">
-            <!-- AI Response Area - Moved to top -->
+            <!-- SAM.gov Search Form -->
+            <div class="card dashboard-card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="fas fa-search me-2"></i>Search SAM.gov
+                    </h3>
+                    <form id="samSearchForm">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label">Search for solicitations, opportunities, or contracts</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchInput" 
+                                       placeholder="e.g., IT services, construction, medical supplies" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Search Results Area -->
+                    <div id="searchResults" class="mt-4"></div>
+                </div>
+            </div>
+
+            <!-- AI Response Area -->
             <div id="responseArea"></div>
 
             <!-- Query Form -->
@@ -54,7 +77,7 @@
             </div>
         </div>
 
-        <!-- Right Column - Unchanged -->
+        <!-- Right Column -->
         <div class="col-md-4">
             <!-- Account Status Card -->
             <div class="card dashboard-card mb-4">

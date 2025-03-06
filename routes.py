@@ -169,11 +169,11 @@ def register_routes(app):
 
             query_text = data['query']
             logger.info(f"Searching SAM.gov for: {query_text}")
-            
+
             # Get solicitations from SAM.gov
             from services.web_service import get_sam_solicitations
             solicitations = get_sam_solicitations(query_text)
-            
+
             if solicitations:
                 # Format for display
                 formatted_results = []
@@ -186,7 +186,7 @@ def register_routes(app):
                         'due_date': sol.get('due_date', 'N/A'),
                         'url': sol.get('url', '#')
                     })
-                
+
                 return jsonify({
                     'status': 'success',
                     'results': formatted_results,
