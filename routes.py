@@ -4,6 +4,7 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from app import db
+from services import ai_service, sam_service
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +73,6 @@ def register_routes(app):
             if not current_user.is_premium and Query.query.filter_by(user_id=current_user.id).count() >= 10:
                 return jsonify(error='Free tier limit reached. Please upgrade to premium.'), 403
 
-            from services import ai_service
             ai_response = ai_service.get_ai_response(query_text)
             if not ai_response:
                 return jsonify(error="Failed to get AI response"), 500
@@ -90,6 +90,40 @@ def register_routes(app):
         except Exception as e:
             logger.error(f"Error processing query: {str(e)}")
             return jsonify(error=str(e)), 500
+
+    @app.route('/api/sam/status')
+    @login_required
+    def sam_status():
+        logger.debug("SAM.gov status API endpoint accessed")
+        try:
+            entities = sam_service.get_relevant_data("contractor status")
+            return jsonify({
+                'status': 'success',
+                'entities': entities
+            })
+        except Exception as e:
+            logger.error(f"Error fetching SAM.gov status: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'error': 'Could not fetch SAM.gov data. Please try again later.'
+            }), 500
+
+    @app.route('/api/sam/awards')
+    @login_required
+    def sam_awards():
+        logger.debug("SAM.gov awards API endpoint accessed")
+        try:
+            awards = sam_service.get_awarded_contracts()
+            return jsonify({
+                'status': 'success',
+                'awards': awards
+            })
+        except Exception as e:
+            logger.error(f"Error fetching SAM.gov awards: {str(e)}")
+            return jsonify({
+                'status': 'error',
+                'error': 'Could not fetch contract awards. Please try again later.'
+            }), 500
 
     # Error handler for API routes
     @app.errorhandler(Exception)
