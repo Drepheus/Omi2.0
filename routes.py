@@ -1,11 +1,10 @@
 import logging
-from datetime import datetime, timedelta
-from flask import render_template, redirect, url_for, flash, request, jsonify, Response, stream_with_context
+from datetime import datetime
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from app import db
 from services import ai_service, sam_service
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -97,22 +96,7 @@ def register_routes(app):
     def sam_status():
         logger.debug("SAM.gov status API endpoint accessed")
         try:
-            # Fetch SAM.gov entity status data
             entities = sam_service.get_relevant_data("contractor status")
-
-            # Create placeholder data if API call failed
-            if not entities:
-                logger.warning("No SAM.gov entities found, providing placeholder data")
-                entities = [
-                    {
-                        'entity_name': 'Demo Contractor Inc.',
-                        'duns': '123456789',
-                        'status': 'Active',
-                        'expiration_date': (datetime.now() + timedelta(days=365)).strftime("%Y-%m-%d"),
-                        'url': 'https://sam.gov/'
-                    }
-                ]
-
             return jsonify({
                 'status': 'success',
                 'entities': entities
@@ -130,21 +114,6 @@ def register_routes(app):
         logger.debug("SAM.gov awards API endpoint accessed")
         try:
             awards = sam_service.get_awarded_contracts()
-
-            # Create placeholder data if API call failed
-            if not awards:
-                logger.warning("No SAM.gov awards found, providing placeholder data")
-                awards = [
-                    {
-                        'title': 'Facility Maintenance Services',
-                        'solicitation_number': 'ABC12345',
-                        'award_amount': '250000',
-                        'award_date': datetime.now().strftime("%Y-%m-%d"),
-                        'awardee': 'Acme Services LLC',
-                        'url': 'https://sam.gov/'
-                    }
-                ]
-
             return jsonify({
                 'status': 'success',
                 'awards': awards
@@ -156,57 +125,6 @@ def register_routes(app):
                 'error': 'Could not fetch contract awards. Please try again later.'
             }), 500
 
-    @app.route('/api/sam/search', methods=['POST'])
-    @login_required
-    def sam_search():
-        """Direct endpoint to search SAM.gov"""
-        try:
-            if not request.is_json:
-                return jsonify(error="Invalid request format. Expected JSON."), 400
-
-            data = request.get_json()
-            if not data or 'query' not in data:
-                return jsonify(error="Missing query parameter"), 400
-
-            query_text = data['query']
-            logger.info(f"Searching SAM.gov for: {query_text}")
-
-            # Get solicitations from SAM.gov
-            from services.web_service import get_sam_solicitations
-            solicitations = get_sam_solicitations(query_text)
-
-            if solicitations:
-                # Format for display
-                formatted_results = []
-                for sol in solicitations:
-                    formatted_results.append({
-                        'title': sol.get('title', 'N/A'),
-                        'agency': sol.get('agency', 'N/A'),
-                        'solicitation_number': sol.get('solicitation_number', 'N/A'),
-                        'posted_date': sol.get('posted_date', 'N/A'),
-                        'due_date': sol.get('due_date', 'N/A'),
-                        'url': sol.get('url', '#')
-                    })
-
-                return jsonify({
-                    'status': 'success',
-                    'results': formatted_results,
-                    'count': len(formatted_results)
-                })
-            else:
-                return jsonify({
-                    'status': 'warning',
-                    'message': 'No solicitations found matching your criteria',
-                    'results': []
-                })
-
-        except Exception as e:
-            logger.error(f"Error searching SAM.gov: {str(e)}")
-            return jsonify({
-                'status': 'error',
-                'error': 'Failed to search SAM.gov. Please try again later.'
-            }), 500
-
     # Error handler for API routes
     @app.errorhandler(Exception)
     def handle_error(error):
@@ -214,57 +132,5 @@ def register_routes(app):
         if request.path.startswith('/api/'):
             return jsonify(error=str(error)), getattr(error, 'code', 500)
         return render_template('error.html', error=error), 500
-
-    @app.route('/api/query/stream', methods=['POST'])
-    @login_required
-    def process_query_stream():
-        try:
-            if not request.is_json:
-                return jsonify(error="Invalid request format. Expected JSON."), 400
-
-            data = request.get_json()
-            if not data or 'query' not in data:
-                return jsonify(error="Missing query parameter"), 400
-
-            query_text = data['query']
-
-            if not current_user.is_premium and Query.query.filter_by(user_id=current_user.id).count() >= 10:
-                return jsonify(error='Free tier limit reached. Please upgrade to premium.'), 403
-
-            def generate():
-                response_chunks = []
-                try:
-                    for chunk in ai_service.get_ai_streaming_response(query_text):
-                        response_chunks.append(chunk)
-                        yield f"data: {chunk}\n\n"
-
-                    # Save the complete response to the database
-                    complete_response = ''.join([json.loads(chunk).get('content', '') for chunk in response_chunks if 'content' in json.loads(chunk)])
-                    query = Query(
-                        user_id=current_user.id,
-                        query_text=query_text,
-                        response=complete_response
-                    )
-                    db.session.add(query)
-                    db.session.commit()
-                except Exception as e:
-                    logger.error(f"Error in stream generation: {str(e)}")
-                    yield f"data: {json.dumps({'error': str(e)})}\n\n"
-
-            response = Response(
-                stream_with_context(generate()),
-                mimetype='text/event-stream',
-                headers={
-                    'Cache-Control': 'no-cache',
-                    'Transfer-Encoding': 'chunked',
-                    'Access-Control-Allow-Origin': '*',
-                    'X-Accel-Buffering': 'no'
-                }
-            )
-            return response
-
-        except Exception as e:
-            logger.error(f"Error processing streaming query: {str(e)}")
-            return jsonify(error=str(e)), 500
 
     return app
