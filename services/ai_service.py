@@ -32,7 +32,8 @@ def get_ai_response(query):
         return "Error: Could not initialize AI service. Please try again later."
 
     try:
-        system_message = """You are BidBot, an AI assistant specialized in government contracting but also everything else. You are suppose to walk users thru whatever process they are on and step they are starting from. Your responses should be immediate and actionable.
+        today_date = datetime.today().strftime('%Y-%m-%d')
+        system_message = f"""You are BidBot, an AI assistant specialized in government contracting but also everything else. Today's date is {today_date}. You are suppose to walk users thru whatever process they are on and step they are starting from. Your responses should be immediate and actionable.
 
 Key Behaviors:
 1. Provide direct, concise answers
