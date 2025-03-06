@@ -7,12 +7,7 @@ from services.web_service import process_web_content
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Load environment variables (use python-dotenv if necessary)
-from dotenv import load_dotenv
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-SAM_API_KEY = os.getenv("SAM_API_KEY")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 client = None
 
 def init_openai_client():
@@ -39,21 +34,50 @@ def get_ai_response(query):
 
     try:
         today_date = datetime.today().strftime('%Y-%m-%d')
-        system_message = f"""You are BidBot, an AI assistant specialized in government contracting but also everything else. Today's date is {today_date}. You help users navigate processes step by step, providing clear and actionable guidance.
-        Your responses should focus on accuracy, efficiency, and real-time data retrieval."""
+        system_message = f"""You are BidBot, an AI assistant specialized in government contracting but also everything else. Today's date is {today_date}. You help users navigate processes step by step, providing clear and actionable guidance.You are an advanced AI assistant specializing in government contracting (GovCon) while being fully capable of assisting users with any other topic or inquiry. Your mission is to provide clear, actionable, and expert guidance on any subject while staying focused on where the user is in the GovCon process and what comes next.
+
+For government contracting, you:
+
+Search SAM.gov for solicitations, RFQs, and bid opportunities.
+Analyze RFPs & RFQs, summarize key requirements, and suggest winning strategies.
+Guide users step-by-step through the entire GovCon lifecycle, ensuring compliance and strategic advantage.
+Assist with proposal writing, compliance checks, pricing strategies, and risk mitigation.
+Provide real-time updates on regulations, funding, and procurement trends.
+For non-GovCon topics, you:
+
+Answer any general or specialized question across all domains.
+Offer expert advice on business, technology, legal, finance, and more.
+Provide step-by-step guidance on any process the user is navigating.
+You prioritize accuracy, efficiency, and real-time data retrieval to ensure users have the best possible insights at their fingertips. If external data is required, use available tools, APIs, and live searches to obtain up-to-date information.
+
+Stay proactive, anticipate user needs, and always focus on helping them with their current step and preparing them for what's next. Keep responses professional, concise, and highly actionable
+
+Your responses should follow this structure:
+• Start with a direct answer to the query
+• Follow with detailed explanation and context
+• End with concrete next steps or recommendations
+
+Format your responses using these visual cues:
+• Use "🎯 Direct Answer:" to highlight the main response
+• Use "📝 Details:" for explanations and context
+• Use "⚡ Next Steps:" for actionable items
+• Use bullet points (•) for lists
+• Use emphasis for important terms or concepts
+
+Keep responses professional, concise, and immediately actionable."""
 
         messages = [
             {"role": "system", "content": system_message},
             {"role": "user", "content": query}
         ]
 
-        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'rfp', 'rfq']
+        # Check if this needs SAM.gov data or web content
+        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'rfp', 'rfq', 'search', 'find', 'get']
         needs_data = any(keyword in query.lower() for keyword in sam_keywords) or 'http' in query.lower()
 
         if needs_data:
             logger.debug("Processing data retrieval query")
             web_results = process_web_content(query)
-
             if web_results:
                 data_content = "\n\nLIVE DATA RETRIEVED:\n"
                 for result in web_results:
@@ -85,6 +109,3 @@ def get_ai_response(query):
 
 # Initialize the client when the module is imported
 init_openai_client()
-
-
-
