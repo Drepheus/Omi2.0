@@ -71,24 +71,19 @@ Keep responses professional, concise, and immediately actionable."""
             {"role": "user", "content": query}
         ]
 
-        # Check if this is a query that needs web content
-        web_keywords = ['fetch', 'search', 'find', 'look up', 'get', 'download']
-        needs_web_content = any(keyword in query.lower() for keyword in web_keywords)
+        # Check if this is a SAM.gov related query
+        sam_keywords = ['solicitation', 'sam.gov', 'contract', 'opportunity', 'bid', 'rfp', 'rfq', 'search', 'find', 'get']
+        needs_sam_data = any(keyword in query.lower() for keyword in sam_keywords)
 
-        if needs_web_content:
-            # Try to get web content
+        if needs_sam_data:
+            logger.debug("Processing SAM.gov related query")
             web_results = process_web_content(query)
             if web_results:
-                web_data = "\n\nRELEVANT DATA RETRIEVED:\n"
+                sam_data = "\n\nLIVE SAM.GOV DATA RETRIEVED:\n"
                 for result in web_results:
-                    source_type = result.get('source', 'Web')
-                    web_data += f"\nSource ({source_type}): {result['url']}\n"
-                    if source_type == 'SAM.gov':
-                        web_data += f"Content:\n{result['content']}\n"
-                    else:
-                        web_data += f"Content Summary:\n{result['content'][:1000]}...\n"
-                # Add web data to user query
-                messages.append({"role": "system", "content": f"Here is relevant live data that might help: {web_data}"})
+                    sam_data += f"\n{result['content']}\n"
+                # Add SAM.gov data to user query
+                messages.append({"role": "system", "content": f"Here is real-time SAM.gov data that was just retrieved: {sam_data}\nPlease analyze this data and provide insights based on the user's query."})
 
         logger.debug(f"Sending request to OpenAI API with query: {query[:50]}...")
         logger.debug("Using model: gpt-4o-2024-11-20")

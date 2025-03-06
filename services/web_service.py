@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import os
 from time import sleep
 from functools import lru_cache
+from services.sam_service import get_sam_solicitations
 
 logger = logging.getLogger(__name__)
 
@@ -178,37 +179,30 @@ def process_web_content(query):
 
         # Handle SAM.gov queries
         if is_sam_query:
-            from services.sam_service import get_relevant_data
-            opportunities = get_relevant_data(query)
-            if opportunities:
-                for opp in opportunities:
+            logger.info(f"Processing SAM.gov query: {query}")
+            solicitations = get_sam_solicitations(query)
+
+            if solicitations:
+                for sol in solicitations:
                     content = (
-                        f"Title: {opp['title']}\n"
-                        f"Agency: {opp['agency']}\n"
-                        f"Solicitation Number: {opp['solicitation_number']}\n"
-                        f"Response Deadline: {opp['response_deadline']}\n"
-                        f"Status: {opp['status']}\n"
-                        f"Description: {opp['description']}\n"
-                        f"View on SAM.gov: {opp['url']}"
+                        f"SAM.GOV SOLICITATION:\n"
+                        f"Title: {sol['title']}\n"
+                        f"Agency: {sol['agency']}\n"
+                        f"Solicitation Number: {sol['solicitation_number']}\n"
+                        f"Posted Date: {sol['posted_date']}\n"
+                        f"Response Deadline: {sol['due_date']}\n"
+                        f"Description: {sol['description'] if 'description' in sol else 'N/A'}\n"
+                        f"View on SAM.gov: {sol['url']}"
                     )
                     web_contents.append({
-                        'url': opp['url'],
+                        'url': sol['url'],
                         'content': content,
-                        'source': 'SAM.gov'
+                        'source': 'SAM.gov',
+                        'timestamp': datetime.now().isoformat()
                     })
-
-        # Extract and process URLs from the query
-        urls = extract_urls(query)
-        for url in urls:
-            result = get_webpage_content(url)
-            if result:
-                web_contents.append({
-                    'url': url,
-                    'content': result['content'],
-                    'metadata': result.get('metadata', {}),
-                    'source': 'Web Scraping',
-                    'timestamp': result['timestamp']
-                })
+                logger.info(f"Found {len(web_contents)} solicitations from SAM.gov")
+            else:
+                logger.warning("No SAM.gov solicitations found")
 
         if web_contents:
             logger.info(f"Successfully processed {len(web_contents)} sources")
