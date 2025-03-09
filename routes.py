@@ -13,7 +13,16 @@ def register_routes(app):
 
     @app.route('/')
     def index():
+        return render_template('landing.html')
+        
+    @app.route('/home')
+    def home():
         return render_template('index.html')
+        
+    @app.route('/simple-dashboard')
+    @login_required
+    def simple_dashboard():
+        return render_template('simple_dashboard.html')
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
