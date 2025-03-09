@@ -1,11 +1,11 @@
 
 :root {
-  --bg-dark: #121212;
-  --bg-darker: #1a1a1a;
-  --card-bg: #2C2C2C;
+  --bg-dark: #1f1f1f;
+  --bg-darker: #2d2d2d;
+  --card-bg: #303030;
   --text-primary: #ffffff;
-  --text-secondary: #909090;
-  --accent-gradient: linear-gradient(90deg, #0057B8 0%, #2B1E6B 33%, #D72638 66%, #FFB400 100%);
+  --text-secondary: #a8c7fa;
+  --accent-gradient: linear-gradient(90deg, #8ab4f8 0%, #c58af9 50%, #8ab4f8 100%);
 }
 
 body {
@@ -35,9 +35,7 @@ body {
   position: absolute;
   width: 24px;
   height: 24px;
-  border: 2px solid transparent;
-  border-image: var(--accent-gradient);
-  border-image-slice: 1;
+  border: 2px solid #8ab4f8;
   border-radius: 50%;
   margin-left: -30px;
   animation: pulse 2s infinite;
