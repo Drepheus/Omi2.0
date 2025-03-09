@@ -133,18 +133,7 @@ body {
   color: var(--text-primary);
 }
 
-.ai-response::before {
-  content: "";
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--accent-gradient);
-  top: -15px;
-  left: 20px;
-  opacity: 0.8;
-  z-index: 1;
-}
+/* Removed the circle icon */
 
 .response-card {
   border-left: none;
