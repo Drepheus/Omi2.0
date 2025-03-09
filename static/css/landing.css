@@ -8,8 +8,8 @@
   justify-content: space-between;
   padding: 20px;
   position: relative;
-  background-image: radial-gradient(circle at 10% 20%, rgba(138, 180, 248, 0.03) 0%, transparent 20%),
-                    radial-gradient(circle at 80% 60%, rgba(138, 180, 248, 0.03) 0%, transparent 30%);
+  background-image: radial-gradient(circle at 10% 20%, rgba(30, 136, 229, 0.03) 0%, transparent 20%),
+                    radial-gradient(circle at 80% 60%, rgba(216, 27, 96, 0.03) 0%, transparent 30%);
 }
 
 /* Corner Pulse Circle - Removed */
@@ -29,7 +29,15 @@
   height: 120px;
   border-radius: 50%;
   background: none;
-  border: 3px solid #8ab4f8;
+  border: 3px solid transparent;
+  background-image: linear-gradient(white, white), 
+                    linear-gradient(to right, 
+                      #1E88E5 0%,
+                      #8E24AA 33%,
+                      #D81B60 66%,
+                      #FFA000 100%);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
   animation: pulse 2s infinite ease-in-out;
   position: relative;
 }
@@ -40,7 +48,7 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(138, 180, 248, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(142, 36, 170, 0.3) 0%, transparent 70%);
   opacity: 0.6;
 }
 
@@ -50,7 +58,11 @@
   font-weight: bold;
   color: #ffffff;
   text-align: center;
-  background: linear-gradient(90deg, #8ab4f8 0%, #c58af9 50%, #8ab4f8 100%);
+  background: linear-gradient(to right, 
+    #1E88E5 0%,
+    #8E24AA 33%,
+    #D81B60 66%,
+    #FFA000 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -66,8 +78,16 @@
 .btn-use-omi {
   padding: 15px 40px;
   background-color: #2d2d2d;
-  color: #8ab4f8;
-  border: 2px solid #8ab4f8;
+  color: #1E88E5;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#2d2d2d, #2d2d2d), 
+                    linear-gradient(to right, 
+                      #1E88E5 0%,
+                      #8E24AA 33%,
+                      #D81B60 66%,
+                      #FFA000 100%);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
   border-radius: 30px;
   font-size: 18px;
   font-weight: 600;
@@ -79,9 +99,13 @@
 
 .btn-use-omi:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(138, 180, 248, 0.3);
-  background-color: #8ab4f8;
-  color: #1f1f1f;
+  box-shadow: 0 8px 20px rgba(216, 27, 96, 0.3);
+  background-image: linear-gradient(to right, 
+                      #1E88E5 0%,
+                      #8E24AA 33%,
+                      #D81B60 66%,
+                      #FFA000 100%);
+  color: #ffffff;
 }
 
 .btn-use-omi:before {
@@ -91,7 +115,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(138, 180, 248, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transform: translateX(-100%);
 }
 
@@ -107,7 +131,7 @@
 }
 
 .corner-text a {
-  color: #a8c7fa;
+  color: #1E88E5;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -115,7 +139,7 @@
 }
 
 .corner-text a:hover {
-  color: #c58af9;
+  color: #D81B60;
 }
 
 /* Animations */
@@ -123,12 +147,16 @@
   0%, 100% {
     transform: scale(1);
     opacity: 0.8;
-    border-color: #8ab4f8;
+  }
+  25% {
+    border-image-source: linear-gradient(to right, #1E88E5, #8E24AA);
   }
   50% {
     transform: scale(1.1);
     opacity: 1;
-    border-color: #c58af9;
+  }
+  75% {
+    border-image-source: linear-gradient(to right, #D81B60, #FFA000);
   }
 }
 
