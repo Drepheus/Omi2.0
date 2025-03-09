@@ -1,20 +1,12 @@
 /* Custom styles on top of Bootstrap dark theme */
 :root {
-    --gov-blue: #1E88E5;
-    --gov-red: #D81B60;
-    --gov-purple: #8E24AA;
-    --gov-amber: #FFA000;
-    --dark-bg: #1f1f1f;
-    --card-bg: #303030;
-    --card-hover: #3d3d3d;
+    --gov-blue: #000000;
+    --gov-red: #ef4444;
+    --dark-bg: #000000;
+    --card-bg: #00000;
+    --card-hover: #374151;
     --text-primary: #f3f4f6;
-    --text-secondary: #e2e2e2;
-    --gemini-gradient: linear-gradient(to right, 
-      #1E88E5 0%,    /* Blue */
-      #8E24AA 33%,   /* Purple */
-      #D81B60 66%,   /* Pink */
-      #FFA000 100%   /* Amber/Gold */
-    );
+    --text-secondary: #9ca3af;
 }
 
 body {
