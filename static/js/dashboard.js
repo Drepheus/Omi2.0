@@ -132,11 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h4 class="mb-0">AI Response</h4>
                     </div>
                     <div class="ai-response">
-                        <div class="typing-animation">
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                        </div>
                         <span class="typing-cursor">▎</span>
                     </div>
                     <div class="response-metadata">
