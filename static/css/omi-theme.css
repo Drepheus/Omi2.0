@@ -173,12 +173,16 @@ body {
   border-bottom-left-radius: 5px;
 }
 
-.message-bubble.ai .message-content strong {
+.message-bubble.ai .message-content strong,
+.message-bubble.ai .formatted-content strong {
   font-weight: 600;
   color: #ffffff;
+  background-color: transparent;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
-.message-bubble.ai .message-content em {
+.message-bubble.ai .message-content em,
+.message-bubble.ai .formatted-content em {
   font-style: italic;
   color: #e1e1e1;
 }
