@@ -8,7 +8,7 @@
     </video>
 </div>
 
-<div class="landing-container" style="display: none; opacity: 0;">
+<div class="landing-content" style="display: none; opacity: 0;">
     {% include "landing.html" %}
 </div>
 {% endblock %}
@@ -42,6 +42,12 @@
     opacity: 1 !important;
     transition: opacity 0.5s ease-in;
 }
+
+.landing-content {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+}
 </style>
 {% endblock %}
 
@@ -50,7 +56,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const video = document.getElementById('intro-video');
     const introContainer = document.querySelector('.intro-container');
-    const landingContainer = document.querySelector('.landing-container');
+    const landingContent = document.querySelector('.landing-content');
 
     // Play video when loaded
     video.play().catch(function(error) {
@@ -65,9 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
         introContainer.classList.add('fade-out');
 
         // Show landing page
-        landingContainer.style.display = 'block';
+        landingContent.style.display = 'block';
         setTimeout(() => {
-            landingContainer.classList.add('fade-in');
+            landingContent.classList.add('fade-in');
             // Remove intro container after fade
             setTimeout(() => {
                 introContainer.style.display = 'none';
@@ -77,8 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function skipToLanding() {
         introContainer.style.display = 'none';
-        landingContainer.style.display = 'block';
-        landingContainer.classList.add('fade-in');
+        landingContent.style.display = 'block';
+        landingContent.classList.add('fade-in');
     }
 });
 </script>
