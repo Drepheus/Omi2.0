@@ -173,6 +173,64 @@ body {
   border-bottom-left-radius: 5px;
 }
 
+.message-bubble.ai .message-content strong {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.message-bubble.ai .message-content em {
+  font-style: italic;
+  color: #e1e1e1;
+}
+
+.message-bubble.ai .message-content h3,
+.message-bubble.ai .message-content h4,
+.message-bubble.ai .message-content h5 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.message-bubble.ai .message-content ul,
+.message-bubble.ai .message-content ol {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.message-bubble.ai .message-content li {
+  margin-bottom: 8px;
+}
+
+.message-bubble.ai .message-content p {
+  margin-bottom: 16px;
+}
+
+.message-bubble.ai .message-content a {
+  color: #4e9eff;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.message-bubble.ai .message-content a:hover {
+  color: #2b7ad9;
+}
+
+.message-bubble.ai .message-content hr {
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 20px 0;
+}
+
+.message-bubble.ai .message-content code {
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
 .ai-response-header {
   font-weight: bold;
   margin-bottom: 4px;

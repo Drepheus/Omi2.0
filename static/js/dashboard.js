@@ -222,16 +222,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
 
-            // Helper function to format AI responses (convert linebreaks, URLs, etc.)
+            // Helper function to format AI responses (convert Markdown to HTML)
             function formatResponseToHTML(text) {
                 if (!text) return '';
 
                 // Convert URLs to clickable links
                 text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-
-                // Convert line breaks to <br>
+                
+                // Convert bold markdown: *text* or **text** to <strong>text</strong>
+                text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                text = text.replace(/\*([^\*]+?)\*/g, '<strong>$1</strong>');
+                
+                // Convert italic markdown: _text_ to <em>text</em>
+                text = text.replace(/\_([^\_]+?)\_/g, '<em>$1</em>');
+                
+                // Convert headings: # Heading to <h3>Heading</h3>
+                text = text.replace(/^# (.+)$/gm, '<h3 class="mt-3 mb-2">$1</h3>');
+                text = text.replace(/^## (.+)$/gm, '<h4 class="mt-2 mb-2">$1</h4>');
+                text = text.replace(/^### (.+)$/gm, '<h5 class="mt-2 mb-1">$1</h5>');
+                
+                // Convert bullet points: - item to <li>item</li>
+                text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+                
+                // Wrap bullet point lists in <ul> tags
+                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ul class="mb-3">$1$2</ul>');
+                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '$1$2');
+                text = text.replace(/(<li>.+<\/li>)(?!\n<li>)/g, '<ul class="mb-3">$1</ul>');
+                
+                // Convert numbered lists: 1. item to <ol><li>item</li></ol>
+                text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+                
+                // Wrap numbered lists in <ol> tags
+                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ol class="mb-3">$1$2</ol>');
+                
+                // Convert line breaks to <br> (after all formatting is done)
+                text = text.replace(/\n\n/g, '<p class="mb-3"></p>');
                 text = text.replace(/\n/g, '<br>');
-
+                
                 return text;
             }
 
