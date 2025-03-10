@@ -175,7 +175,8 @@ def register_routes(app):
                 'error': 'Could not fetch SAM.gov data. Please try again later.'
             }), 500
 
-    @app.route('/api/recent_conversations')
+    @app.route('/api/recent_conversations', methods=['GET'])
+    @app.route('/api/recent-conversations', methods=['GET'])
     @login_required
     def recent_conversations():
         """API endpoint to get recent conversations for the current user"""

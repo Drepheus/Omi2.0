@@ -1,499 +1,445 @@
-
-// Dashboard JavaScript
+// Dashboard functionality
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Dashboard script loaded");
-    
-    // Determine which dashboard is active
-    const isGovConDashboard = document.querySelector('.gov-dashboard') !== null;
+
+    // Determine which dashboard is being used
     const isSimpleDashboard = document.querySelector('.simple-dashboard') !== null;
-    
+    const isGovConDashboard = document.querySelector('.gov-dashboard') !== null;
+
     if (isSimpleDashboard) {
+        console.log("Initializing Simple Dashboard");
         initializeSimpleDashboard();
-    }
-    
-    if (isGovConDashboard) {
+    } else if (isGovConDashboard) {
+        console.log("Initializing GovCon Dashboard");
         initializeGovConDashboard();
+    }
+
+    // Disable query examples for stability
+    if (document.getElementById('queryExamples')) {
+        console.log("Query examples feature has been disabled for stability reasons.");
     }
 });
 
-// ========================
-// SIMPLE DASHBOARD FUNCTIONS
-// ========================
+// Initialize the Simple Dashboard
 function initializeSimpleDashboard() {
-    console.log("Initializing Simple Dashboard");
-    
-    const queryForm = document.getElementById('query-form');
-    const queryInput = document.getElementById('query-input');
-    const messagesContainer = document.getElementById('messages-container');
-    const typingIndicator = document.getElementById('typing-indicator');
-    const recentConversations = document.getElementById('recent-conversations');
-    const voiceModeButton = document.getElementById('voice-mode-button');
-    const imageCreationButton = document.getElementById('image-creation-button');
-    
-    // Initialize functionality
-    if (queryForm) {
-        queryForm.addEventListener('submit', handleSimpleQuery);
-    }
-    
-    if (voiceModeButton) {
-        voiceModeButton.addEventListener('click', () => {
-            alert('Voice mode coming soon!');
-        });
-    }
-    
-    if (imageCreationButton) {
-        imageCreationButton.addEventListener('click', () => {
-            alert('Image creation coming soon!');
-        });
-    }
-    
-    // Load recent conversations
+    const chatForm = document.getElementById('chatForm');
+    const queryInput = document.getElementById('queryInput');
+    const messagesContainer = document.getElementById('messages');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const conversationsContainer = document.getElementById('recentConversations');
+
+    // Load recent conversations when page loads
     loadRecentConversations();
-    
-    // Handle query submission for Simple Dashboard
-    async function handleSimpleQuery(e) {
-        e.preventDefault();
-        
-        const query = queryInput.value.trim();
-        if (!query) return;
-        
-        // Add user message to the UI
-        addMessageToUI('user', query);
-        
-        // Clear input
-        queryInput.value = '';
-        
-        // Show typing indicator
-        typingIndicator.style.display = 'block';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        try {
-            // Send query to API
-            const response = await fetch('/api/query', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query: query })
-            });
-            
-            const data = await response.json();
-            
-            // Hide typing indicator
-            typingIndicator.style.display = 'none';
-            
-            if (response.ok) {
-                // Add AI response to the UI
-                addMessageToUI('ai', data.response);
-                
-                // Update recent conversations
-                loadRecentConversations();
-            } else {
-                console.error('API Error:', data.error);
-                addMessageToUI('ai', 'Sorry, I encountered an error processing your request. Please try again.');
+
+    // Handle form submission
+    if (chatForm) {
+        chatForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = queryInput.value.trim();
+
+            if (!query) return;
+
+            // Add user message to the UI
+            addMessageToUI('user', query);
+
+            // Clear input field
+            queryInput.value = '';
+
+            // Show typing indicator
+            if (typingIndicator) {
+                typingIndicator.style.display = 'block';
             }
-        } catch (error) {
-            console.error('Error:', error);
-            typingIndicator.style.display = 'none';
-            addMessageToUI('ai', 'Sorry, I encountered an error. Please try again.');
-        }
+
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            try {
+                // Send query to API
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+
+                // Hide typing indicator
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
+                }
+
+                if (response.ok) {
+                    // Add AI response to the UI
+                    if (data.ai_response) {
+                        addMessageToUI('ai', data.ai_response);
+                    } else if (data.error) {
+                        addMessageToUI('ai', `Error: ${data.error || 'Unknown error occurred'}`);
+                    } else {
+                        addMessageToUI('ai', 'Sorry, I couldn\'t process your request at this time.');
+                    }
+
+                    // Update recent conversations
+                    loadRecentConversations();
+                } else {
+                    console.error('API Error:', data.error);
+                    addMessageToUI('ai', `Sorry, I encountered an error processing your request. ${data.error || ''}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
+                }
+                addMessageToUI('ai', 'Sorry, I encountered an error. Please try again.');
+            }
+        });
     }
-    
+
     // Add a message to the UI
     function addMessageToUI(type, content) {
+        if (!messagesContainer) return;
+
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message-bubble', type);
-        
-        const messageContent = document.createElement('div');
-        messageContent.classList.add('message-content');
-        
+
+        // For AI responses, parse the markdown and format
         if (type === 'ai') {
-            const header = document.createElement('div');
-            header.classList.add('ai-response-header');
-            header.textContent = 'Omi';
-            messageContent.appendChild(header);
-            
-            // Process markdown-like formatting
-            const formattedContent = formatAIResponse(content);
-            messageContent.innerHTML += formattedContent;
+            // Format code blocks and other markdown elements
+            const formattedContent = formatMarkdown(content);
+            messageDiv.innerHTML = formattedContent;
         } else {
-            messageContent.textContent = content;
+            messageDiv.textContent = content;
         }
-        
-        messageDiv.appendChild(messageContent);
+
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-    
-    // Format AI response with basic markdown-like formatting
-    function formatAIResponse(text) {
-        if (!text) return '';
-        
-        // Convert markdown headings
-        text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-        text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-        text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-        
-        // Convert bold and italic text
-        text = text.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-        text = text.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-        
-        // Convert bullet points
-        text = text.replace(/^\s*- (.*$)/gim, '<ul><li>$1</li></ul>');
-        
-        // Convert line breaks
-        text = text.replace(/\n/gim, '<br>');
-        
-        // Clean up duplicated tags
-        text = text.replace(/<\/ul><ul>/gim, '');
-        
+
+    // Format markdown in AI responses
+    function formatMarkdown(text) {
+        // If text is empty or undefined, return a placeholder
+        if (!text || text.trim() === '') {
+            return '<p>I\'m processing your request...</p>';
+        }
+
+        // Convert markdown-like syntax to HTML
+        // Code blocks
+        text = text.replace(/```([a-z]*)\n([\s\S]*?)\n```/g, '<pre><code class="$1">$2</code></pre>');
+
+        // Bold text
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Italic text
+        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+        // Convert line breaks to <br>
+        text = text.replace(/\n/g, '<br>');
+
+        // Lists
+        text = text.replace(/^\s*•\s*(.*)/gm, '<li>$1</li>');
+        text = text.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+        // Headers
+        text = text.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+        text = text.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+        text = text.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+
         return text;
     }
-    
-    // Load recent conversations
+
+    // Function to load recent conversations
     async function loadRecentConversations() {
-        if (!recentConversations) return;
-        
+        if (!conversationsContainer) return;
+
         try {
-            const response = await fetch('/api/recent-conversations');
+            const response = await fetch('/api/recent_conversations');
             const data = await response.json();
-            
-            if (response.ok && data.conversations && data.conversations.length > 0) {
-                recentConversations.innerHTML = '';
-                
+
+            if (response.ok && data.conversations) {
+                conversationsContainer.innerHTML = '';
+
+                if (data.conversations.length === 0) {
+                    conversationsContainer.innerHTML = '<p class="text-muted">No recent conversations</p>';
+                    return;
+                }
+
                 data.conversations.forEach(conversation => {
-                    const item = document.createElement('div');
-                    item.classList.add('conversation-item');
-                    
-                    const queryPreview = document.createElement('div');
-                    queryPreview.classList.add('query-preview');
-                    queryPreview.textContent = conversation.query_text.substring(0, 50) + 
-                        (conversation.query_text.length > 50 ? '...' : '');
-                    
-                    const timestamp = document.createElement('div');
-                    timestamp.classList.add('timestamp');
+                    const convoDiv = document.createElement('div');
+                    convoDiv.classList.add('conversation-item');
+
+                    const queryElement = document.createElement('p');
+                    queryElement.classList.add('query-text');
+                    queryElement.textContent = conversation.query_text;
+
+                    const dateElement = document.createElement('small');
+                    dateElement.classList.add('text-muted');
                     const date = new Date(conversation.created_at);
-                    timestamp.textContent = date.toLocaleString();
-                    
-                    item.appendChild(queryPreview);
-                    item.appendChild(timestamp);
-                    
-                    item.addEventListener('click', () => {
-                        queryInput.value = conversation.query_text;
-                        queryInput.focus();
+                    dateElement.textContent = date.toLocaleString();
+
+                    convoDiv.appendChild(queryElement);
+                    convoDiv.appendChild(dateElement);
+
+                    // Add click event to populate query field
+                    convoDiv.addEventListener('click', function() {
+                        if (queryInput) {
+                            queryInput.value = conversation.query_text;
+                            queryInput.focus();
+                        }
                     });
-                    
-                    recentConversations.appendChild(item);
+
+                    conversationsContainer.appendChild(convoDiv);
                 });
             } else {
-                recentConversations.innerHTML = `
-                    <div class="text-center py-3 text-muted">
-                        <small>No recent conversations</small>
-                    </div>
-                `;
+                console.error('Failed to load conversations:', data.error);
+                conversationsContainer.innerHTML = '<p class="text-muted">Could not load recent conversations</p>';
             }
         } catch (error) {
-            console.error('Error loading recent conversations:', error);
-            recentConversations.innerHTML = `
-                <div class="text-center py-3 text-muted">
-                    <small>Error loading conversations</small>
-                </div>
-            `;
+            console.error('Error loading conversations:', error);
+            conversationsContainer.innerHTML = '<p class="text-muted">Could not load recent conversations</p>';
         }
     }
 }
 
-// ========================
-// GOVCON DASHBOARD FUNCTIONS
-// ========================
+// Initialize the Government Contracting Dashboard
 function initializeGovConDashboard() {
-    console.log("Initializing GovCon Dashboard");
-    
-    // GovCon specific elements
     const samSearchForm = document.getElementById('samSearchForm');
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
-    const queryForm = document.getElementById('queryForm');
-    const queryInput = document.getElementById('queryInput');
     const responseArea = document.getElementById('responseArea');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const samStatusCard = document.getElementById('samStatusCard');
-    const documentUploadForm = document.getElementById('documentUploadForm');
-    
-    // Initialize functionality
-    if (samSearchForm) {
-        samSearchForm.addEventListener('submit', handleSamSearch);
-    }
-    
-    if (queryForm) {
-        queryForm.addEventListener('submit', handleGovConQuery);
-    }
-    
-    if (documentUploadForm) {
-        documentUploadForm.addEventListener('submit', handleDocumentUpload);
-    }
-    
-    // Initialize SAM.gov status display
-    initializeSamStatus();
-    
-    // Handle SAM.gov search
-    async function handleSamSearch(e) {
-        e.preventDefault();
-        
-        const query = searchInput.value.trim();
-        if (!query) return;
-        
-        // Show loading indicator
-        searchResults.innerHTML = `
-            <div class="text-center py-3">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2 text-muted">Searching SAM.gov...</p>
-            </div>
-        `;
-        
-        try {
-            const response = await fetch('/api/sam/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query: query })
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                displaySamResults(data.results);
-            } else {
-                searchResults.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        ${data.error || 'An error occurred during the search.'}
-                    </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            searchResults.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    An error occurred during the search. Please try again.
-                </div>
-            `;
-        }
-    }
-    
-    // Display SAM.gov search results
-    function displaySamResults(results) {
-        if (!results || results.length === 0) {
-            searchResults.innerHTML = `
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    No results found. Try different keywords.
-                </div>
-            `;
-            return;
-        }
-        
-        let resultsHTML = `<h5 class="mt-3 mb-3">Search Results</h5>`;
-        
-        results.forEach(result => {
-            resultsHTML += `
-                <div class="card mb-3 sam-data-card">
-                    <div class="card-body">
-                        <h5 class="card-title">${result.title}</h5>
-                        <p class="card-text">${result.description.substring(0, 150)}${result.description.length > 150 ? '...' : ''}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="badge bg-primary">${result.type}</span>
-                            <span class="text-muted small">${result.date}</span>
-                        </div>
-                        <a href="${result.url}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-                            <i class="fas fa-external-link-alt me-1"></i>View on SAM.gov
-                        </a>
-                    </div>
-                </div>
-            `;
-        });
-        
-        searchResults.innerHTML = resultsHTML;
-    }
-    
-    // Initialize SAM.gov status display
-    function initializeSamStatus() {
-        if (!samStatusCard) return;
-        
-        const samStatusLoading = document.getElementById('samStatusLoading');
-        const samStatusContent = document.getElementById('samStatusContent');
-        const samDataContent = document.getElementById('samDataContent');
-        
-        // Simulate loading SAM.gov status (replace with actual API call)
-        setTimeout(() => {
-            if (samStatusLoading) samStatusLoading.classList.add('d-none');
-            if (samStatusContent) samStatusContent.classList.remove('d-none');
-            
-            if (samDataContent) {
-                samDataContent.innerHTML = `
-                    <div class="sam-api-status">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            <span>API Connected and Operational</span>
-                        </div>
-                    </div>
-                `;
-            }
-        }, 1500);
-    }
-    
-    // Handle GovCon query submission
-    async function handleGovConQuery(e) {
-        e.preventDefault();
-        
-        const query = queryInput.value.trim();
-        if (!query) return;
-        
-        // Show loading spinner
-        loadingSpinner.classList.remove('d-none');
-        
-        try {
-            const response = await fetch('/api/query', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query: query })
-            });
-            
-            const data = await response.json();
-            
-            // Hide loading spinner
-            loadingSpinner.classList.add('d-none');
-            
-            if (response.ok) {
-                displayGovConResponse(data.response);
-            } else {
-                console.error('API Error:', data.error);
-                displayGovConResponse('Sorry, I encountered an error processing your request. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            loadingSpinner.classList.add('d-none');
-            displayGovConResponse('Sorry, I encountered an error. Please try again.');
-        }
-    }
-    
-    // Display GovCon response
-    function displayGovConResponse(content) {
-        const responseCard = document.createElement('div');
-        responseCard.classList.add('card', 'dashboard-card', 'response-card', 'mb-4');
-        
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-        
-        const title = document.createElement('h3');
-        title.classList.add('card-title', 'mb-4');
-        title.innerHTML = '<i class="fas fa-robot me-2"></i>BidBot Response';
-        
-        const responseContent = document.createElement('div');
-        responseContent.classList.add('response-content');
-        
-        // Format content with basic markdown-like formatting
-        const formattedContent = formatGovConResponse(content);
-        responseContent.innerHTML = formattedContent;
-        
-        cardBody.appendChild(title);
-        cardBody.appendChild(responseContent);
-        responseCard.appendChild(cardBody);
-        
-        // Add to response area (prepend to show newest first)
-        responseArea.insertBefore(responseCard, responseArea.firstChild);
-    }
-    
-    // Format GovCon response with basic markdown-like formatting
-    function formatGovConResponse(text) {
-        if (!text) return '';
-        
-        // Convert markdown headings
-        text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
-        text = text.replace(/^## (.*$)/gim, '<h3>$1</h3>');
-        text = text.replace(/^# (.*$)/gim, '<h2>$1</h2>');
-        
-        // Convert bold and italic text
-        text = text.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-        text = text.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-        
-        // Convert bullet points
-        text = text.replace(/^\s*- (.*$)/gim, '<ul><li>$1</li></ul>');
-        
-        // Convert line breaks
-        text = text.replace(/\n/gim, '<br>');
-        
-        // Clean up duplicated tags
-        text = text.replace(/<\/ul><ul>/gim, '');
-        
-        return text;
-    }
-    
-    // Handle document upload
-    async function handleDocumentUpload(e) {
-        e.preventDefault();
-        
-        const fileInput = document.getElementById('documentFile');
-        const documentQuery = document.getElementById('documentQuery');
-        
-        if (!fileInput.files.length) {
-            alert('Please select at least one file to upload.');
-            return;
-        }
-        
-        // Show loading spinner
-        loadingSpinner.classList.remove('d-none');
-        
-        const formData = new FormData();
-        
-        // Add all files to form data
-        for (let i = 0; i < fileInput.files.length; i++) {
-            formData.append('documents', fileInput.files[i]);
-        }
-        
-        // Add query if provided
-        if (documentQuery.value.trim()) {
-            formData.append('query', documentQuery.value.trim());
-        }
-        
-        try {
-            const response = await fetch('/api/documents/analyze', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            // Hide loading spinner
-            loadingSpinner.classList.add('d-none');
-            
-            if (response.ok) {
-                displayGovConResponse(data.response);
-                
-                // Clear form
-                fileInput.value = '';
-                documentQuery.value = '';
-            } else {
-                console.error('API Error:', data.error);
-                displayGovConResponse('Sorry, I encountered an error analyzing the documents. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            loadingSpinner.classList.add('d-none');
-            displayGovConResponse('Sorry, I encountered an error. Please try again.');
-        }
-    }
-}
+    const govConChatForm = document.getElementById('govConChatForm');
+    const govConQueryInput = document.getElementById('govConQueryInput');
 
-// Load query examples if script is available
-try {
-    console.log("Query examples feature has been disabled for stability reasons.");
-} catch (e) {
-    console.error("Error loading query examples:", e);
+    // SAM.gov search functionality
+    if (samSearchForm) {
+        samSearchForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+
+            if (!query) return;
+
+            searchResults.innerHTML = '<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+            try {
+                const response = await fetch('/api/sam/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    renderSearchResults(data);
+                } else {
+                    searchResults.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to fetch results'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                searchResults.innerHTML = '<div class="alert alert-danger">Failed to connect to the server. Please try again.</div>';
+            }
+        });
+    }
+
+    // GovCon AI Chat functionality
+    if (govConChatForm) {
+        govConChatForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = govConQueryInput.value.trim();
+
+            if (!query) return;
+
+            // Show a loading indicator
+            responseArea.innerHTML = '<div class="typing-indicator">Processing your request<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>';
+
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Format and display AI response
+                    displayGovConResponse(data.ai_response, query);
+                    govConQueryInput.value = '';
+                } else {
+                    responseArea.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to process request'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                responseArea.innerHTML = '<div class="alert alert-danger">Failed to connect to the server. Please try again.</div>';
+            }
+        });
+    }
+
+    // Display formatted response in the GovCon dashboard
+    function displayGovConResponse(response, query) {
+        if (!responseArea) return;
+
+        const responseContent = document.createElement('div');
+        responseContent.classList.add('ai-response');
+
+        const responseHeader = document.createElement('div');
+        responseHeader.classList.add('ai-response-header');
+        responseHeader.innerHTML = '<i class="fas fa-robot"></i><h5>Omi Response</h5>';
+
+        const queryElement = document.createElement('div');
+        queryElement.classList.add('user-query');
+        queryElement.innerHTML = `<strong>You asked:</strong> ${query}`;
+
+        const formattedResponse = formatGovConResponse(response);
+
+        responseContent.appendChild(responseHeader);
+        responseContent.appendChild(queryElement);
+        responseContent.appendChild(formattedResponse);
+
+        responseArea.innerHTML = '';
+        responseArea.appendChild(responseContent);
+    }
+
+    // Format the response for GovCon dashboard
+    function formatGovConResponse(text) {
+        if (!text || text.trim() === '') {
+            const placeholder = document.createElement('p');
+            placeholder.textContent = "No response received. Please try again.";
+            return placeholder;
+        }
+
+        const formattedDiv = document.createElement('div');
+
+        // Convert markdown-like syntax to HTML elements
+        // Code blocks
+        text = text.replace(/```([a-z]*)\n([\s\S]*?)\n```/g, '<pre><code class="$1">$2</code></pre>');
+
+        // Bold text
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Italic text
+        text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+        // Lists
+        text = text.replace(/^\s*•\s*(.*)/gm, '<li>$1</li>');
+        text = text.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+        // Headers
+        text = text.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+        text = text.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+        text = text.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+
+        // Convert line breaks to <br>
+        text = text.replace(/\n/g, '<br>');
+
+        formattedDiv.innerHTML = text;
+        return formattedDiv;
+    }
+
+    // Render SAM.gov search results
+    function renderSearchResults(data) {
+        if (!searchResults) return;
+
+        if (data.status === 'success' && data.results && data.results.length > 0) {
+            let html = `<h5 class="mt-3 mb-3">Found ${data.count} results:</h5>`;
+            html += '<div class="list-group">';
+
+            data.results.forEach(result => {
+                html += `
+                <a href="${result.url}" target="_blank" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${result.title}</h5>
+                        <small>${result.due_date || 'N/A'}</small>
+                    </div>
+                    <p class="mb-1">Agency: ${result.agency}</p>
+                    <small>Solicitation #: ${result.solicitation_number}</small>
+                </a>`;
+            });
+
+            html += '</div>';
+            searchResults.innerHTML = html;
+        } else if (data.status === 'warning') {
+            searchResults.innerHTML = `<div class="alert alert-warning">${data.message}</div>`;
+        } else {
+            searchResults.innerHTML = '<div class="alert alert-info">No results found. Try a different search term.</div>';
+        }
+    }
+
+    // Initialize SAM.gov status panel (entity registrations)
+    loadSAMStatus();
+
+    // Initialize contract awards panel
+    loadContractAwards();
+
+    // Function to load SAM.gov status
+    async function loadSAMStatus() {
+        const samStatusContainer = document.getElementById('samStatusContainer');
+        if (!samStatusContainer) return;
+
+        try {
+            const response = await fetch('/api/sam/status');
+            const data = await response.json();
+
+            if (response.ok) {
+                let html = '';
+                data.entities.forEach(entity => {
+                    html += `
+                    <div class="card mb-3 sam-data-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${entity.entity_name}</h5>
+                            <p class="card-text">DUNS: ${entity.duns}</p>
+                            <p class="card-text">Status: <span class="badge bg-success">${entity.status}</span></p>
+                            <p class="card-text">Expires: ${entity.expiration_date}</p>
+                            <a href="${entity.url}" target="_blank" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>`;
+                });
+                samStatusContainer.innerHTML = html;
+            } else {
+                samStatusContainer.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to load SAM.gov status'}</div>`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            samStatusContainer.innerHTML = '<div class="alert alert-danger">Could not connect to the server. Please try again later.</div>';
+        }
+    }
+
+    // Function to load contract awards
+    async function loadContractAwards() {
+        const awardsContainer = document.getElementById('awardsContainer');
+        if (!awardsContainer) return;
+
+        try {
+            const response = await fetch('/api/sam/awards');
+            const data = await response.json();
+
+            if (response.ok) {
+                let html = '';
+                data.awards.forEach(award => {
+                    html += `
+                    <div class="card mb-3 award-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${award.title}</h5>
+                            <p class="card-text">Solicitation #: ${award.solicitation_number}</p>
+                            <p class="card-text">Award: $${parseInt(award.award_amount).toLocaleString()}</p>
+                            <p class="card-text">Awardee: ${award.awardee}</p>
+                            <p class="card-text"><small class="text-muted">Award Date: ${award.award_date}</small></p>
+                            <a href="${award.url}" target="_blank" class="btn btn-sm btn-outline-success">View Details</a>
+                        </div>
+                    </div>`;
+                });
+                awardsContainer.innerHTML = html;
+            } else {
+                awardsContainer.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to load contract awards'}</div>`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            awardsContainer.innerHTML = '<div class="alert alert-danger">Could not connect to the server. Please try again later.</div>';
+        }
+    }
 }
