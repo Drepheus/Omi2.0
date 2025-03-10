@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const responseArea = document.getElementById('responseArea') || document.getElementById('conversation');
 
     // Elements specific to dashboard type
-    let queryInput, submitBtn, stopBtn, samSearchForm, searchInput, searchResults, documentUploadForm;
-
+    let queryInput, submitBtn, stopBtn;
+    
+    // Conditionally define elements based on dashboard type
     if (isSimpleDashboard) {
         // Simple dashboard elements
         queryInput = document.getElementById('query-input');
@@ -18,10 +19,21 @@ document.addEventListener('DOMContentLoaded', function() {
         queryInput = document.getElementById('queryInput');
         submitBtn = document.querySelector('#queryForm button[type="submit"]');
         stopBtn = document.getElementById('stopResponseBtn');
-        samSearchForm = document.getElementById('samSearchForm');
-        searchInput = document.getElementById('searchInput');
-        searchResults = document.getElementById('searchResults');
-        documentUploadForm = document.getElementById('documentUploadForm');
+        
+        // Only define these elements if we're on the full dashboard
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        // Only initialize forms if they exist
+        const samSearchForm = document.getElementById('samSearchForm');
+        if (samSearchForm) {
+            // SAM search form initialization code would go here
+        }
+        
+        const documentUploadForm = document.getElementById('documentUploadForm');
+        if (documentUploadForm) {
+            // Document upload form initialization code would go here
+        }
     }
 
     // Flag to track if typing animation is in progress

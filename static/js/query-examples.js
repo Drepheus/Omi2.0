@@ -1,6 +1,15 @@
 
 // Example queries to show in the animation
 const exampleQueries = [
+    "What is machine learning and how does it work?",
+    "Can you help me write a professional email template?",
+    "Explain quantum computing in simple terms",
+    "How do I create an effective marketing strategy?",
+    "What are the best practices for web development?"
+];
+
+// Government contracting examples (for the main dashboard)
+const govConExampleQueries = [
     "Search for cybersecurity contracts in SAM.gov",
     "Analyze and summarize this IT RFP requirements",
     "How do I register as a government contractor?",
@@ -10,8 +19,13 @@ const exampleQueries = [
 
 document.addEventListener('DOMContentLoaded', function() {
     const queryInput = document.getElementById('query-input');
+    const isSimpleDashboard = document.querySelector('.simple-dashboard') !== null || 
+                            window.location.pathname.includes('simple-dashboard');
     
     if (!queryInput) return; // Exit if query input doesn't exist on this page
+    
+    // Choose which set of examples to use based on dashboard type
+    const queriesForThisPage = isSimpleDashboard ? exampleQueries : govConExampleQueries;
     
     let currentExampleIndex = 0;
     let currentCharIndex = 0;
@@ -24,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function typeNextCharacter() {
-        const currentExample = exampleQueries[currentExampleIndex];
+        const currentExample = queriesForThisPage[currentExampleIndex];
         
         if (isDeleting) {
             // Deleting characters
@@ -35,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Move to next example
                 isDeleting = false;
-                currentExampleIndex = (currentExampleIndex + 1) % exampleQueries.length;
+                currentExampleIndex = (currentExampleIndex + 1) % queriesForThisPage.length;
                 typingTimeout = setTimeout(typeNextCharacter, 700);
             }
         } else {

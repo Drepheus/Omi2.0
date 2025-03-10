@@ -177,6 +177,12 @@ button.file-upload:hover {
     opacity: 1 !important;
     user-select: auto !important;
     -webkit-user-select: auto !important;
+    cursor: text !important;
+}
+
+/* Additional form control styles to ensure input field works properly */
+.form-control:not([readonly]):not(:disabled) {
+    background-color: var(--dark-bg);
 }
 
 .form-control:focus {
