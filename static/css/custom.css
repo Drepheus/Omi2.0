@@ -39,6 +39,8 @@ button.file-upload {
   background-color: #000000 !important;
   color: #ffffff !important;
   border: 1px solid #333333 !important;
+  min-height: 44px; /* Better touch target for mobile */
+  -webkit-tap-highlight-color: rgba(0,0,0,0); /* Remove tap highlight on mobile */
 }
 
 .file-upload-section button:hover,
@@ -47,6 +49,20 @@ button.file-upload {
 .file-upload-section .btn:hover,
 button.file-upload:hover {
   background-color: #333333 !important;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+  .file-upload-section {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .file-upload-section button,
+  .file-upload-section .btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
 }
 
     background-position: center;

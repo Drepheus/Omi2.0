@@ -93,14 +93,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileUploadStatus = document.getElementById('file-upload-status');
 
     if (fileUploadButton && fileUploadInput) {
-        fileUploadButton.addEventListener('click', function() {
-            fileUploadInput.click();
+        // Use touchstart and click events for better mobile compatibility
+        ['touchstart', 'click'].forEach(eventType => {
+            fileUploadButton.addEventListener(eventType, function(e) {
+                e.preventDefault(); // Prevent default behavior
+                fileUploadInput.click();
+            }, { passive: false });
         });
 
         fileUploadInput.addEventListener('change', function() {
             if (fileUploadInput.files.length > 0) {
                 const file = fileUploadInput.files[0];
-                fileUploadStatus.textContent = `Uploading: ${file.name}...`;
+                if (fileUploadStatus) {
+                    fileUploadStatus.textContent = `Uploading: ${file.name}...`;
+                }
 
                 const formData = new FormData();
                 formData.append('file', file);
