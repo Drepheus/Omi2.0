@@ -3,15 +3,17 @@
 
 {% block content %}
 <div class="landing-container">
-  <!-- Logo Animation Container -->
-  <div class="logo-container">
-    <div class="logo-pulse"></div>
-    <h1 class="logo-text">Omi AI</h1>
-  </div>
-  
-  <!-- Navigation Buttons -->
-  <div class="action-buttons">
-    <a href="{{ url_for('simple_dashboard') }}" class="btn-use-omi">Use Omi</a>
+  <div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+    <!-- Logo Animation Container -->
+    <div class="logo-container">
+      <div class="logo-pulse"></div>
+      <h1 class="logo-text">Omi AI</h1>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="action-buttons">
+      <a href="{{ url_for('simple_dashboard') }}" class="btn-use-omi">Use Omi</a>
+    </div>
   </div>
   
   <div class="corner-text">
