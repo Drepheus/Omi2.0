@@ -91,11 +91,12 @@ body {
 }
 
 .btn-primary {
-  background: var(--accent-gradient);
-  border: none;
+  background: linear-gradient(135deg, #000000, #444444) !important;
+  border: none !important;
   border-radius: 23px;
   padding: 10px 20px;
   font-weight: 600;
+  color: #ffffff !important;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -103,7 +104,8 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(215, 38, 56, 0.3);
+  background: linear-gradient(135deg, #222222, #555555) !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .btn-primary::after {

@@ -319,17 +319,19 @@ button.file-upload:hover {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #000000, #444444);
-    border: none;
+    background: linear-gradient(135deg, #000000, #444444) !important;
+    border: none !important;
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     font-weight: 600;
+    color: #ffffff !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #222222, #555555) !important;
 }
 
 .loading-spinner {
