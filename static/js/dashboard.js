@@ -65,11 +65,40 @@ document.addEventListener('DOMContentLoaded', function() {
             const query = queryInput.value.trim();
             if (!query || isTyping) return;
 
+            // Disable button to prevent multiple submissions
             submitBtn.disabled = true;
-            queryInput.disabled = false; // Ensure input remains enabled
-            queryInput.readOnly = false; // Ensure input remains enabled
+            isTyping = true;
+            
+            // Make sure the input field remains enabled
+            queryInput.disabled = false;
+            queryInput.readOnly = false;
+            
+            // Show stop button if it exists
             if (stopBtn) stopBtn.classList.remove('d-none');
             shouldStopTyping = false;
+            
+            // For simple dashboard, add user message to chat
+            if (document.querySelector('.simple-dashboard')) {
+                const messagesContainer = document.getElementById('messages-container');
+                if (messagesContainer) {
+                    messagesContainer.innerHTML += `
+                        <div class="message-bubble user">
+                            <div class="message-content">
+                                <p>${query}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Show typing indicator
+                    const typingIndicator = document.getElementById('typing-indicator');
+                    if (typingIndicator) {
+                        typingIndicator.style.display = 'block';
+                    }
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
 
             // Append user query card
             const userCard = `
@@ -109,13 +138,43 @@ document.addEventListener('DOMContentLoaded', function() {
             })
                 .then(response => response.json())
                 .then(data => {
-                    // Remove all typing indicators completely
-                    clearAllTypingIndicators();
+                    // Handle the response differently based on dashboard type
+                    if (document.querySelector('.simple-dashboard')) {
+                        // Hide typing indicator
+                        const typingIndicator = document.getElementById('typing-indicator');
+                        if (typingIndicator) {
+                            typingIndicator.style.display = 'none';
+                        }
+                        
+                        // Add AI response to chat
+                        const messagesContainer = document.getElementById('messages-container');
+                        if (messagesContainer) {
+                            messagesContainer.innerHTML += `
+                                <div class="message-bubble ai">
+                                    <div class="message-content">
+                                        <div class="ai-response-header">
+                                            Omi
+                                        </div>
+                                        <p>${data.response}</p>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Scroll to bottom
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    } else {
+                        // Handle full dashboard response (existing code)
+                        // Remove all typing indicators completely
+                        if (typeof clearAllTypingIndicators === 'function') {
+                            clearAllTypingIndicators();
+                        }
 
-                    // Additional cleanup for any remaining elements
-                    document.querySelectorAll('.typing-indicator, .typing-dots, .message-bubble.ai.typing').forEach(el => {
-                        el.remove();
-                    });
+                        // Additional cleanup for any remaining elements
+                        document.querySelectorAll('.typing-indicator, .typing-dots, .message-bubble.ai.typing').forEach(el => {
+                            el.remove();
+                        });
+                    }
 
                     // Check if we hit a rate limit
                     if (data.error === 'Free tier query limit reached') {
@@ -192,28 +251,68 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (queryHistory) {
                         updateQueryHistory();
                     }
+                    
+                    // Reset form state
+                    submitBtn.disabled = false;
+                    queryInput.value = '';
+                    isTyping = false;
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    
+                    if (document.querySelector('.simple-dashboard')) {
+                        // Handle error in simple dashboard
+                        const typingIndicator = document.getElementById('typing-indicator');
+                        if (typingIndicator) {
+                            typingIndicator.style.display = 'none';
+                        }
+                        
+                        // Add error message to chat
+                        const messagesContainer = document.getElementById('messages-container');
+                        if (messagesContainer) {
+                            messagesContainer.innerHTML += `
+                                <div class="message-bubble ai error">
+                                    <div class="message-content">
+                                        <div class="ai-response-header">
+                                            Error
+                                        </div>
+                                        <p>Sorry, there was an error processing your request. Please try again.</p>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Scroll to bottom
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    } else {
+                        // Handle error in full dashboard
+                        const responseArea = document.getElementById('responseArea');
+                        if (responseArea) {
+                            // Remove typing indicator
+                            const typingCard = document.querySelector('.typing-indicator');
+                            if (typingCard && typingCard.closest('.card')) {
+                                responseArea.removeChild(typingCard.closest('.card'));
+                            }
 
-                    // Remove typing indicator
-                    const typingCard = document.querySelector('.typing-indicator');
-                    if (typingCard && typingCard.closest('.card')) {
-                        responseArea.removeChild(typingCard.closest('.card'));
-                    }
-
-                    // Show error message
-                    responseArea.innerHTML += `
-                    <div class="card dashboard-card response-card mb-4">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="response-icon me-2"><i class="fas fa-exclamation-triangle"></i></div>
-                                <h5 class="card-title mb-0">Error</h5>
+                            // Show error message
+                            responseArea.innerHTML += `
+                            <div class="card dashboard-card response-card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="response-icon me-2"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <h5 class="card-title mb-0">Error</h5>
+                                    </div>
+                                    <div class="card-text">Sorry, there was an error processing your request. Please try again.</div>
+                                </div>
                             </div>
-                            <div class="card-text">Sorry, there was an error processing your request. Please try again.</div>
-                        </div>
-                    </div>
-                `;
+                            `;
+                        }
+                    }
+                    
+                    // Reset form state
+                    submitBtn.disabled = false;
+                    isTyping = false;
+                    queryInput.focus();
 
                     submitBtn.disabled = false;
                     if (stopBtn) stopBtn.classList.add('d-none');
