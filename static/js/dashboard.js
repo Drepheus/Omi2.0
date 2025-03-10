@@ -94,10 +94,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     // Remove typing indicator
-                    const typingCard = document.querySelector('.typing-indicator');
-                    if (typingCard && typingCard.closest('.card')) {
-                        responseArea.removeChild(typingCard.closest('.card'));
+                    const typingIndicator = document.querySelector('.message-bubble.ai.typing');
+                    if (typingIndicator) {
+                        typingIndicator.remove();
                     }
+                    
+                    // Also check for any other typing indicators that might be present
+                    const typingDots = document.querySelectorAll('.typing-dots');
+                    typingDots.forEach(dot => {
+                        const bubbleContainer = dot.closest('.message-bubble.ai.typing');
+                        if (bubbleContainer) {
+                            bubbleContainer.remove();
+                        }
+                    });
 
                     // Append AI response
                     const responseCard = `
@@ -108,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <h5 class="card-title mb-0">Omi</h5>
                                 </div>
                                 <div class="card-text ai-response">${formatResponseToHTML(data.ai_response)}</div>
-                                <div class="typing-cursor d-none"></div>
                             </div>
                         </div>
                     `;
@@ -305,8 +313,21 @@ document.addEventListener('DOMContentLoaded', function() {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
+        function clearAllTypingIndicators() {
+            // Clear any existing typing indicators
+            const typingIndicators = document.querySelectorAll('.message-bubble.ai.typing, .typing-indicator');
+            typingIndicators.forEach(indicator => indicator.remove());
+            
+            // Also clear any typing cursors
+            const typingCursors = document.querySelectorAll('.typing-cursor:not(.d-none)');
+            typingCursors.forEach(cursor => cursor.classList.add('d-none'));
+        }
+        
         function processQuery(query) {
             isTyping = true;
+            
+            // Clear any existing typing indicators first
+            clearAllTypingIndicators();
 
             // Add user message
             addMessage(query, 'user');
