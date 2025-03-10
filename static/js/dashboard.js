@@ -131,7 +131,60 @@ document.addEventListener('DOMContentLoaded', function() {
         isTyping = false;
     }
 
-    function createTypingCard() {
+    document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the simple dashboard
+    const isSimpleDashboard = document.getElementById('ai-response-display') !== null;
+    
+    if (isSimpleDashboard) {
+        const queryForm = document.getElementById('query-form');
+        const queryInput = document.getElementById('query-input');
+        const aiResponseContent = document.getElementById('ai-response-content');
+        const typingIndicator = document.getElementById('typing-indicator');
+        
+        queryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const query = queryInput.value.trim();
+            if (!query) return;
+            
+            // Show typing indicator
+            aiResponseContent.style.display = 'none';
+            typingIndicator.style.display = 'block';
+            
+            // Send query to API
+            fetch('/api/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide typing indicator and show response
+                typingIndicator.style.display = 'none';
+                aiResponseContent.style.display = 'block';
+                
+                if (data.error) {
+                    aiResponseContent.textContent = 'Error: ' + data.error;
+                } else {
+                    aiResponseContent.textContent = data.ai_response;
+                }
+                
+                // Clear input
+                queryInput.value = '';
+            })
+            .catch(error => {
+                typingIndicator.style.display = 'none';
+                aiResponseContent.style.display = 'block';
+                aiResponseContent.textContent = 'Sorry, there was an error processing your request.';
+                console.error('Error:', error);
+            });
+        });
+    }
+});
+
+function createTypingCard() {
         return `
             <div class="card dashboard-card response-card mb-4">
                 <div class="card-body">

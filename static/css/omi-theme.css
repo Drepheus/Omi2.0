@@ -135,6 +135,19 @@ body {
 
 /* Removed the circle icon */
 
+.typing-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  background-color: var(--text-primary);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 .response-card {
   border-left: none;
   background-color: transparent;
