@@ -361,11 +361,16 @@ body {
 
 .file-upload-section {
   margin-top: 10px;
+  display: block !important;
 }
 
 .file-upload-section button {
   color: var(--gov-blue);
   padding-left: 0;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+  align-items: center;
 }
 
 .file-upload-section button:hover {
