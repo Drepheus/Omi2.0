@@ -158,10 +158,10 @@ body {
 
 .message-bubble.user .message-content {
   background-color: #1A1A1A;
-  color: white;
+  color: #cccccc;
   border-radius: 18px;
   border-bottom-right-radius: 5px;
-  border: 2px solid #cccccc;
+  border: none;
 }
 
 .message-bubble.ai .message-content {
