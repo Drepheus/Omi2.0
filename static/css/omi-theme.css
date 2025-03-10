@@ -366,7 +366,8 @@ body {
 
 .file-upload-section {
   margin-top: 10px;
-  display: block !important;
+  display: flex !important;
+  flex-wrap: wrap;
 }
 
 .file-upload-section button,

@@ -150,6 +150,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const conversationsContainer = document.getElementById('recent-conversations');
         const fileUploadInput = document.getElementById('file-upload-input');
         const fileUploadButton = document.getElementById('file-upload-button');
+        const voiceModeButton = document.getElementById('voice-mode-button');
+        const imageCreationButton = document.getElementById('image-creation-button');
         const fileUploadStatus = document.getElementById('file-upload-status');
         
         // Initialize file upload functionality
