@@ -175,6 +175,8 @@ button.file-upload:hover {
     padding: 0.75rem 1rem;
     pointer-events: auto !important;
     opacity: 1 !important;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
 }
 
 .form-control:focus {
@@ -182,6 +184,16 @@ button.file-upload:hover {
     border-color: var(--gov-blue);
     color: var(--text-primary);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    pointer-events: auto !important;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+}
+
+/* Remove disabled attributes from form controls */
+.form-control:disabled, 
+.form-control[readonly] {
+    background-color: var(--dark-bg);
+    opacity: 1 !important;
     pointer-events: auto !important;
 }
 

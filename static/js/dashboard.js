@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!query || isTyping) return;
 
             submitBtn.disabled = true;
+            queryInput.disabled = false; // Ensure input remains enabled
             queryInput.readOnly = false; // Ensure input remains enabled
             if (stopBtn) stopBtn.classList.remove('d-none');
             shouldStopTyping = false;
