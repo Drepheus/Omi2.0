@@ -142,12 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         // Display remaining queries if available
                         if (data.queries_remaining !== undefined) {
-                            const queriesRemaining = `
-                        <div class="queries-remaining text-end mb-2">
-                            <small class="text-muted">${data.queries_remaining} queries remaining</small>
-                        </div>
-                    `;
-                            responseArea.innerHTML += queriesRemaining;
+                            // Update remaining queries display for free users
+                            const remainingElements = document.querySelectorAll('.text-muted');
+                            remainingElements.forEach(el => {
+                                if (el.textContent.includes('queries remaining')) {
+                                    el.textContent = `${data.queries_remaining} queries remaining`;
+                                }
+                            });
                         }
 
                         // Append AI response
