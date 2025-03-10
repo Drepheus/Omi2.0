@@ -27,12 +27,6 @@ body {
   color: transparent !important;
   font-weight: bold;
   position: relative;
-  margin-left: 15px;
-  padding-left: 35px;
-  display: inline-flex;
-  align-items: center;
-  height: 38px;
-  line-height: 1;
 }
 
 .navbar-brand::before {
@@ -42,23 +36,8 @@ body {
   height: 24px;
   border: 2px solid #8ab4f8;
   border-radius: 50%;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-top: 0;
+  margin-left: -30px;
   animation: pulse 2s infinite;
-}
-
-@media (max-width: 768px) {
-  .navbar-brand {
-    margin-left: 10px;
-    padding-left: 30px;
-  }
-  
-  .navbar-brand::before {
-    width: 20px;
-    height: 20px;
-  }
 }
 
 @keyframes pulse {
