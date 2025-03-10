@@ -84,7 +84,13 @@ function initializeSimpleDashboard() {
                     appendMessage('ai', `Error: ${data.error}`);
                 } else {
                     // Display AI response
-                    appendMessage('ai', data.ai_response.replace(/\n/g, '<br>'));
+                    // Convert markdown to HTML (basic formatting)
+                    let formattedResponse = data.ai_response
+                        .replace(/\n/g, '<br>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/`(.*?)`/g, '<code>$1</code>');
+                    appendMessage('ai', formattedResponse);
                     
                     // Display remaining queries for free users if available
                     if (data.queries_remaining !== undefined) {
