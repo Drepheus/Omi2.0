@@ -84,7 +84,7 @@ function initializeSimpleDashboard() {
                     appendMessage('ai', `Error: ${data.error}`);
                 } else {
                     // Display AI response
-                    appendMessage('ai', data.ai_response);
+                    appendMessage('ai', data.ai_response.replace(/\n/g, '<br>'));
                     
                     // Display remaining queries for free users if available
                     if (data.queries_remaining !== undefined) {
