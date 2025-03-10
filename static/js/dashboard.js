@@ -231,13 +231,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Show typing indicator
             const typingIndicator = document.createElement('div');
-            typingIndicator.className = 'message-bubble ai typing';
+            typingIndicator.className = 'message assistant typing';
             typingIndicator.innerHTML = `
                 <div class="message-content">
-                    <div class="ai-response-header">
-                        Omi
-                    </div>
-                    <div class="typing-dots">
+                    <div class="typing-indicator">
                         <span class="typing-dot"></span>
                         <span class="typing-dot"></span>
                         <span class="typing-dot"></span>
@@ -308,14 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function addMessage(content, role) {
             const message = document.createElement('div');
-            message.className = `message-bubble ${role}`;
-            
-            if (role === 'user') {
-                message.innerHTML = `<div class="message-content">${formatResponseToHTML(content)}</div>`;
-            } else {
-                message.innerHTML = `<div class="message-content"><div class="ai-response-header">Omi</div>${formatResponseToHTML(content)}</div>`;
-            }
-            
+            message.className = `message ${role}`;
+            message.innerHTML = `<div class="message-content">${formatResponseToHTML(content)}</div>`;
             messagesContainer.appendChild(message);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
