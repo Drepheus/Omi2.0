@@ -1,13 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on the dashboard or simple dashboard
-    const isDashboard = document.getElementById('response-area') !== null;
-    const isSimpleDashboard = document.getElementById('messages-container') !== null;
+    // Check which dashboard we're on
+    const isSimpleDashboard = document.querySelector('.simple-dashboard') !== null || 
+                            window.location.pathname.includes('simple-dashboard');
+
+    // DOM elements for both dashboards
+    const responseArea = document.getElementById('responseArea') || document.getElementById('conversation');
+
+    // Elements specific to dashboard type
+    let queryInput, submitBtn, stopBtn, samSearchForm, searchInput, searchResults, documentUploadForm;
+
+    if (isSimpleDashboard) {
+        // Simple dashboard elements
+        queryInput = document.getElementById('query-input');
+        submitBtn = document.getElementById('submit-query');
+    } else {
+        // Full dashboard elements
+        queryInput = document.getElementById('queryInput');
+        submitBtn = document.querySelector('#queryForm button[type="submit"]');
+        stopBtn = document.getElementById('stopResponseBtn');
+        samSearchForm = document.getElementById('samSearchForm');
+        searchInput = document.getElementById('searchInput');
+        searchResults = document.getElementById('searchResults');
+        documentUploadForm = document.getElementById('documentUploadForm');
+    }
+
+    // Flag to track if typing animation is in progress
+    let isTyping = false;
+    let shouldStopTyping = false;
 
     // Store conversation history
     let currentConversationId = null;
     let conversations = [];
-    let shouldStopTyping = false;
-    let isTyping = false;
 
     // Load conversations from localStorage
     if (localStorage.getItem('conversations')) {
@@ -19,300 +42,281 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (isDashboard) {
-        const queryInput = document.getElementById('query-input');
-        const responseArea = document.getElementById('response-area');
-        const submitBtn = document.getElementById('submit-query');
-        const stopBtn = document.getElementById('stop-generation');
+    if (isSimpleDashboard || (queryInput && submitBtn)) {
+        // Handle query submission for both dashboards
+        submitBtn.addEventListener('click', function() {
+            sendQuery();
+        });
 
-        // Handle stop button
-        if (stopBtn) {
-            stopBtn.addEventListener('click', function() {
-                shouldStopTyping = true;
-                stopBtn.classList.add('d-none');
-                if (submitBtn) submitBtn.disabled = false;
-            });
-        }
-
-        // Dashboard query handling
-        if (queryInput && submitBtn) {
-            submitBtn.addEventListener('click', function() {
+        queryInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendQuery();
-            });
+            }
+        });
+        function sendQuery() {
+            const query = queryInput.value.trim();
+            if (!query || isTyping) return;
 
-            queryInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendQuery();
-                }
-            });
+            submitBtn.disabled = true;
+            queryInput.readOnly = false; // Ensure input remains enabled
+            if (stopBtn) stopBtn.classList.remove('d-none');
+            shouldStopTyping = false;
 
-            function sendQuery() {
-                const query = queryInput.value.trim();
-                if (!query || isTyping) return;
-
-                submitBtn.disabled = true;
-                queryInput.readOnly = false; // Ensure input remains enabled
-                if (stopBtn) stopBtn.classList.remove('d-none');
-                shouldStopTyping = false;
-
-                // Append user query card
-                const userCard = `
-                    <div class="card dashboard-card user-card mb-4">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="user-icon me-2"><i class="fas fa-user"></i></div>
-                                <h5 class="card-title mb-0">You</h5>
-                            </div>
-                            <div class="card-text">${query}</div>
+            // Append user query card
+            const userCard = `
+                <div class="card dashboard-card user-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="user-icon me-2"><i class="fas fa-user"></i></div>
+                            <h5 class="card-title mb-0">You</h5>
                         </div>
+                        <div class="card-text">${query}</div>
                     </div>
-                `;
-                responseArea.innerHTML += userCard;
+                </div>
+            `;
+            responseArea.innerHTML += userCard;
 
-                // Append typing indicator
-                responseArea.innerHTML += createTypingCard();
+            // Append typing indicator
+            responseArea.innerHTML += createTypingCard();
 
-                // Add message to current conversation
-                if (currentConversationId && conversations) {
-                    const conversation = conversations.find(c => c.id === currentConversationId);
-                    if (conversation) {
-                        conversation.messages.push({
-                            role: 'user',
-                            content: query,
-                            timestamp: new Date().toISOString()
-                        });
-                        saveConversations();
-                    }
+            // Add message to current conversation
+            if (currentConversationId && conversations) {
+                const conversation = conversations.find(c => c.id === currentConversationId);
+                if (conversation) {
+                    conversation.messages.push({
+                        role: 'user',
+                        content: query,
+                        timestamp: new Date().toISOString()
+                    });
+                    saveConversations();
                 }
+            }
 
-                // Send query to API
-                fetch('/api/query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Remove all typing indicators completely
-                        clearAllTypingIndicators();
+            // Send query to API
+            fetch('/api/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove all typing indicators completely
+                    clearAllTypingIndicators();
 
-                        // Additional cleanup for any remaining elements
-                        document.querySelectorAll('.typing-indicator, .typing-dots, .message-bubble.ai.typing').forEach(el => {
-                            el.remove();
-                        });
+                    // Additional cleanup for any remaining elements
+                    document.querySelectorAll('.typing-indicator, .typing-dots, .message-bubble.ai.typing').forEach(el => {
+                        el.remove();
+                    });
 
-                        // Check if we hit a rate limit
-                        if (data.error === 'Free tier query limit reached') {
-                            // Display rate limit message
-                            const limitMessage = `
-                        <div class="card mb-3 border-danger">
-                            <div class="card-body">
-                                <h5 class="card-title text-danger">Query Limit Reached</h5>
-                                <p>${data.message}</p>
-                                <div class="subscription-options mt-3">
-                                    <h6>Upgrade to continue asking questions:</h6>
-                                    <div class="row mt-3">
-                                        <div class="col-md-6 mb-2">
-                                            <div class="card bg-dark">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Pro Plan</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">$20/month</h6>
-                                                    <p class="card-text">Unlimited queries<br>Priority support</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <div class="card bg-dark">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">Premium Plan</h5>
-                                                    <h6 class="card-subtitle mb-2 text-muted">$40/month</h6>
-                                                    <p class="card-text">Unlimited queries<br>Priority support<br>Advanced features</p>
-                                                </div>
+                    // Check if we hit a rate limit
+                    if (data.error === 'Free tier query limit reached') {
+                        // Display rate limit message
+                        const limitMessage = `
+                    <div class="card mb-3 border-danger">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">Query Limit Reached</h5>
+                            <p>${data.message}</p>
+                            <div class="subscription-options mt-3">
+                                <h6>Upgrade to continue asking questions:</h6>
+                                <div class="row mt-3">
+                                    <div class="col-md-6 mb-2">
+                                        <div class="card bg-dark">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Pro Plan</h5>
+                                                <h6 class="card-subtitle mb-2 text-muted">$20/month</h6>
+                                                <p class="card-text">Unlimited queries<br>Priority support</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="${data.upgrade_url}" class="btn btn-primary mt-3">Upgrade Now</a>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="card bg-dark">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Premium Plan</h5>
+                                                <h6 class="card-subtitle mb-2 text-muted">$40/month</h6>
+                                                <p class="card-text">Unlimited queries<br>Priority support<br>Advanced features</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <a href="${data.upgrade_url}" class="btn btn-primary mt-3">Upgrade Now</a>
                             </div>
                         </div>
                     `;
-                            responseArea.innerHTML += limitMessage;
-                            return;
-                        }
+                        responseArea.innerHTML += limitMessage;
+                        return;
+                    }
 
-                        // Display remaining queries if available
-                        if (data.queries_remaining !== undefined) {
-                            // Update remaining queries display for free users
-                            const remainingElements = document.querySelectorAll('.text-muted');
-                            remainingElements.forEach(el => {
-                                if (el.textContent.includes('queries remaining')) {
-                                    el.textContent = `${data.queries_remaining} queries remaining`;
-                                }
-                            });
-                        }
+                    // Display remaining queries if available
+                    if (data.queries_remaining !== undefined) {
+                        // Update remaining queries display for free users
+                        const remainingElements = document.querySelectorAll('.text-muted');
+                        remainingElements.forEach(el => {
+                            if (el.textContent.includes('queries remaining')) {
+                                el.textContent = `${data.queries_remaining} queries remaining`;
+                            }
+                        });
+                    }
 
-                        // Append AI response
-                        const responseCard = `
-                        <div class="card dashboard-card response-card mb-4">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
-                                    <h5 class="card-title mb-0">Omi</h5>
-                                </div>
-                                <div class="card-text ai-response">${formatResponseToHTML(data.ai_response)}</div>
-                            </div>
-                        </div>
-                    `;
-                        responseArea.innerHTML += responseCard;
-
-                        submitBtn.disabled = false;
-                        if (stopBtn) stopBtn.classList.add('d-none');
-                        queryInput.value = '';
-
-                        // Auto-scroll to bottom
-                        window.scrollTo(0, document.body.scrollHeight);
-
-                        // Update query history if it exists
-                        const queryHistory = document.getElementById('query-history');
-                        if (queryHistory) {
-                            updateQueryHistory();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-
-                        // Remove typing indicator
-                        const typingCard = document.querySelector('.typing-indicator');
-                        if (typingCard && typingCard.closest('.card')) {
-                            responseArea.removeChild(typingCard.closest('.card'));
-                        }
-
-                        // Show error message
-                        responseArea.innerHTML += `
-                        <div class="card dashboard-card response-card mb-4">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="response-icon me-2"><i class="fas fa-exclamation-triangle"></i></div>
-                                    <h5 class="card-title mb-0">Error</h5>
-                                </div>
-                                <div class="card-text">Sorry, there was an error processing your request. Please try again.</div>
-                            </div>
-                        </div>
-                    `;
-
-                        submitBtn.disabled = false;
-                        if (stopBtn) stopBtn.classList.add('d-none');
-                    });
-            }
-
-            function createTypingCard() {
-                return `
+                    // Append AI response
+                    const responseCard = `
                     <div class="card dashboard-card response-card mb-4">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
                                 <h5 class="card-title mb-0">Omi</h5>
                             </div>
-                            <div class="typing-indicator">
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                            </div>
+                            <div class="card-text ai-response">${formatResponseToHTML(data.ai_response)}</div>
                         </div>
                     </div>
                 `;
-            }
+                    responseArea.innerHTML += responseCard;
 
-            // Helper function to format AI responses (convert Markdown to HTML)
-            function formatResponseToHTML(text) {
-                if (!text) return '';
+                    submitBtn.disabled = false;
+                    if (stopBtn) stopBtn.classList.add('d-none');
+                    queryInput.value = '';
 
-                // Convert URLs to clickable links
-                text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+                    // Auto-scroll to bottom
+                    window.scrollTo(0, document.body.scrollHeight);
 
-                // Convert bold markdown: *text* or **text** to <strong>text</strong>
-                text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-                text = text.replace(/\*([^\*]+?)\*/g, '<strong>$1</strong>');
+                    // Update query history if it exists
+                    const queryHistory = document.getElementById('query-history');
+                    if (queryHistory) {
+                        updateQueryHistory();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
 
-                // Convert italic markdown: _text_ to <em>text</em>
-                text = text.replace(/\_([^\_]+?)\_/g, '<em>$1</em>');
+                    // Remove typing indicator
+                    const typingCard = document.querySelector('.typing-indicator');
+                    if (typingCard && typingCard.closest('.card')) {
+                        responseArea.removeChild(typingCard.closest('.card'));
+                    }
 
-                // Convert headings: # Heading to <h3>Heading</h3>
-                text = text.replace(/^# (.+)$/gm, '<h3 class="mt-3 mb-2">$1</h3>');
-                text = text.replace(/^## (.+)$/gm, '<h4 class="mt-2 mb-2">$1</h4>');
-                text = text.replace(/^### (.+)$/gm, '<h5 class="mt-2 mb-1">$1</h5>');
+                    // Show error message
+                    responseArea.innerHTML += `
+                    <div class="card dashboard-card response-card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="response-icon me-2"><i class="fas fa-exclamation-triangle"></i></div>
+                                <h5 class="card-title mb-0">Error</h5>
+                            </div>
+                            <div class="card-text">Sorry, there was an error processing your request. Please try again.</div>
+                        </div>
+                    </div>
+                `;
 
-                // Convert bullet points: - item to <li>item</li>
-                text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+                    submitBtn.disabled = false;
+                    if (stopBtn) stopBtn.classList.add('d-none');
+                });
+        }
 
-                // Wrap bullet point lists in <ul> tags
-                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ul class="mb-3">$1$2</ul>');
-                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '$1$2');
-                text = text.replace(/(<li>.+<\/li>)(?!\n<li>)/g, '<ul class="mb-3">$1</ul>');
+        function createTypingCard() {
+            return `
+                <div class="card dashboard-card response-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
+                            <h5 class="card-title mb-0">Omi</h5>
+                        </div>
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
-                // Convert numbered lists: 1. item to <ol><li>item</li></ol>
-                text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+        // Helper function to format AI responses (convert Markdown to HTML)
+        function formatResponseToHTML(text) {
+            if (!text) return '';
 
-                // Wrap numbered lists in <ol> tags
-                text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ol class="mb-3">$1$2</ol>');
+            // Convert URLs to clickable links
+            text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
 
-                // Convert line breaks to <br> (after all formatting is done)
-                text = text.replace(/\n\n/g, '<p class="mb-3"></p>');
-                text = text.replace(/\n/g, '<br>');
+            // Convert bold markdown: *text* or **text** to <strong>text</strong>
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*([^\*]+?)\*/g, '<strong>$1</strong>');
 
-                return text;
-            }
+            // Convert italic markdown: _text_ to <em>text</em>
+            text = text.replace(/\_([^\_]+?)\_/g, '<em>$1</em>');
 
-            // Function to update query history (if it exists)
-            function updateQueryHistory() {
-                fetch('/api/history')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.queries && data.queries.length > 0) {
-                            const queryHistory = document.getElementById('query-history');
-                            if (queryHistory) {
-                                queryHistory.innerHTML = '';
-                                data.queries.forEach(query => {
-                                    const accordion = document.createElement('div');
-                                    accordion.className = 'accordion-item';
-                                    accordion.innerHTML = `
-                                        <h2 class="accordion-header" id="heading-${query.id}">
-                                            <button class="accordion-button collapsed" type="button" 
-                                                data-bs-toggle="collapse" data-bs-target="#collapse-${query.id}">
-                                                ${query.query_text.substring(0, 50)}${query.query_text.length > 50 ? '...' : ''}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse-${query.id}" class="accordion-collapse collapse" 
-                                            data-bs-parent="#query-history">
-                                            <div class="accordion-body">
-                                                <div class="query-details">
-                                                    <h6 class="text-muted mb-2">Query:</h6>
-                                                    <p>${query.query_text}</p>
-                                                    <h6 class="text-muted mb-2">Response:</h6>
-                                                    <p>${formatResponseToHTML(query.response)}</p>
-                                                    <small class="text-muted d-block mt-2">
-                                                        <i class="fas fa-clock me-1"></i>
-                                                        ${new Date(query.created_at).toLocaleString()}
-                                                    </small>
-                                                </div>
+            // Convert headings: # Heading to <h3>Heading</h3>
+            text = text.replace(/^# (.+)$/gm, '<h3 class="mt-3 mb-2">$1</h3>');
+            text = text.replace(/^## (.+)$/gm, '<h4 class="mt-2 mb-2">$1</h4>');
+            text = text.replace(/^### (.+)$/gm, '<h5 class="mt-2 mb-1">$1</h5>');
+
+            // Convert bullet points: - item to <li>item</li>
+            text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+
+            // Wrap bullet point lists in <ul> tags
+            text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ul class="mb-3">$1$2</ul>');
+            text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '$1$2');
+            text = text.replace(/(<li>.+<\/li>)(?!\n<li>)/g, '<ul class="mb-3">$1</ul>');
+
+            // Convert numbered lists: 1. item to <ol><li>item</li></ol>
+            text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+            // Wrap numbered lists in <ol> tags
+            text = text.replace(/(<li>.+<\/li>)\n(<li>.+<\/li>)/g, '<ol class="mb-3">$1$2</ol>');
+
+            // Convert line breaks to <br> (after all formatting is done)
+            text = text.replace(/\n\n/g, '<p class="mb-3"></p>');
+            text = text.replace(/\n/g, '<br>');
+
+            return text;
+        }
+
+        // Function to update query history (if it exists)
+        function updateQueryHistory() {
+            fetch('/api/history')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.queries && data.queries.length > 0) {
+                        const queryHistory = document.getElementById('query-history');
+                        if (queryHistory) {
+                            queryHistory.innerHTML = '';
+                            data.queries.forEach(query => {
+                                const accordion = document.createElement('div');
+                                accordion.className = 'accordion-item';
+                                accordion.innerHTML = `
+                                    <h2 class="accordion-header" id="heading-${query.id}">
+                                        <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#collapse-${query.id}">
+                                            ${query.query_text.substring(0, 50)}${query.query_text.length > 50 ? '...' : ''}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-${query.id}" class="accordion-collapse collapse" 
+                                        data-bs-parent="#query-history">
+                                        <div class="accordion-body">
+                                            <div class="query-details">
+                                                <h6 class="text-muted mb-2">Query:</h6>
+                                                <p>${query.query_text}</p>
+                                                <h6 class="text-muted mb-2">Response:</h6>
+                                                <p>${formatResponseToHTML(query.response)}</p>
+                                                <small class="text-muted d-block mt-2">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    ${new Date(query.created_at).toLocaleString()}
+                                                </small>
                                             </div>
                                         </div>
-                                    `;
-                                    queryHistory.appendChild(accordion);
-                                });
-                            }
+                                    </div>
+                                `;
+                                queryHistory.appendChild(accordion);
+                            });
                         }
-                    })
-                    .catch(error => console.error('Error updating query history:', error));
-            }
+                    }
+                })
+                .catch(error => console.error('Error updating query history:', error));
         }
     }
 
     // Simple dashboard functionality
     if (isSimpleDashboard) {
         const queryForm = document.getElementById('query-form');
-        const queryInput = document.getElementById('query-input');
         const messagesContainer = document.getElementById('messages-container');
         const stopBtn = document.getElementById('stop-generation');
 
@@ -546,6 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
     // Initialize SAM.gov data loading
     loadSamGovStatus();
     loadContractAwards();
@@ -873,8 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const resultsHtml = data.results.map(result => `
                         <div class="card dashboard-card mb-3">
                             <div class="card-body">
-                                <h5 class="card-title">${result.title}</h5>
-                                <p class="card-text">
+                                <h5 class="card-title">${result.title}</h5><p class="card-text">
                                     <strong>Agency:</strong> ${result.agency}<br>
                                     <strong>Solicitation #:</strong> ${result.solicitation_number}<br>
                                     <strong>Posted:</strong> ${result.posted_date}<br>
