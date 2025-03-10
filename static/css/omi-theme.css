@@ -370,16 +370,26 @@ body {
 }
 
 .file-upload-section button {
-  color: var(--gov-blue);
-  padding-left: 0;
+  color: #ffffff;
+  background-color: #0097FB;
+  border-radius: 6px;
+  padding: 8px 15px;
   visibility: visible !important;
   opacity: 1 !important;
   display: flex !important;
   align-items: center;
+  transition: all 0.2s ease;
+  margin: 5px 0;
 }
 
 .file-upload-section button:hover {
-  color: var(--gov-blue-hover);
+  background-color: #0078c8;
+  transform: translateY(-2px);
+}
+
+#file-upload-status {
+  margin-top: 8px;
+  display: block;
 }
 
 .recent-conversations {

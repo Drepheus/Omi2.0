@@ -143,13 +143,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle simple dashboard chat functionality
-    if (isSimpleDashboard) {
+    if (document.getElementById('messages-container')) {
         const messagesContainer = document.getElementById('messages-container');
         const queryForm = document.getElementById('query-form');
         const queryInput = document.getElementById('query-input');
-        const conversationsContainer = document.getElementById('conversations-container');
-        const fileUploadInput = document.getElementById('file-upload');
-        const uploadButton = document.getElementById('upload-button');
+        const conversationsContainer = document.getElementById('recent-conversations');
+        const fileUploadInput = document.getElementById('file-upload-input');
+        const fileUploadButton = document.getElementById('file-upload-button');
+        const fileUploadStatus = document.getElementById('file-upload-status');
+        
+        // Initialize file upload functionality
+        if (fileUploadButton && fileUploadInput) {
+            fileUploadButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                fileUploadInput.click();
+            });
+            
+            fileUploadInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fileUploadStatus.textContent = `Selected: ${this.files[0].name}`;
+                    
+                    // Create form data for upload
+                    const formData = new FormData();
+                    formData.append('file', this.files[0]);
+                    
+                    // Show loading state
+                    fileUploadStatus.textContent = `Uploading ${this.files[0].name}...`;
+                    
+                    // Send file to server
+                    fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            fileUploadStatus.textContent = `Error: ${data.error}`;
+                        } else {
+                            fileUploadStatus.textContent = `Uploaded: ${this.files[0].name}`;
+                            // Add a message in the chat
+                            addMessage(`File "${this.files[0].name}" uploaded successfully.`, 'system');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        fileUploadStatus.textContent = 'Error uploading file.';
+                    });
+                }
+            });
+        }
 
         // Initialize or get current conversation
         if (!currentConversationId && conversations.length > 0) {

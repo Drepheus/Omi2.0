@@ -185,6 +185,34 @@ def register_routes(app):
 
             # Get solicitations from SAM.gov
             from services.web_service import get_sam_solicitations
+
+    @app.route('/api/upload', methods=['POST'])
+    @login_required
+    def upload_file():
+        """Endpoint for handling file uploads"""
+        try:
+            if 'file' not in request.files:
+                return jsonify(error="No file part"), 400
+                
+            file = request.files['file']
+            
+            if file.filename == '':
+                return jsonify(error="No selected file"), 400
+                
+            if file:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join('uploads', filename)
+                os.makedirs('uploads', exist_ok=True)
+                file.save(file_path)
+                
+                # Here you would typically process the file with your AI service
+                # For now, just return success
+                return jsonify(success=True, filename=filename)
+                
+        except Exception as e:
+            logger.error(f"Error uploading file: {str(e)}")
+            return jsonify(error=str(e)), 500
+
             solicitations = get_sam_solicitations(query_text)
 
             if solicitations:
