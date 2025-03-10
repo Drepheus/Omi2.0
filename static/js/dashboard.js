@@ -1,3 +1,4 @@
+
 // Dashboard functionality
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Dashboard script loaded");
@@ -21,117 +22,116 @@ function initializeSimpleDashboard() {
     const queryInput = document.getElementById('query-input');
     const messagesContainer = document.getElementById('messages-container');
     const typingIndicator = document.getElementById('typing-indicator');
+    const voiceModeButton = document.getElementById('voice-mode-button');
+    const imageCreationButton = document.getElementById('image-creation-button');
 
+    // Handle voice mode button
+    if (voiceModeButton) {
+        voiceModeButton.addEventListener('click', function() {
+            alert("Voice mode is coming soon!");
+        });
+    }
+
+    // Handle image creation button
+    if (imageCreationButton) {
+        imageCreationButton.addEventListener('click', function() {
+            alert("Image creation feature is coming soon!");
+        });
+    }
+
+    // Disable query examples feature for stability
+    console.log("Query examples feature has been disabled for stability reasons.");
+
+    // Handle query form
     if (queryForm) {
         queryForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const query = queryInput.value.trim();
+            if (!queryInput) return;
 
+            const query = queryInput.value.trim();
             if (!query) return;
 
-            // Add user message to the chat
-            addMessageToChat('user', query);
-
-            // Clear input
+            // Add user message to chat
+            appendMessage('user', query);
             queryInput.value = '';
 
             // Show typing indicator
-            typingIndicator.style.display = 'flex';
-
-            // Scroll to bottom
-            scrollToBottom();
+            if (typingIndicator) {
+                typingIndicator.style.display = 'block';
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
 
             // Send query to API
             fetch('/api/query', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ query: query })
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || data.message || 'Unknown error');
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 // Hide typing indicator
-                typingIndicator.style.display = 'none';
-
-                // Add AI response to chat
-                if (data.ai_response) {
-                    addMessageToChat('ai', data.ai_response);
-
-                    // Update recent conversations
-                    loadRecentConversations();
-                } else {
-                    addMessageToChat('ai', 'Sorry, I couldn\'t generate a response. Please try again.');
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
                 }
+
+                if (data.error === 'Free tier query limit reached') {
+                    // Handle free tier limit
+                    appendMessage('ai', `${data.message} <a href="${data.upgrade_url}" class="btn btn-sm btn-outline-primary mt-2">Upgrade Now</a>`);
+                } else if (data.error) {
+                    // Handle other errors
+                    appendMessage('ai', `Error: ${data.error}`);
+                } else {
+                    // Display AI response
+                    appendMessage('ai', data.ai_response);
+                    
+                    // Display remaining queries for free users if available
+                    if (data.queries_remaining !== undefined) {
+                        const queriesRemaining = document.createElement('div');
+                        queriesRemaining.className = 'queries-remaining text-muted mt-2';
+                        queriesRemaining.textContent = `Queries remaining: ${data.queries_remaining}`;
+                        messagesContainer.lastChild.querySelector('.message-content').appendChild(queriesRemaining);
+                    }
+                }
+
+                // Update recent conversations
+                loadRecentConversations();
             })
             .catch(error => {
-                console.log("Error:", error);
-                // Hide typing indicator
-                typingIndicator.style.display = 'none';
-
-                // Add error message
-                addMessageToChat('ai', `Sorry, I encountered an error. Please try again. (${error.message})`);
-            })
-            .finally(() => {
-                // Scroll to bottom
-                scrollToBottom();
+                console.log("API Error:", error.message);
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
+                }
+                appendMessage('ai', `I apologize, but I encountered an error. Please try again.`);
             });
         });
     }
 
-    // Function to add a message to the chat
-    function addMessageToChat(role, content) {
+    // Helper function to add messages to the chat
+    function appendMessage(role, content) {
         if (!messagesContainer) return;
 
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message-bubble', role);
+        const messageBubble = document.createElement('div');
+        messageBubble.className = `message-bubble ${role}`;
 
         const messageContent = document.createElement('div');
-        messageContent.classList.add('message-content');
+        messageContent.className = 'message-content';
 
         if (role === 'ai') {
-            // Format the AI message content with Markdown or simple HTML
-            const formattedContent = formatMessageContent(content);
-            messageContent.innerHTML = formattedContent;
-        } else {
-            messageContent.textContent = content;
+            const header = document.createElement('div');
+            header.className = 'ai-response-header';
+            header.textContent = 'Omi';
+            messageContent.appendChild(header);
         }
 
-        messageDiv.appendChild(messageContent);
-        messagesContainer.appendChild(messageDiv);
+        const messageText = document.createElement('div');
+        messageText.innerHTML = content;
+        messageContent.appendChild(messageText);
 
-        // Scroll to the new message
-        scrollToBottom();
-    }
-
-    // Function to format message content
-    function formatMessageContent(content) {
-        if (!content) return '';
-
-        // Replace markdown-style formatting with HTML
-        let formatted = content
-            // Bold text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            // Italic text
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            // Handles line breaks
-            .replace(/\n/g, '<br>');
-
-        return formatted;
-    }
-
-    // Function to scroll the chat to the bottom
-    function scrollToBottom() {
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        messageBubble.appendChild(messageContent);
+        messagesContainer.appendChild(messageBubble);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 }
 
@@ -153,60 +153,74 @@ function initializeGovConDashboard() {
             const query = govConQueryInput.value.trim();
             if (!query) return;
 
-            // Clear previous response
+            // Clear previous response if any
             if (responseArea) {
-                responseArea.innerHTML = `
-                    <div class="card dashboard-card mb-4">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="fas fa-robot me-2"></i>
-                                <h4 class="card-title mb-0">AI Processing...</h4>
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                responseArea.innerHTML = '<div class="loading-indicator"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2 text-muted">Processing your query...</p></div>';
             }
 
-            // Send the query
+            // Send query to API
             fetch('/api/query', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ query: query })
             })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || data.message || 'Unknown error');
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                // Display the AI response
                 if (responseArea) {
-                    responseArea.innerHTML = `
-                        <div class="card dashboard-card mb-4">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="fas fa-robot me-2"></i>
-                                    <h4 class="card-title mb-0">AI Response</h4>
-                                </div>
-                                <div class="formatted-content">
-                                    ${formatResponseContent(data.ai_response)}
+                    if (data.error === 'Free tier query limit reached') {
+                        // Handle free tier limit
+                        responseArea.innerHTML = `
+                            <div class="card dashboard-card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-exclamation-circle me-2 text-warning"></i>
+                                        <h4 class="card-title mb-0">Limit Reached</h4>
+                                    </div>
+                                    <div class="alert alert-warning">
+                                        ${data.message}
+                                    </div>
+                                    <a href="${data.upgrade_url}" class="btn btn-primary">Upgrade Now</a>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } else if (data.error) {
+                        // Handle other errors
+                        responseArea.innerHTML = `
+                            <div class="card dashboard-card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                                        <h4 class="card-title mb-0">Error</h4>
+                                    </div>
+                                    <div class="alert alert-danger">
+                                        ${data.error}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Display AI response
+                        responseArea.innerHTML = `
+                            <div class="card dashboard-card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fas fa-robot me-2 text-primary"></i>
+                                        <h4 class="card-title mb-0">Omi Response</h4>
+                                    </div>
+                                    <div class="ai-response">
+                                        ${data.ai_response.replace(/\n/g, '<br>')}
+                                    </div>
+                                    ${data.queries_remaining !== undefined ? 
+                                        `<div class="queries-remaining text-muted mt-3">
+                                            Queries remaining: ${data.queries_remaining}
+                                        </div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
-                // Clear input
-                govConQueryInput.value = '';
 
                 // Update recent conversations
                 loadRecentConversations();
@@ -248,59 +262,68 @@ function initializeGovConDashboard() {
                 const response = await fetch('/api/sam/search', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ query: query })
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (searchResults) {
                     if (data.status === 'success' && data.results && data.results.length > 0) {
-                        let resultsHtml = `
-                            <h5 class="mb-3">Found ${data.count} results</h5>
+                        let resultsHTML = `
+                            <div class="alert alert-success">
+                                Found ${data.count} solicitations matching your criteria.
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-sm table-dark table-striped table-hover">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Solicitation</th>
+                                            <th>Title</th>
                                             <th>Agency</th>
-                                            <th>Posted Date</th>
-                                            <th>Due Date</th>
+                                            <th>Number</th>
+                                            <th>Posted</th>
+                                            <th>Due</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                         `;
-
-                        data.results.forEach(result => {
-                            resultsHtml += `
+                        
+                        data.results.forEach(item => {
+                            resultsHTML += `
                                 <tr>
-                                    <td>${result.title}</td>
-                                    <td>${result.agency}</td>
-                                    <td>${result.posted_date}</td>
-                                    <td>${result.due_date}</td>
+                                    <td>${item.title}</td>
+                                    <td>${item.agency}</td>
+                                    <td>${item.solicitation_number}</td>
+                                    <td>${item.posted_date}</td>
+                                    <td>${item.due_date}</td>
                                     <td>
-                                        <a href="${result.url}" target="_blank" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-external-link-alt me-1"></i>View
+                                        <a href="${item.url}" target="_blank" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-external-link-alt"></i> View
                                         </a>
                                     </td>
                                 </tr>
                             `;
                         });
-
-                        resultsHtml += `
+                        
+                        resultsHTML += `
                                     </tbody>
                                 </table>
                             </div>
                         `;
-
-                        searchResults.innerHTML = resultsHtml;
-                    } else {
+                        
+                        searchResults.innerHTML = resultsHTML;
+                    } else if (data.status === 'warning') {
                         searchResults.innerHTML = `
                             <div class="alert alert-warning">
-                                <i class="fas fa-info-circle me-2"></i>
-                                ${data.message || 'No results found matching your search criteria.'}
+                                ${data.message}
+                            </div>
+                        `;
+                    } else {
+                        searchResults.innerHTML = `
+                            <div class="alert alert-danger">
+                                ${data.error || 'An unknown error occurred'}
                             </div>
                         `;
                     }
@@ -310,160 +333,144 @@ function initializeGovConDashboard() {
                 if (searchResults) {
                     searchResults.innerHTML = `
                         <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Error searching SAM.gov. Please try again later.
+                            Failed to search SAM.gov. Please try again later.
                         </div>
                     `;
                 }
             }
         });
     }
-    // Initialize SAM.gov status panel (entity registrations)
-    loadSAMStatus();
 
-    // Initialize contract awards panel
+    // Load SAM.gov status data
+    loadSamStatus();
     loadContractAwards();
-
-    // Function to load SAM.gov status
-    async function loadSAMStatus() {
-        const samStatusContainer = document.getElementById('samStatusContainer');
-        if (!samStatusContainer) return;
-
-        try {
-            const response = await fetch('/api/sam/status');
-            const data = await response.json();
-
-            if (response.ok) {
-                let html = '';
-                data.entities.forEach(entity => {
-                    html += `
-                    <div class="card mb-3 sam-data-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${entity.entity_name}</h5>
-                            <p class="card-text">DUNS: ${entity.duns}</p>
-                            <p class="card-text">Status: <span class="badge bg-success">${entity.status}</span></p>
-                            <p class="card-text">Expires: ${entity.expiration_date}</p>
-                            <a href="${entity.url}" target="_blank" class="btn btn-sm btn-outline-primary">View Details</a>
-                        </div>
-                    </div>`;
-                });
-                samStatusContainer.innerHTML = html;
-            } else {
-                samStatusContainer.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to load SAM.gov status'}</div>`;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            samStatusContainer.innerHTML = '<div class="alert alert-danger">Could not connect to the server. Please try again later.</div>';
-        }
-    }
-
-    // Function to load contract awards
-    async function loadContractAwards() {
-        const awardsContainer = document.getElementById('awardsContainer');
-        if (!awardsContainer) return;
-
-        try {
-            const response = await fetch('/api/sam/awards');
-            const data = await response.json();
-
-            if (response.ok) {
-                let html = '';
-                data.awards.forEach(award => {
-                    html += `
-                    <div class="card mb-3 award-card">
-                        <div class="card-body">
-                            <h5 class="card-title">${award.title}</h5>
-                            <p class="card-text">Solicitation #: ${award.solicitation_number}</p>
-                            <p class="card-text">Award: $${parseInt(award.award_amount).toLocaleString()}</p>
-                            <p class="card-text">Awardee: ${award.awardee}</p>
-                            <p class="card-text"><small class="text-muted">Award Date: ${award.award_date}</small></p>
-                            <a href="${award.url}" target="_blank" class="btn btn-sm btn-outline-success">View Details</a>
-                        </div>
-                    </div>`;
-                });
-                awardsContainer.innerHTML = html;
-            } else {
-                awardsContainer.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to load contract awards'}</div>`;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            awardsContainer.innerHTML = '<div class="alert alert-danger">Could not connect to the server. Please try again later.</div>';
-        }
-    }
 }
 
-// Common functionality for both dashboards
+// Load SAM.gov status
+function loadSamStatus() {
+    const samDataContent = document.getElementById('samDataContent');
+    if (!samDataContent) return;
+
+    fetch('/api/sam/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.entities && data.entities.length > 0) {
+                let contentHTML = '<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Entity Name</th><th>DUNS</th><th>Status</th><th>Expires</th></tr></thead><tbody>';
+                
+                data.entities.forEach(entity => {
+                    contentHTML += `
+                        <tr>
+                            <td>${entity.entity_name}</td>
+                            <td>${entity.duns}</td>
+                            <td><span class="badge bg-success">${entity.status}</span></td>
+                            <td>${entity.expiration_date}</td>
+                        </tr>
+                    `;
+                });
+                
+                contentHTML += '</tbody></table></div>';
+                samDataContent.innerHTML = contentHTML;
+            } else {
+                samDataContent.innerHTML = '<div class="alert alert-warning">No entity data available.</div>';
+            }
+        })
+        .catch(error => {
+            console.error("Error loading SAM.gov status:", error);
+            samDataContent.innerHTML = '<div class="alert alert-danger">Failed to load SAM.gov data.</div>';
+        });
+}
+
+// Load contract awards
+function loadContractAwards() {
+    const awardsContent = document.getElementById('awardsContent');
+    const awardsLoading = document.getElementById('awardsLoading');
+    
+    if (!awardsContent) return;
+
+    fetch('/api/sam/awards')
+        .then(response => response.json())
+        .then(data => {
+            if (awardsLoading) {
+                awardsLoading.style.display = 'none';
+            }
+
+            if (data.status === 'success' && data.awards && data.awards.length > 0) {
+                let contentHTML = '<div class="table-responsive"><table class="table table-sm"><thead><tr><th>Title</th><th>Solicitation #</th><th>Amount</th><th>Date</th><th>Awardee</th></tr></thead><tbody>';
+                
+                data.awards.forEach(award => {
+                    contentHTML += `
+                        <tr>
+                            <td>${award.title}</td>
+                            <td>${award.solicitation_number}</td>
+                            <td>$${award.award_amount}</td>
+                            <td>${award.award_date}</td>
+                            <td>${award.awardee}</td>
+                        </tr>
+                    `;
+                });
+                
+                contentHTML += '</tbody></table></div>';
+                awardsContent.innerHTML = contentHTML;
+                awardsContent.classList.remove('d-none');
+            } else {
+                awardsContent.innerHTML = '<div class="alert alert-warning">No recent contract awards found.</div>';
+                awardsContent.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            console.error("Error loading contract awards:", error);
+            if (awardsLoading) {
+                awardsLoading.style.display = 'none';
+            }
+            awardsContent.innerHTML = '<div class="alert alert-danger">Failed to load contract awards.</div>';
+            awardsContent.classList.remove('d-none');
+        });
+}
+
+// Function to load recent conversations
 function loadRecentConversations() {
-    const conversationsList = document.getElementById('conversations-list');
-    if (!conversationsList) return;
+    const recentConversationsDiv = document.getElementById('recent-conversations');
+    if (!recentConversationsDiv) return;
 
     fetch('/api/recent-conversations')
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success' && data.conversations && data.conversations.length > 0) {
-                conversationsList.innerHTML = '';
-
+                recentConversationsDiv.innerHTML = '';
+                
                 data.conversations.forEach(conversation => {
                     const formattedDate = new Date(conversation.created_at).toLocaleString();
-                    const item = document.createElement('div');
-                    item.classList.add('conversation-item');
-                    item.innerHTML = `
-                        <div class="query-preview">${truncateText(conversation.query_text, 50)}</div>
-                        <div class="timestamp">${formattedDate}</div>
+                    const conversationPreview = document.createElement('div');
+                    conversationPreview.className = 'conversation-preview';
+                    
+                    conversationPreview.innerHTML = `
+                        <div class="preview-title">${truncateText(conversation.query_text, 40)}</div>
+                        <div class="preview-snippet">${truncateText(conversation.response, 60)}</div>
+                        <div class="conversation-time">${formattedDate}</div>
                     `;
-
-                    item.addEventListener('click', function() {
-                        const queryInput = document.getElementById('query-input') || document.getElementById('govConQueryInput');
+                    
+                    conversationPreview.addEventListener('click', function() {
+                        const queryInput = document.getElementById('query-input');
                         if (queryInput) {
                             queryInput.value = conversation.query_text;
                             queryInput.focus();
                         }
                     });
-
-                    conversationsList.appendChild(item);
+                    
+                    recentConversationsDiv.appendChild(conversationPreview);
                 });
             } else {
-                conversationsList.innerHTML = '<div class="p-3 text-center text-muted">No recent conversations found.</div>';
+                recentConversationsDiv.innerHTML = '<div class="text-center py-3 text-muted"><small>No recent conversations</small></div>';
             }
         })
         .catch(error => {
             console.error("Error loading recent conversations:", error);
-            conversationsList.innerHTML = '<div class="p-3 text-center text-danger">Error loading conversations.</div>';
+            recentConversationsDiv.innerHTML = '<div class="text-center py-3 text-danger"><small>Failed to load conversations</small></div>';
         });
 }
 
-// Helper functions
+// Helper function to truncate text
 function truncateText(text, maxLength) {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-}
-
-function formatResponseContent(content) {
-    if (!content) return '';
-
-    // Replace markdown-style formatting with HTML
-    let formatted = content
-        // Bold text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        // Italic text
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        // Handle bullet lists
-        .replace(/^[\s]*•[\s]+(.*?)$/gm, '<li>$1</li>')
-        // Handle numbered lists
-        .replace(/^[\s]*(\d+)\.[\s]+(.*?)$/gm, '<li>$2</li>')
-        // Handle line breaks
-        .replace(/\n/g, '<br>');
-
-    // Wrap lists in ul tags
-    if (formatted.includes('<li>')) {
-        formatted = formatted.replace(/<br><li>/g, '<li>');
-        formatted = formatted.replace(/<li>.*?<li>/g, match => {
-            return '<ul>' + match;
-        });
-        formatted = formatted.replace(/<li>.*?$/g, match => {
-            return '<ul>' + match + '</ul>';
-        });
-    }
-
-    return formatted;
 }
