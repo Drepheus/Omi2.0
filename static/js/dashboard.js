@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Store conversation history
     let currentConversationId = null;
     let conversations = [];
-    
+    let shouldStopTyping = false;
+    let isTyping = false;
+
     // Load conversations from localStorage
     if (localStorage.getItem('conversations')) {
         try {
@@ -22,8 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const responseArea = document.getElementById('response-area');
         const submitBtn = document.getElementById('submit-query');
         const stopBtn = document.getElementById('stop-generation');
-        let shouldStopTyping = false;
-        let isTyping = false;
 
         // Handle stop button
         stopBtn.addEventListener('click', function() {
@@ -32,26 +32,414 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = false;
         });
 
-        // Handle form submission
-        document.getElementById('query-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const query = queryInput.value.trim();
-            if (!query) return;
+        // Dashboard query handling
+        if (queryInput && submitBtn) {
+            submitBtn.addEventListener('click', function() {
+                sendQuery();
+            });
 
-            try {
-                // Clear previous response and show typing indicator
-                responseArea.innerHTML = createTypingCard();
+            queryInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendQuery();
+                }
+            });
+
+            function sendQuery() {
+                const query = queryInput.value.trim();
+                if (!query || isTyping) return;
+
                 submitBtn.disabled = true;
                 stopBtn.classList.remove('d-none');
                 shouldStopTyping = false;
 
-                const response = await fetch('/api/query', {
+                // Append user query card
+                const userCard = `
+                    <div class="card dashboard-card user-card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="user-icon me-2"><i class="fas fa-user"></i></div>
+                                <h5 class="card-title mb-0">You</h5>
+                            </div>
+                            <div class="card-text">${query}</div>
+                        </div>
+                    </div>
+                `;
+                responseArea.innerHTML += userCard;
+
+                // Append typing indicator
+                responseArea.innerHTML += createTypingCard();
+
+                // Send query to API
+                fetch('/api/query', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ query })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove typing indicator
+                    const typingCard = document.querySelector('.typing-indicator').closest('.card');
+                    if (typingCard) {
+                        responseArea.removeChild(typingCard);
+                    }
+
+                    // Append AI response
+                    const responseCard = `
+                        <div class="card dashboard-card response-card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
+                                    <h5 class="card-title mb-0">Omi</h5>
+                                </div>
+                                <div class="card-text ai-response">${formatResponseToHTML(data.ai_response)}</div>
+                                <div class="typing-cursor d-none"></div>
+                            </div>
+                        </div>
+                    `;
+                    responseArea.innerHTML += responseCard;
+
+                    submitBtn.disabled = false;
+                    stopBtn.classList.add('d-none');
+                    queryInput.value = '';
+
+                    // Auto-scroll to bottom
+                    window.scrollTo(0, document.body.scrollHeight);
+
+                    // Update query history if it exists
+                    const queryHistory = document.getElementById('query-history');
+                    if (queryHistory) {
+                        updateQueryHistory();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+
+                    // Remove typing indicator
+                    const typingCard = document.querySelector('.typing-indicator').closest('.card');
+                    if (typingCard) {
+                        responseArea.removeChild(typingCard);
+                    }
+
+                    // Show error message
+                    const errorCard = `
+                        <div class="card dashboard-card response-card mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="response-icon me-2"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <h5 class="card-title mb-0">Error</h5>
+                                </div>
+                                <div class="card-text">Sorry, there was an error processing your request. Please try again.</div>
+                            </div>
+                        </div>
+                    `;
+                    responseArea.innerHTML += errorCard;
+
+                    submitBtn.disabled = false;
+                    stopBtn.classList.add('d-none');
+                });
+            }
+        }
+    }
+
+    // Handle simple dashboard chat functionality
+    if (isSimpleDashboard) {
+        const messagesContainer = document.getElementById('messages-container');
+        const queryForm = document.getElementById('query-form');
+        const queryInput = document.getElementById('query-input');
+        const conversationsContainer = document.getElementById('conversations-container');
+        const fileUploadInput = document.getElementById('file-upload');
+        const uploadButton = document.getElementById('upload-button');
+
+        // Initialize or get current conversation
+        if (!currentConversationId && conversations.length > 0) {
+            currentConversationId = conversations[0].id;
+            renderCurrentConversation();
+        } else if (!currentConversationId) {
+            // Create a new conversation
+            createNewConversation();
+        }
+
+        // Handle file uploads
+        if (fileUploadInput && uploadButton) {
+            uploadButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                fileUploadInput.click();
+            });
+
+            fileUploadInput.addEventListener('change', function() {
+                if (fileUploadInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('file', fileUploadInput.files[0]);
+
+                    // Show uploading message
+                    addMessage('Uploading file...', 'user');
+
+                    fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            addMessage('Error uploading file: ' + data.error, 'assistant');
+                        } else {
+                            addMessage(`File "${fileUploadInput.files[0].name}" uploaded successfully.`, 'system');
+                            // Automatically ask about the file
+                            processQuery(`Can you analyze this file: ${fileUploadInput.files[0].name}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        addMessage('Error uploading file. Please try again.', 'assistant');
+                    });
+
+                    // Reset the file input
+                    fileUploadInput.value = '';
+                }
+            });
+        }
+
+        // Handle query form submission
+        if (queryForm) {
+            queryForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const query = queryInput.value.trim();
+                if (!query || isTyping) return;
+
+                processQuery(query);
+                queryInput.value = '';
+            });
+        }
+
+        // Handle conversation selection
+        if (conversationsContainer) {
+            renderConversationsList();
+
+            // Add new conversation button
+            const newConvoBtn = document.getElementById('new-conversation-btn');
+            if (newConvoBtn) {
+                newConvoBtn.addEventListener('click', function() {
+                    createNewConversation();
+                });
+            }
+        }
+
+        function processQuery(query) {
+            // Add user message to UI
+            addMessage(query, 'user');
+
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message assistant typing';
+            typingIndicator.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingIndicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Add message to current conversation
+            const conversation = conversations.find(c => c.id === currentConversationId);
+            if (conversation) {
+                conversation.messages.push({
+                    role: 'user',
+                    content: query,
+                    timestamp: new Date().toISOString()
+                });
+                saveConversations();
+            }
+
+            // Send query to API
+            fetch('/api/query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove typing indicator
+                const typingMsg = messagesContainer.querySelector('.message.typing');
+                if (typingMsg) {
+                    messagesContainer.removeChild(typingMsg);
+                }
+
+                // Add response to UI
+                if (data.error) {
+                    addMessage('Error: ' + data.error, 'assistant');
+                } else {
+                    addMessage(data.ai_response, 'assistant');
+
+                    // Add message to current conversation
+                    const conversation = conversations.find(c => c.id === currentConversationId);
+                    if (conversation) {
+                        conversation.messages.push({
+                            role: 'assistant',
+                            content: data.ai_response,
+                            timestamp: new Date().toISOString()
+                        });
+                        // Update conversation preview
+                        conversation.preview = data.ai_response.substring(0, 60) + '...';
+                        saveConversations();
+                        renderConversationsList();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                // Remove typing indicator
+                const typingMsg = messagesContainer.querySelector('.message.typing');
+                if (typingMsg) {
+                    messagesContainer.removeChild(typingMsg);
+                }
+
+                addMessage('Sorry, there was an error processing your request.', 'assistant');
+            });
+        }
+
+        function addMessage(content, role) {
+            const message = document.createElement('div');
+            message.className = `message ${role}`;
+            message.innerHTML = `<div class="message-content">${formatResponseToHTML(content)}</div>`;
+            messagesContainer.appendChild(message);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function createNewConversation() {
+            const newId = 'conv_' + Date.now();
+            const newConversation = {
+                id: newId,
+                title: 'New Conversation',
+                preview: 'Start a new conversation',
+                created: new Date().toISOString(),
+                messages: []
+            };
+
+            // Add to beginning of array
+            conversations.unshift(newConversation);
+            currentConversationId = newId;
+
+            saveConversations();
+            renderConversationsList();
+            renderCurrentConversation();
+        }
+
+        function renderConversationsList() {
+            if (!conversationsContainer) return;
+
+            conversationsContainer.innerHTML = '';
+
+            conversations.forEach(conv => {
+                const convEl = document.createElement('div');
+                convEl.className = `conversation-preview ${conv.id === currentConversationId ? 'active' : ''}`;
+                convEl.dataset.id = conv.id;
+
+                // Format date
+                const date = new Date(conv.created);
+                const formattedDate = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+                convEl.innerHTML = `
+                    <div class="preview-title">${conv.title}</div>
+                    <div class="preview-snippet">${conv.preview || 'No messages'}</div>
+                    <div class="conversation-time">${formattedDate}</div>
+                `;
+
+                convEl.addEventListener('click', function() {
+                    currentConversationId = conv.id;
+                    // Update active class
+                    document.querySelectorAll('.conversation-preview').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    convEl.classList.add('active');
+                    renderCurrentConversation();
+                });
+
+                conversationsContainer.appendChild(convEl);
+            });
+        }
+
+        function renderCurrentConversation() {
+            if (!messagesContainer) return;
+
+            messagesContainer.innerHTML = '';
+
+            const conversation = conversations.find(c => c.id === currentConversationId);
+            if (conversation && conversation.messages.length > 0) {
+                conversation.messages.forEach(msg => {
+                    addMessage(msg.content, msg.role);
+                });
+            } else {
+                // Empty state
+                addMessage('Hello! How can I help you today?', 'assistant');
+            }
+        }
+
+        function saveConversations() {
+            localStorage.setItem('conversations', JSON.stringify(conversations));
+        }
+    }
+
+    function formatResponseToHTML(text) {
+        if (!text) return '';
+        // Convert markdown-like text to HTML
+        return text
+            .replace(/\n\n/g, '<br><br>')
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    }
+
+    function createTypingCard() {
+        return `
+            <div class="card dashboard-card response-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
+                        <h5 class="card-title mb-0">Omi</h5>
+                    </div>
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Initialize SAM.gov data loading
+    loadSamGovStatus();
+    loadContractAwards();
+
+    if (documentUploadForm) {
+        documentUploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const fileInput = document.getElementById('documentFile');
+            const submitBtn = this.querySelector('button[type="submit"]');
+
+            if (!fileInput.files.length) {
+                displayError('Please select at least one file to upload');
+                return;
+            }
+
+            try {
+                // Show loading state
+                submitBtn.disabled = true;
+                responseArea.innerHTML = createTypingCard();
+
+                console.log('Uploading documents:', fileInput.files.length, 'files'); // Debug log
+
+                const response = await fetch('/api/document/upload', {
+                    method: 'POST',
+                    body: formData
                 });
 
                 // Check if response is JSON
@@ -72,508 +460,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     throw new Error(data.error || `Server error: ${response.status}`);
                 }
 
-                if (!data.ai_response) {
-                    throw new Error('Invalid response format from server');
+                let statusMessage = '';
+                if (data.uploaded_documents && data.uploaded_documents.length > 0) {
+                    statusMessage = `Successfully processed ${data.uploaded_documents.length} documents:\n`;
+                    data.uploaded_documents.forEach(doc => {
+                        statusMessage += `- ${doc.filename}\n`;
+                    });
+                }
+                if (data.failed_documents && data.failed_documents.length > 0) {
+                    statusMessage += `\nFailed to process ${data.failed_documents.length} documents:\n`;
+                    data.failed_documents.forEach(doc => {
+                        statusMessage += `- ${doc.filename}: ${doc.error}\n`;
+                    });
                 }
 
-                // Type out the response gradually
-                typeResponse(data.ai_response, query);
-                queryInput.value = '';
+                await displayResponseWithTyping(data.ai_response + '\n\n' + statusMessage);
+                updateQueryHistory(
+                    `Document Analysis: ${fileInput.files.length} files`,
+                    data.ai_response + '\n\n' + statusMessage
+                );
 
+                // Reset form
+                documentUploadForm.reset();
             } catch (error) {
-                console.error('Error:', error);
-                responseArea.innerHTML = createErrorCard(error.message);
+                console.error('Document upload error:', error);
+                displayError(error.message || 'An unexpected error occurred. Please try again.');
+            } finally {
                 submitBtn.disabled = false;
-                stopBtn.classList.add('d-none');
             }
         });
-
-        // Function to type response gradually
-        function typeResponse(text, query) {
-            isTyping = true;
-            let i = 0;
-            const typingSpeed = 20; // ms per character
-            const htmlContent = formatResponseToHTML(text);
-
-            const responseHTML = `
-                <div class="card dashboard-card response-card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
-                            <h5 class="card-title mb-0">Omi</h5>
-                        </div>
-                        <div class="query-text mb-3">
-                            <strong>Query:</strong> ${query}
-                        </div>
-                        <div class="ai-response-content"></div>
-                    </div>
-                </div>
-            `;
-
-            responseArea.innerHTML = responseHTML;
-            const responseContentEl = responseArea.querySelector('.ai-response-content');
-
-            function typeNextChar() {
-                if (i < htmlContent.length && !shouldStopTyping) {
-                    responseContentEl.innerHTML = htmlContent.substring(0, i + 1);
-                    i++;
-                    setTimeout(typeNextChar, typingSpeed);
-                } else {
-                    // Complete the response immediately if stopped
-                    if (shouldStopTyping) {
-                        responseContentEl.innerHTML = htmlContent;
-                    }
-
-                    submitBtn.disabled = false;
-                    stopBtn.classList.add('d-none');
-                    isTyping = false;
-
-                    // Update query history if it exists
-                    const queryHistory = document.getElementById('query-history');
-                    if (queryHistory) {
-                        updateQueryHistory();
-                    }
-                }
-            }
-
-            typeNextChar();
-        }
-
-        function formatResponseToHTML(text) {
-            // Convert markdown-like text to HTML
-            return text
-                .replace(/\n\n/g, '<br><br>')
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
-        }
-
-        function createTypingCard() {
-            return `
-                <div class="card dashboard-card response-card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="response-icon me-2"><i class="fas fa-robot"></i></div>
-                            <h5 class="card-title mb-0">Omi</h5>
-                        </div>
-                        <div class="typing-indicator">
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function createErrorCard(errorMessage) {
-            return `
-                <div class="card dashboard-card response-card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="response-icon me-2"><i class="fas fa-exclamation-triangle text-danger"></i></div>
-                            <h5 class="card-title mb-0">Error</h5>
-                        </div>
-                        <div class="error-message text-danger">
-                            ${errorMessage}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function updateQueryHistory() {
-            fetch('/api/history')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.queries && data.queries.length > 0) {
-                        const queryHistoryEl = document.getElementById('query-history');
-                        queryHistoryEl.innerHTML = '';
-
-                        data.queries.forEach(query => {
-                            const accordionItem = document.createElement('div');
-                            accordionItem.className = 'accordion-item';
-                            accordionItem.innerHTML = `
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#query-${query.id}">
-                                        ${query.query_text.substring(0, 50)}${query.query_text.length > 50 ? '...' : ''}
-                                    </button>
-                                </h2>
-                                <div id="query-${query.id}" class="accordion-collapse collapse">
-                                    <div class="accordion-body">
-                                        <p><strong>Query:</strong> ${query.query_text}</p>
-                                        <p><strong>Response:</strong> ${query.response.replace(/\n/g, '<br>')}</p>
-                                        <p class="text-muted small">Asked on ${new Date(query.created_at).toLocaleString()}</p>
-                                    </div>
-                                </div>
-                            `;
-                            queryHistoryEl.appendChild(accordionItem);
-                        });
-                    }
-                })
-                .catch(error => console.error('Error fetching history:', error));
-        }
     }
-
-    // Simple Dashboard chat functionality
-    if (isSimpleDashboard) {
-        const queryForm = document.getElementById('query-form');
-        const queryInput = document.getElementById('query-input');
-        const messagesContainer = document.getElementById('messages-container');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const recentConversationsContainer = document.getElementById('recent-conversations');
-        const fileUploadButton = document.getElementById('file-upload-button');
-        const fileUploadInput = document.getElementById('file-upload-input');
-        const fileUploadStatus = document.getElementById('file-upload-status');
-        
-        // Handle file upload button click
-        if (fileUploadButton && fileUploadInput) {
-            fileUploadButton.addEventListener('click', () => {
-                fileUploadInput.click();
-            });
-            
-            // Handle file selection
-            fileUploadInput.addEventListener('change', (e) => {
-                const files = e.target.files;
-                if (files.length > 0) {
-                    const fileNames = Array.from(files).map(file => file.name).join(', ');
-                    fileUploadStatus.textContent = `Selected: ${fileNames}`;
-                    
-                    // Create FormData object to upload files
-                    const formData = new FormData();
-                    Array.from(files).forEach(file => {
-                        formData.append('document', file);
-                    });
-                    
-                    // Show typing indicator
-                    typingIndicator.style.display = 'block';
-                    
-                    // Upload files to server
-                    fetch('/api/document/upload', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        typingIndicator.style.display = 'none';
-                        if (data.error) {
-                            addMessageToUI('ai', `Error uploading files: ${data.error}`);
-                        } else {
-                            addMessageToUI('user', `Uploaded: ${fileNames}`);
-                            addMessageToUI('ai', `I've received your files: ${fileNames}. How would you like me to help with these documents?`);
-                        }
-                        fileUploadStatus.textContent = '';
-                        fileUploadInput.value = '';
-                    })
-                    .catch(error => {
-                        typingIndicator.style.display = 'none';
-                        addMessageToUI('ai', 'Sorry, there was an error uploading your files.');
-                        fileUploadStatus.textContent = '';
-                        fileUploadInput.value = '';
-                    });
-                }
-            });
-        }
-
-        // Function to format date
-        function formatDate(date) {
-            const now = new Date();
-            const messageDate = new Date(date);
-            
-            if (now.toDateString() === messageDate.toDateString()) {
-                return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            } else {
-                return messageDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-            }
-        }
-
-        // Load and display recent conversations
-        function loadRecentConversations() {
-            if (conversations.length === 0) {
-                recentConversationsContainer.innerHTML = `
-                    <div class="text-center py-3 text-muted">
-                        <small>No recent conversations</small>
-                    </div>
-                `;
-                return;
-            }
-
-            recentConversationsContainer.innerHTML = '';
-            
-            // Sort conversations by last message date
-            const sortedConversations = [...conversations].sort((a, b) => {
-                const aLastDate = a.messages.length > 0 ? new Date(a.messages[a.messages.length - 1].timestamp) : new Date(a.createdAt);
-                const bLastDate = b.messages.length > 0 ? new Date(b.messages[b.messages.length - 1].timestamp) : new Date(b.createdAt);
-                return bLastDate - aLastDate;
-            });
-
-            sortedConversations.forEach(conv => {
-                const lastMessage = conv.messages.length > 0 ? conv.messages[conv.messages.length - 1] : null;
-                const previewTitle = conv.title || 'Conversation';
-                const previewText = lastMessage ? (lastMessage.content.length > 40 ? lastMessage.content.substring(0, 40) + '...' : lastMessage.content) : 'No messages';
-                const timestamp = lastMessage ? formatDate(lastMessage.timestamp) : formatDate(conv.createdAt);
-                
-                const conversationEl = document.createElement('div');
-                conversationEl.className = 'conversation-preview';
-                conversationEl.dataset.id = conv.id;
-                conversationEl.innerHTML = `
-                    <div class="preview-title">${previewTitle}</div>
-                    <div class="preview-snippet">${previewText}</div>
-                    <div class="conversation-time">${timestamp}</div>
-                `;
-                
-                conversationEl.addEventListener('click', () => {
-                    loadConversation(conv.id);
-                });
-                
-                recentConversationsContainer.appendChild(conversationEl);
-            });
-        }
-
-        // Load a conversation by ID
-        function loadConversation(conversationId) {
-            const conversation = conversations.find(c => c.id === conversationId);
-            if (!conversation) return;
-            
-            currentConversationId = conversationId;
-            messagesContainer.innerHTML = '';
-            
-            // Display all messages in the conversation
-            conversation.messages.forEach(message => {
-                const messageEl = document.createElement('div');
-                messageEl.className = `message-bubble ${message.role}`;
-                
-                messageEl.innerHTML = `
-                    <div class="message-content">
-                        ${message.role === 'ai' ? '<div class="ai-response-header">Omi</div>' : ''}
-                        <p>${message.content}</p>
-                    </div>
-                `;
-                
-                messagesContainer.appendChild(messageEl);
-            });
-            
-            // Scroll to bottom of messages
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            // Update active conversation in UI
-            document.querySelectorAll('.conversation-preview').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset.id === conversationId) {
-                    el.classList.add('active');
-                }
-            });
-        }
-
-        // Create a new conversation
-        function createNewConversation(firstMessage, response) {
-            const conversationId = 'conv_' + Date.now();
-            const conversation = {
-                id: conversationId,
-                title: firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : ''),
-                createdAt: new Date().toISOString(),
-                messages: [
-                    {
-                        role: 'user',
-                        content: firstMessage,
-                        timestamp: new Date().toISOString()
-                    },
-                    {
-                        role: 'ai',
-                        content: response,
-                        timestamp: new Date().toISOString()
-                    }
-                ]
-            };
-            
-            conversations.push(conversation);
-            saveConversations();
-            currentConversationId = conversationId;
-            
-            return conversation;
-        }
-
-        // Add message to current conversation
-        function addMessageToConversation(role, content) {
-            if (!currentConversationId) {
-                // If no conversation is active, create one
-                if (role === 'user') {
-                    // We'll add the AI response later
-                    const conversation = {
-                        id: 'conv_' + Date.now(),
-                        title: content.substring(0, 30) + (content.length > 30 ? '...' : ''),
-                        createdAt: new Date().toISOString(),
-                        messages: [
-                            {
-                                role: 'user',
-                                content: content,
-                                timestamp: new Date().toISOString()
-                            }
-                        ]
-                    };
-                    
-                    conversations.push(conversation);
-                    currentConversationId = conversation.id;
-                    saveConversations();
-                }
-                return;
-            }
-            
-            const conversation = conversations.find(c => c.id === currentConversationId);
-            if (!conversation) return;
-            
-            conversation.messages.push({
-                role: role,
-                content: content,
-                timestamp: new Date().toISOString()
-            });
-            
-            saveConversations();
-        }
-
-        // Save conversations to localStorage
-        function saveConversations() {
-            try {
-                localStorage.setItem('conversations', JSON.stringify(conversations));
-            } catch (e) {
-                console.error('Error saving conversations to localStorage:', e);
-            }
-            loadRecentConversations();
-        }
-
-        // Add a message to the UI
-        function addMessageToUI(role, content) {
-            const messageEl = document.createElement('div');
-            messageEl.className = `message-bubble ${role}`;
-            
-            messageEl.innerHTML = `
-                <div class="message-content">
-                    ${role === 'ai' ? '<div class="ai-response-header">Omi</div>' : ''}
-                    <p>${content}</p>
-                </div>
-            `;
-            
-            messagesContainer.appendChild(messageEl);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Initialize
-        loadRecentConversations();
-        
-        // If no conversation is loaded, show the welcome message
-        if (!currentConversationId) {
-            messagesContainer.innerHTML = `
-                <div class="message-bubble ai">
-                    <div class="message-content">
-                        <div class="ai-response-header">Omi</div>
-                        <p>Hello! How can I assist you today?</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        queryForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const query = queryInput.value.trim();
-            if (!query) return;
-
-            // Add user message to UI
-            addMessageToUI('user', query);
-            addMessageToConversation('user', query);
-            
-            // Clear input
-            queryInput.value = '';
-
-            // Show typing indicator
-            typingIndicator.style.display = 'flex';
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Send query to API
-            fetch('/api/query', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ query: query })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Hide typing indicator
-                typingIndicator.style.display = 'none';
-                
-                if (data.error) {
-                    addMessageToUI('ai', 'Error: ' + data.error);
-                    addMessageToConversation('ai', 'Error: ' + data.error);
-                } else {
-                    addMessageToUI('ai', data.ai_response);
-                    addMessageToConversation('ai', data.ai_response);
-                }
-                
-                // Update recent conversations
-                loadRecentConversations();
-            })
-            .catch(error => {
-                typingIndicator.style.display = 'none';
-                addMessageToUI('ai', 'Sorry, there was an error processing your request.');
-                addMessageToConversation('ai', 'Sorry, there was an error processing your request.');
-                console.error('Error:', error);
-            });
-        });
-
-                if (data.error) {
-                    aiResponseContent.textContent = 'Error: ' + data.error;
-                } else {
-                    aiResponseContent.textContent = data.ai_response;
-                }
-
-                // Clear input
-                queryInput.value = '';
-            })
-            .catch(error => {
-                typingIndicator.style.display = 'none';
-                aiResponseContent.style.display = 'block';
-                aiResponseContent.textContent = 'Sorry, there was an error processing your request.';
-                console.error('Error:', error);
-            });
-        });
-    }
-    // Initialize SAM.gov data loading
-    loadSamGovStatus();
-    loadContractAwards();
-
-    if (queryForm) {
-        // Add stop button after the submit button
-        const submitButton = queryForm.querySelector('button[type="submit"]');
-        const stopButton = document.createElement('button');
-        stopButton.type = 'button';
-        stopButton.className = 'btn btn-danger ms-2 d-none';
-        stopButton.innerHTML = '<i class="fas fa-stop"></i> Stop';
-        stopButton.onclick = stopTyping;
-        submitButton.parentNode.insertBefore(stopButton, submitButton.nextSibling);
-
-    }
-
-
-    function stopTyping() {
-        shouldStopTyping = true;
-        const submitBtn = queryForm.querySelector('button[type="submit"]');
-        const stopBtn = queryForm.querySelector('.btn-danger');
-        submitBtn.disabled = false;
-        stopBtn.classList.add('d-none');
-
-        // Clear the current response
-        const responseCard = document.querySelector('.response-card');
-        if (responseCard) {
-            responseCard.querySelector('.typing-cursor').classList.add('d-none');
-        }
-    }
-
     async function displayResponseWithTyping(response) {
         const responseCard = document.querySelector('.response-card');
         const responseContent = responseCard.querySelector('.ai-response');
@@ -692,79 +608,6 @@ document.addEventListener('DOMContentLoaded', function() {
         historyContainer.insertBefore(historyItem, historyContainer.firstChild);
     }
 
-    if (documentUploadForm) {
-        documentUploadForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const fileInput = document.getElementById('documentFile');
-            const submitBtn = this.querySelector('button[type="submit"]');
-
-            if (!fileInput.files.length) {
-                displayError('Please select at least one file to upload');
-                return;
-            }
-
-            try {
-                // Show loading state
-                submitBtn.disabled = true;
-                responseArea.innerHTML = createTypingCard();
-
-                console.log('Uploading documents:', fileInput.files.length, 'files'); // Debug log
-
-                const response = await fetch('/api/document/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Server returned non-JSON response. Please try again.');
-                }
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (parseError) {
-                    console.error('JSON parse error:', parseError);
-                    throw new Error('Failed to parse server response');
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.error || `Server error: ${response.status}`);
-                }
-
-                let statusMessage = '';
-                if (data.uploaded_documents && data.uploaded_documents.length > 0) {
-                    statusMessage = `Successfully processed ${data.uploaded_documents.length} documents:\n`;
-                    data.uploaded_documents.forEach(doc => {
-                        statusMessage += `- ${doc.filename}\n`;
-                    });
-                }
-                if (data.failed_documents && data.failed_documents.length > 0) {
-                    statusMessage += `\nFailed to process ${data.failed_documents.length} documents:\n`;
-                    data.failed_documents.forEach(doc => {
-                        statusMessage += `- ${doc.filename}: ${doc.error}\n`;
-                    });
-                }
-
-                await displayResponseWithTyping(data.ai_response + '\n\n' + statusMessage);
-                updateQueryHistory(
-                    `Document Analysis: ${fileInput.files.length} files`,
-                    data.ai_response + '\n\n' + statusMessage
-                );
-
-                // Reset form
-                documentUploadForm.reset();
-            } catch (error) {
-                console.error('Document upload error:', error);
-                displayError(error.message || 'An unexpected error occurred. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-            }
-        });
-    }
     async function loadSamGovStatus() {
         const statusCard = document.getElementById('samStatusCard');
         const loadingElement = document.getElementById('samStatusLoading');
