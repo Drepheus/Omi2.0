@@ -29,6 +29,26 @@ body {
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
                 url('https://images.unsplash.com/photo-1624472546960-b93c0cc89c0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
     background-size: cover;
+
+/* Override any conflicting button styles */
+.file-upload-section button,
+.file-upload-section input[type="button"],
+.file-upload-section input[type="submit"],
+.file-upload-section .btn,
+button.file-upload {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+}
+
+.file-upload-section button:hover,
+.file-upload-section input[type="button"]:hover,
+.file-upload-section input[type="submit"]:hover,
+.file-upload-section .btn:hover,
+button.file-upload:hover {
+  background-color: #333333 !important;
+}
+
     background-position: center;
 }
 
