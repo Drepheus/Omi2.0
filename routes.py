@@ -388,7 +388,8 @@ def register_routes(app):
                 'queries_today': queries_today,
                 'total_queries': total_queries,
                 'last_active': last_active.isoformat(),
-                'created_at': user.created_at.isoformat()
+                'created_at': user.created_at.isoformat(),
+                'timezone': 'America/Phoenix'  # Adding timezone info
             })
         
         return jsonify({
@@ -419,7 +420,8 @@ def register_routes(app):
                 'id': query.id,
                 'username': username,
                 'query_text': query.query_text,
-                'created_at': query.created_at.isoformat()
+                'created_at': query.created_at.isoformat(),
+                'timezone': 'America/Phoenix'  # Adding timezone info
             })
         
         return jsonify({

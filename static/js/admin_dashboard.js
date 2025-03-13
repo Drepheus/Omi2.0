@@ -1,15 +1,14 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the admin dashboard
     loadUserActivity();
     loadRecentQueries();
-    
+
     // Set up event listeners
     document.getElementById('refresh-btn').addEventListener('click', function() {
         loadUserActivity();
         loadRecentQueries();
     });
-    
+
     document.getElementById('search-btn').addEventListener('click', performSearch);
     document.getElementById('search-input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -56,17 +55,17 @@ function loadRecentQueries() {
 function renderUsersTable(users) {
     const tableBody = document.getElementById('users-table-body');
     tableBody.innerHTML = '';
-    
+
     if (users.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = '<td colspan="8" class="text-center">No users found</td>';
         tableBody.appendChild(row);
         return;
     }
-    
+
     users.forEach(user => {
         const row = document.createElement('tr');
-        
+
         // Calculate time since last active
         const lastActive = new Date(user.last_active);
         const now = new Date();
@@ -74,7 +73,7 @@ function renderUsersTable(users) {
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-        
+
         let lastActiveStr;
         if (diffDays > 0) {
             lastActiveStr = `${diffDays}d ${diffHours}h ago`;
@@ -83,11 +82,11 @@ function renderUsersTable(users) {
         } else {
             lastActiveStr = `${diffMinutes}m ago`;
         }
-        
+
         // Get status color
         const statusClass = user.is_active ? 'text-success' : 'text-danger';
         const statusText = user.is_active ? 'Active' : 'Inactive';
-        
+
         // Get plan badge color
         let planBadgeClass = 'bg-secondary';
         if (user.subscription_type === 'pro') {
@@ -95,7 +94,7 @@ function renderUsersTable(users) {
         } else if (user.subscription_type === 'premium') {
             planBadgeClass = 'bg-warning text-dark';
         }
-        
+
         row.innerHTML = `
             <td>${user.username}</td>
             <td>${user.email}</td>
@@ -110,10 +109,10 @@ function renderUsersTable(users) {
                 </button>
             </td>
         `;
-        
+
         tableBody.appendChild(row);
     });
-    
+
     // Attach event listeners to view details buttons
     document.querySelectorAll('.view-details-btn').forEach(button => {
         button.addEventListener('click', function() {
@@ -126,27 +125,27 @@ function renderUsersTable(users) {
 function renderQueriesTable(queries) {
     const tableBody = document.getElementById('queries-table-body');
     tableBody.innerHTML = '';
-    
+
     if (queries.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = '<td colspan="3" class="text-center">No recent queries</td>';
         tableBody.appendChild(row);
         return;
     }
-    
+
     queries.forEach(query => {
         const row = document.createElement('tr');
-        
+
         // Format time
         const queryTime = new Date(query.created_at);
-        const timeStr = queryTime.toLocaleString();
-        
+        const timeStr = queryTime.toLocaleString('en-US', {timeZone: 'America/Phoenix'});
+
         row.innerHTML = `
             <td>${query.username}</td>
             <td>${query.query_text}</td>
             <td>${timeStr}</td>
         `;
-        
+
         tableBody.appendChild(row);
     });
 }
@@ -154,21 +153,21 @@ function renderQueriesTable(queries) {
 function renderPagination(pagination) {
     const paginationElement = document.getElementById('activity-pagination');
     paginationElement.innerHTML = '';
-    
+
     if (pagination.total_pages <= 1) {
         return;
     }
-    
+
     const nav = document.createElement('nav');
     nav.setAttribute('aria-label', 'User activity pagination');
-    
+
     const ul = document.createElement('ul');
     ul.className = 'pagination';
-    
+
     // Previous button
     const prevLi = document.createElement('li');
     prevLi.className = `page-item ${pagination.current_page === 1 ? 'disabled' : ''}`;
-    
+
     const prevLink = document.createElement('a');
     prevLink.className = 'page-link';
     prevLink.href = '#';
@@ -179,15 +178,15 @@ function renderPagination(pagination) {
             loadUserActivity(pagination.current_page - 1, document.getElementById('search-input').value);
         });
     }
-    
+
     prevLi.appendChild(prevLink);
     ul.appendChild(prevLi);
-    
+
     // Page numbers
     for (let i = 1; i <= pagination.total_pages; i++) {
         const li = document.createElement('li');
         li.className = `page-item ${i === pagination.current_page ? 'active' : ''}`;
-        
+
         const link = document.createElement('a');
         link.className = 'page-link';
         link.href = '#';
@@ -196,15 +195,15 @@ function renderPagination(pagination) {
             e.preventDefault();
             loadUserActivity(i, document.getElementById('search-input').value);
         });
-        
+
         li.appendChild(link);
         ul.appendChild(li);
     }
-    
+
     // Next button
     const nextLi = document.createElement('li');
     nextLi.className = `page-item ${pagination.current_page === pagination.total_pages ? 'disabled' : ''}`;
-    
+
     const nextLink = document.createElement('a');
     nextLink.className = 'page-link';
     nextLink.href = '#';
@@ -215,10 +214,10 @@ function renderPagination(pagination) {
             loadUserActivity(pagination.current_page + 1, document.getElementById('search-input').value);
         });
     }
-    
+
     nextLi.appendChild(nextLink);
     ul.appendChild(nextLi);
-    
+
     nav.appendChild(ul);
     paginationElement.appendChild(nav);
 }
@@ -233,11 +232,11 @@ function showUserDetails(userId) {
         })
         .then(data => {
             const modalBody = document.getElementById('user-detail-content');
-            
+
             // Format registration date
             const registeredDate = new Date(data.user.created_at);
-            const registeredStr = registeredDate.toLocaleDateString();
-            
+            const registeredStr = registeredDate.toLocaleString('en-US', {timeZone: 'America/Phoenix'});
+
             // Create HTML for user details
             let html = `
                 <div class="user-profile mb-4">
@@ -248,7 +247,7 @@ function showUserDetails(userId) {
                     <p><strong>Registered:</strong> ${registeredStr}</p>
                     <p><strong>Total Queries:</strong> ${data.user.total_queries}</p>
                 </div>
-                
+
                 <h5>Recent Activity</h5>
                 <div class="table-responsive">
                     <table class="table table-sm">
@@ -260,14 +259,14 @@ function showUserDetails(userId) {
                         </thead>
                         <tbody>
             `;
-            
+
             if (data.activity.length === 0) {
                 html += '<tr><td colspan="2" class="text-center">No recent activity</td></tr>';
             } else {
                 data.activity.forEach(item => {
                     const activityTime = new Date(item.created_at);
-                    const timeStr = activityTime.toLocaleString();
-                    
+                    const timeStr = activityTime.toLocaleString('en-US', {timeZone: 'America/Phoenix'});
+
                     html += `
                         <tr>
                             <td>${item.query_text}</td>
@@ -276,15 +275,15 @@ function showUserDetails(userId) {
                     `;
                 });
             }
-            
+
             html += `
                         </tbody>
                     </table>
                 </div>
             `;
-            
+
             modalBody.innerHTML = html;
-            
+
             // Show the modal
             const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
             modal.show();
@@ -309,19 +308,19 @@ function showError(message) {
         alertContainer.className = 'position-fixed top-0 start-50 translate-middle-x mt-3';
         document.body.appendChild(alertContainer);
     }
-    
+
     // Create alert
     const alert = document.createElement('div');
     alert.className = 'alert alert-danger alert-dismissible fade show';
     alert.role = 'alert';
-    
+
     alert.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-    
+
     alertContainer.appendChild(alert);
-    
+
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
         const bsAlert = new bootstrap.Alert(alert);
