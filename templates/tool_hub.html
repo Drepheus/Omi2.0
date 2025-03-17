@@ -6,61 +6,108 @@
     <h1 class="text-center mb-4">AI Tool Hub</h1>
     <p class="text-center mb-5">A curated collection of the best AI tools across different categories</p>
     
-    <div class="row">
+    <div class="row" id="toolCategories">
+        {% for category in ['Conversational', 'Productivity', 'Content Creation', 'Image Generation', 'Audio Generation'] %}
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Conversational</h5>
-                    <ul class="list-unstyled">
-                        <li>Coming soon...</li>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">{{ category }}</h5>
+                        {% if session.get('is_admin') %}
+                        <button class="btn btn-sm btn-outline-primary add-tool-btn" data-category="{{ category }}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <ul class="list-unstyled tool-list" id="{{ category|replace(' ', '') }}List">
                     </ul>
                 </div>
             </div>
         </div>
+        {% endfor %}
+    </div>
+</div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Productivity</h5>
-                    <ul class="list-unstyled">
-                        <li>Coming soon...</li>
-                    </ul>
-                </div>
+{% if session.get('is_admin') %}
+<!-- Add Tool Modal -->
+<div class="modal fade" id="addToolModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Tool</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-        </div>
-        
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Content Creation</h5>
-                    <ul class="list-unstyled">
-                        <li>Coming soon...</li>
-                    </ul>
-                </div>
+            <div class="modal-body">
+                <form id="addToolForm">
+                    <input type="hidden" id="toolCategory">
+                    <div class="mb-3">
+                        <label for="toolName" class="form-label">Tool Name</label>
+                        <input type="text" class="form-control" id="toolName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="toolUrl" class="form-label">Tool URL</label>
+                        <input type="url" class="form-control" id="toolUrl" required>
+                    </div>
+                </form>
             </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Image Generation</h5>
-                    <ul class="list-unstyled">
-                        <li>Coming soon...</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Audio Generation</h5>
-                    <ul class="list-unstyled">
-                        <li>Coming soon...</li>
-                    </ul>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveToolBtn">Save Tool</button>
             </div>
         </div>
     </div>
 </div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load tools from localStorage
+    function loadTools() {
+        const categories = ['Conversational', 'Productivity', 'Content Creation', 'Image Generation', 'Audio Generation'];
+        categories.forEach(category => {
+            const tools = JSON.parse(localStorage.getItem(category) || '[]');
+            const list = document.getElementById(category.replace(' ', '') + 'List');
+            list.innerHTML = tools.map(tool => `
+                <li class="mb-2">
+                    <a href="${tool.url}" target="_blank" class="text-decoration-none">
+                        ${tool.name}
+                    </a>
+                </li>
+            `).join('');
+        });
+    }
+
+    {% if session.get('is_admin') %}
+    // Modal handling
+    const addToolModal = new bootstrap.Modal(document.getElementById('addToolModal'));
+    const addToolBtns = document.querySelectorAll('.add-tool-btn');
+    const saveToolBtn = document.getElementById('saveToolBtn');
+
+    addToolBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('toolCategory').value = btn.dataset.category;
+            addToolModal.show();
+        });
+    });
+
+    saveToolBtn.addEventListener('click', () => {
+        const category = document.getElementById('toolCategory').value;
+        const name = document.getElementById('toolName').value;
+        const url = document.getElementById('toolUrl').value;
+
+        if (name && url) {
+            const tools = JSON.parse(localStorage.getItem(category) || '[]');
+            tools.push({ name, url });
+            localStorage.setItem(category, JSON.stringify(tools));
+            loadTools();
+            addToolModal.hide();
+            document.getElementById('addToolForm').reset();
+        }
+    });
+    {% endif %}
+
+    // Initial load
+    loadTools();
+});
+</script>
 {% endblock %}
