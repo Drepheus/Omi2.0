@@ -49,7 +49,35 @@ def register_routes(app):
 
     @app.route('/tool-hub')
     def tool_hub():
-        return render_template('tool_hub.html')
+        tools = AITool.query.all()
+        return render_template('tool_hub.html', tools=tools)
+
+    @app.route('/api/tools', methods=['POST'])
+    @login_required
+    def add_tool():
+        if not session.get('is_admin'):
+            return jsonify({'error': 'Unauthorized'}), 403
+        data = request.json
+        tool = AITool(name=data['name'], url=data['url'], category=data['category'])
+        db.session.add(tool)
+        db.session.commit()
+        return jsonify({'success': True})
+
+    @app.route('/api/tools/<int:tool_id>', methods=['PUT', 'DELETE'])
+    @login_required
+    def manage_tool(tool_id):
+        if not session.get('is_admin'):
+            return jsonify({'error': 'Unauthorized'}), 403
+        tool = AITool.query.get_or_404(tool_id)
+        if request.method == 'DELETE':
+            db.session.delete(tool)
+            db.session.commit()
+            return jsonify({'success': True})
+        data = request.json
+        tool.name = data['name']
+        tool.url = data['url']
+        db.session.commit()
+        return jsonify({'success': True})
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():

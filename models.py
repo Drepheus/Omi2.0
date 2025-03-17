@@ -1,5 +1,11 @@
 from datetime import datetime
 from app import db
+
+class AITool(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 

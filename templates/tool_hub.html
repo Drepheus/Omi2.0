@@ -92,11 +92,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Load tools from localStorage
-    function loadTools() {
+    function displayTools() {
         const categories = ['Conversational', 'Productivity', 'Content Creation', 'Code', 'Image Generation', 'Audio Generation'];
         categories.forEach(category => {
-            const tools = JSON.parse(localStorage.getItem(category) || '[]');
+            const tools = {{ tools|tojson }}.filter(t => t.category === category);
             const list = document.getElementById(category.replace(' ', '') + 'List');
             list.innerHTML = tools.map(tool => `
                 <li class="mb-2">
