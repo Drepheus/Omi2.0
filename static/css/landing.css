@@ -88,6 +88,25 @@
   border-color: #cccccc;
 }
 
+.tool-hub-link {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.ai-tool-hub {
+  color: #ffffff;
+  font-size: 1.2rem;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.ai-tool-hub:hover {
+  opacity: 1;
+  color: #cccccc;
+  text-decoration: none;
+}
+
 .corner-text {
   position: absolute;
   bottom: 20px;
