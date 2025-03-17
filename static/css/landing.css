@@ -9,19 +9,17 @@
   padding: 0;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(45deg, #000000, #1a1a1a); /* Fallback for mobile */
 }
 
 .background-video {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 49.5%;
+  width: 200%;
+  height: 400%;
+  transform: translate(-50%, -50%);
   z-index: -1;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .logo-container {
