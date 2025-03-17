@@ -1,17 +1,28 @@
 /* Landing Page Styles - Black and White Theme */
 .landing-container {
   min-height: 100vh;
-  height: 100vh; /* Fixed height */
-  background-color: #1f1f1f;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  padding: 0; /* Reduced padding */
+  justify-content: center;
+  align-items: center;
+  padding: 0;
   position: relative;
-  background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 20%),
-                    radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.03) 0%, transparent 30%);
   overflow: hidden;
+  background-color: rgba(31, 31, 31, 0.5);
+}
+
+.background-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  object-fit: cover;
 }
 
 .logo-container {
