@@ -10,7 +10,7 @@ import os
 logger = logging.getLogger(__name__)
 
 def register_routes(app):
-    from models import User, Query, Document
+    from models import User, Query, Document, AITool
 
     @app.route('/')
     def index():
