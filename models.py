@@ -1,13 +1,21 @@
 from datetime import datetime
 from app import db
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class AITool(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(500), nullable=False)
     category = db.Column(db.String(50), nullable=False)
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'url': self.url,
+            'category': self.category
+        }
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,12 +28,12 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     queries = db.relationship('Query', backref='user', lazy=True)
     documents = db.relationship('Document', backref='user', lazy=True)
-    
+
     # Free tier rate limiting
     query_count = db.Column(db.Integer, default=0)
     last_query_reset = db.Column(db.DateTime, default=datetime.utcnow)
     subscription_type = db.Column(db.String(20), default="free")  # free, pro, premium
-    
+
     # Activity tracking
     total_logins = db.Column(db.Integer, default=0)
     last_active = db.Column(db.DateTime, default=datetime.utcnow)
