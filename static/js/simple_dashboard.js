@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 typingIndicator.style.display = 'none';
                 
                 // Add AI response to chat
-                appendMessage('ai', data.response);
+                appendMessage('ai', data.ai_response);
                 
                 // Refresh recent conversations
                 loadRecentConversations();
