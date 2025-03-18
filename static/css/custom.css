@@ -724,6 +724,37 @@ button.file-upload:hover {
 }
 
 .message-bubble.ai .message-content .formatted-content strong {
+  font-weight: 700 !important;
+  color: #ffffff;
+}
+
+.message-bubble.ai .message-content .formatted-content em {
+  font-style: italic !important;
+  color: #e2e2e2;
+}
+
+.message-bubble.ai .message-content .formatted-content code {
+  font-family: monospace !important;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.message-bubble.ai .message-content .formatted-content pre {
+  background: rgba(0, 0, 0, 0.3) !important;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.message-bubble.ai .message-content .formatted-content {
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-size: 1.05rem;
+  color: #f0f0f0;
+}
+
+.message-bubble.ai .message-content .formatted-content strong {
   font-weight: 700;
   color: #ffffff;
 }
