@@ -768,21 +768,24 @@ button.file-upload:hover {
   line-height: 1.8;
   font-size: 1.05rem;
   color: #f0f0f0;
+  white-space: normal;
 }
 
 .message-bubble.ai .message-content .formatted-content ol,
 .message-bubble.ai .message-content .formatted-content ul {
   margin: 1rem 0;
   padding-left: 2rem;
+  list-style-position: outside;
 }
 
 .message-bubble.ai .message-content .formatted-content li {
   margin-bottom: 0.5rem;
+  display: list-item;
 }
 
 .message-bubble.ai .message-content .formatted-content p {
-  margin: 1rem 0;
-  white-space: normal;
+  margin: 0.5rem 0;
+  display: block;
 }
 
 .message-bubble.ai .message-content .formatted-content strong {
