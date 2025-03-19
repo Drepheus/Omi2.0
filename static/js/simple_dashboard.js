@@ -29,23 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type === 'ai') {
                 const formattedDiv = messageDiv.querySelector('.formatted-content');
                 typingIndicator.style.display = 'none';
-                
-                // Set the full content immediately but make it invisible
-                formattedDiv.innerHTML = formattedContent;
-                const textLength = formattedDiv.textContent.length;
-                const textContent = formattedDiv.textContent;
-                
-                // Clear the content to start typing
-                formattedDiv.innerHTML = '';
                 let i = 0;
                 
                 const typeText = () => {
-                    if (i < textLength) {
-                        const currentText = textContent.substring(0, i + 1);
-                        formattedDiv.innerHTML = formattedContent.replace(textContent, currentText);
+                    if (i < formattedContent.length) {
+                        formattedDiv.innerHTML = formattedContent.substring(0, i + 1);
                         i++;
                         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                        setTimeout(typeText, 10);
+                        setTimeout(typeText, 20);
                     }
                 };
                 
