@@ -22,9 +22,26 @@ document.addEventListener('DOMContentLoaded', function() {
             messageDiv.innerHTML = `
                 <div class="message-content">
                     <div class="ai-response-header">Omi</div>
-                    <div class="formatted-content">${formattedContent}</div>
+                    <div class="formatted-content"></div>
                 </div>
             `;
+            
+            if (type === 'ai') {
+                const formattedDiv = messageDiv.querySelector('.formatted-content');
+                let i = 0;
+                typingIndicator.style.display = 'none';
+                
+                const typeText = () => {
+                    if (i < formattedContent.length) {
+                        formattedDiv.innerHTML += formattedContent.charAt(i);
+                        i++;
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        setTimeout(typeText, 10);
+                    }
+                };
+                
+                typeText();
+            }
         }
 
         messagesContainer.appendChild(messageDiv);
