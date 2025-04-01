@@ -20,27 +20,6 @@
   transform: translate(-50%, -50%);
   z-index: -1;
   object-fit: contain;
-  /* Hide video controls */
-  outline: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Hide native video controls in all browsers */
-video::-webkit-media-controls,
-video::-webkit-media-controls-overlay-play-button,
-video::-webkit-media-controls-play-button,
-video::-webkit-media-controls-timeline,
-video::-webkit-media-controls-current-time-display,
-video::-webkit-media-controls-time-remaining-display,
-video::-webkit-media-controls-time-remaining-display,
-video::-webkit-media-controls-mute-button,
-video::-webkit-media-controls-toggle-closed-captions-button,
-video::-webkit-media-controls-volume-slider,
-video::-webkit-media-controls-fullscreen-button {
-  display: none !important;
 }
 
 .logo-container {
@@ -48,8 +27,28 @@ video::-webkit-media-controls-fullscreen-button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 5vh;
+  margin-top: 5vh; /* Reduced top margin for less whitespace */
   position: relative;
+}
+
+.logo-pulse {
+  width: 120px; /* Increased size */
+  height: 120px;
+  border-radius: 50%;
+  background: none;
+  border: 4px solid #888888;
+  animation: pulse 2s infinite ease-in-out;
+  position: relative;
+}
+
+.logo-pulse::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  opacity: 0.6;
 }
 
 .logo-text {
