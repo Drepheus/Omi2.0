@@ -19,6 +19,13 @@
   height: 100%;
   object-fit: cover;
   z-index: -1;
+  pointer-events: none;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .logo-container {
