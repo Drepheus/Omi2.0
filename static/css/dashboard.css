@@ -1,7 +1,7 @@
-
 /* Main Dashboard Styles */
 .dashboard-container {
     padding: 20px;
+    position: relative; /* Added to allow absolute positioning of account status card */
 }
 
 .dashboard-card {
@@ -81,4 +81,23 @@
     color: #6c757d;
     margin-top: 20px;
     text-align: right;
+}
+
+.account-status-card {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: auto;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.premium-badge-sm {
+    background: linear-gradient(135deg, var(--gov-blue), #60a5fa);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }

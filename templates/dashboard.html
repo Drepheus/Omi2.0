@@ -79,22 +79,23 @@
 
         <!-- Right Column -->
         <div class="col-md-4">
-            <!-- Account Status Card -->
-            <div class="card dashboard-card mb-4">
-                <div class="card-body">
-                    <h4 class="card-title">Account Status</h4>
-                    {% if current_user.is_premium %}
-                        <div class="premium-badge mb-3">Premium Account</div>
-                        <p class="text-muted">Unlimited AI queries and full SAM.gov access</p>
-                    {% else %}
-                        <p class="text-muted mb-3">Free Account</p>
-                        <p class="text-muted">5 queries remaining</p>
-                        <a href="{{ url_for('payment') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-crown me-2"></i>Upgrade to Premium
-                        </a>
-                    {% endif %}
+                <!-- Account Status Card -->
+                <div class="card dashboard-card mb-4 account-status-card">
+                    <div class="card-body p-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                {% if current_user.is_premium %}
+                                    <span class="premium-badge-sm">Premium</span>
+                                {% else %}
+                                    <small class="text-muted">Free (5 queries left)</small>
+                                    <a href="{{ url_for('payment') }}" class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="fas fa-crown"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             <!-- SAM.gov Integration Status Card -->
             <div class="card dashboard-card mb-4" id="samStatusCard">
