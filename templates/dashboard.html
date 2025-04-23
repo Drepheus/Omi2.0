@@ -49,22 +49,30 @@
 
             <!-- Document Upload Card -->
             <div class="card dashboard-card mb-4">
-                <div class="card-body">
-                    <h3 class="card-title mb-4">
-                        <i class="fas fa-file-upload me-2"></i>Document Analysis
-                    </h3>
-                    <form id="documentUploadForm" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="documentFile" class="form-label">Upload documents for analysis (PDF, DOC, DOCX, or TXT)</label>
-                            <input type="file" class="form-control" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required multiple>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="card-title m-0">
+                            <i class="fas fa-file-upload me-2"></i>Document Analysis
+                        </h3>
+                        <span class="badge bg-primary">AI-Powered</span>
+                    </div>
+                    <form id="documentUploadForm" enctype="multipart/form-data" class="document-analysis-form">
+                        <div class="upload-section mb-4">
+                            <label for="documentFile" class="form-label text-muted small mb-2">SUPPORTED FORMATS: PDF, DOC, DOCX, TXT</label>
+                            <div class="upload-zone">
+                                <input type="file" class="form-control" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required multiple>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="documentQuery" class="form-label">What would you like to know about these documents?</label>
-                            <textarea class="form-control" id="documentQuery" name="query" rows="2" placeholder="e.g., Summarize the key points of these contracts"></textarea>
+                        <div class="analysis-query mb-4">
+                            <label for="documentQuery" class="form-label text-muted small mb-2">ANALYSIS QUERY</label>
+                            <textarea class="form-control" id="documentQuery" name="query" rows="2" 
+                                placeholder="What insights would you like to extract from these documents?"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-robot me-2"></i>Analyze Documents
-                        </button>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-robot me-2"></i>Analyze
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

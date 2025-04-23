@@ -25,6 +25,47 @@
     border-left: 3px solid #0066cc;
 }
 
+/* Document Analysis Styling */
+.document-analysis-form {
+    max-width: 100%;
+}
+
+.upload-zone {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: var(--gov-blue);
+    background-color: rgba(0, 102, 204, 0.02);
+}
+
+.upload-zone .form-control {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+.analysis-query textarea {
+    border-radius: 8px;
+    resize: none;
+    font-size: 0.95rem;
+}
+
+.analysis-query textarea:focus {
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.document-analysis-form .badge {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
 .award-card {
     border-left: 3px solid #28a745;
 }
