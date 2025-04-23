@@ -9,7 +9,7 @@ deploymentTarget = "autoscale"
 run = ["sh", "-c", "python main.py"]
 
 [workflows]
-runButton = "Project"
+runButton = "Flask Dev Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -34,6 +34,15 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "python main.py"
 waitForPort = 8080
+
+[[workflows.workflow]]
+name = "Flask Dev Server"
+author = 11463564
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
 
 [[ports]]
 localPort = 3000
