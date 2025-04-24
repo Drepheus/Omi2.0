@@ -153,6 +153,11 @@ button.file-upload:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Light theme card styling */
+html.light-theme .dashboard-card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .dashboard-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -312,11 +317,19 @@ button.file-upload:hover {
     filter: invert(1);
 }
 
+html.light-theme .query-history .accordion-button::after {
+    filter: none;
+}
+
 .query-history .accordion-item {
     background: var(--card-bg);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     margin-bottom: 0.5rem;
+}
+
+html.light-theme .query-history .accordion-item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .query-history .accordion-body {
@@ -522,9 +535,19 @@ button.file-upload:hover {
     cursor: text !important;
 }
 
+/* Light theme form controls */
+html.light-theme .form-control {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Additional form control styles to ensure input field works properly */
 .form-control:not([readonly]):not(:disabled) {
     background-color: var(--dark-bg);
+}
+
+html.light-theme .form-control:not([readonly]):not(:disabled) {
+    background-color: #ffffff;
 }
 
 .form-control:focus {
@@ -537,12 +560,23 @@ button.file-upload:hover {
     -webkit-user-select: auto !important;
 }
 
+html.light-theme .form-control:focus {
+    background-color: #ffffff;
+    border-color: var(--gov-blue);
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
 /* Remove disabled attributes from form controls */
 .form-control:disabled, 
 .form-control[readonly] {
     background-color: var(--dark-bg);
     opacity: 1 !important;
     pointer-events: auto !important;
+}
+
+html.light-theme .form-control:disabled,
+html.light-theme .form-control[readonly] {
+    background-color: #f5f5f5;
 }
 
 #query-input {

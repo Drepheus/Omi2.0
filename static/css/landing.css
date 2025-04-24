@@ -80,6 +80,19 @@ html.light-theme .logo-text {
   border-color: #cccccc;
 }
 
+/* Light theme for buttons */
+html.light-theme .btn-use-omi {
+  color: #ffffff;
+  background-color: #1976D2;
+  border: 2px solid #64B5F6;
+  box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
+}
+
+html.light-theme .btn-use-omi:hover {
+  box-shadow: 0 8px 16px rgba(25, 118, 210, 0.4);
+  border-color: #42A5F5;
+}
+
 .tool-hub-link {
   margin-top: 15px;
   text-align: center;
@@ -97,6 +110,15 @@ html.light-theme .logo-text {
   opacity: 1;
   color: #cccccc;
   text-decoration: none;
+}
+
+/* Light theme for text links */
+html.light-theme .ai-tool-hub {
+  color: #1976D2;
+}
+
+html.light-theme .ai-tool-hub:hover {
+  color: #42A5F5;
 }
 
 .corner-text {
