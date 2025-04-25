@@ -143,3 +143,37 @@
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
+
+.upload-zone input[type="file"] {
+    border-radius: 8px;
+}
+
+/* Style the file input button */
+.upload-zone input[type="file"]::-webkit-file-upload-button {
+    background: linear-gradient(135deg, #000000, #444444);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone input[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #000000, #444444);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone input[type="file"]::-webkit-file-upload-button:hover,
+.upload-zone input[type="file"]::file-selector-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #222222, #555555);
+}
