@@ -12,9 +12,6 @@ function initializeGovConDashboard() {
     const samSearchForm = document.getElementById('samSearchForm');
     const searchResults = document.getElementById('searchResults');
 
-    // Initialize SAM.gov status card
-    loadSamStatus();
-
     // Initialize recent awards
     loadRecentAwards();
 
