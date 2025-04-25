@@ -266,60 +266,29 @@ function initializeGovConDashboard() {
 }
 
 function loadSamStatus() {
-    const samStatusLoading = document.getElementById('samStatusLoading');
-    const samStatusContent = document.getElementById('samStatusContent');
-    const samDataContent = document.getElementById('samDataContent');
-    const samLastUpdate = document.getElementById('samLastUpdate');
-
-    if (!samStatusLoading || !samStatusContent || !samDataContent) return;
+    const samStatusBadge = document.getElementById('samStatusBadge');
+    
+    if (!samStatusBadge) return;
+    
+    // Show loading indicator
+    samStatusBadge.innerHTML = `
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    `;
 
     fetch('/api/sam/status')
         .then(response => response.json())
         .then(data => {
-            samStatusLoading.classList.add('d-none');
-            samStatusContent.classList.remove('d-none');
-
-            if (data.status === 'success' && data.entities && data.entities.length > 0) {
-                let entitiesHtml = '<h6 class="mb-3">Registered Entities</h6><div class="sam-entities">';
-
-                data.entities.forEach(entity => {
-                    entitiesHtml += `
-                        <div class="sam-entity mb-2">
-                            <div class="d-flex justify-content-between">
-                                <span><strong>${entity.entity_name}</strong></span>
-                                <span class="badge bg-success">Active</span>
-                            </div>
-                            <small class="text-muted">DUNS: ${entity.duns}</small>
-                        </div>
-                    `;
-                });
-
-                entitiesHtml += '</div>';
-                samDataContent.innerHTML = entitiesHtml;
-
-                if (samLastUpdate) {
-                    samLastUpdate.textContent = new Date().toLocaleString();
-                }
+            if (data.status === 'success') {
+                samStatusBadge.innerHTML = `<span class="badge bg-success">Connected</span>`;
             } else {
-                samDataContent.innerHTML = `
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <span class="text-dark fw-bold">No entity data available.</span>
-                    </div>
-                `;
+                samStatusBadge.innerHTML = `<span class="badge bg-danger">Not Connected</span>`;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            samStatusLoading.classList.add('d-none');
-            samStatusContent.classList.remove('d-none');
-
-            samDataContent.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    Failed to load SAM.gov data. Please try again later.
-                </div>
-            `;
+            samStatusBadge.innerHTML = `<span class="badge bg-danger">Not Connected</span>`;
         });
 }
 
