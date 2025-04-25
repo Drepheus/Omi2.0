@@ -228,6 +228,9 @@ function initializeGovConDashboard() {
                 if (result.success) {
                     alert('Document uploaded successfully!');
                     this.reset();
+                    document.getElementById('file-display').textContent = 'No file chosen';
+                    document.getElementById('file-display').classList.add('text-muted');
+                    document.getElementById('file-display').classList.remove('text-primary');
                 } else {
                     alert(result.error || 'Failed to upload document');
                 }
@@ -236,6 +239,27 @@ function initializeGovConDashboard() {
                 alert('Error uploading document. Please try again.');
             } finally {
                 loadingSpinner.classList.add('d-none');
+            }
+        });
+    }
+    
+    // Handle file input change for custom file button
+    const documentFileInput = document.getElementById('documentFile');
+    if (documentFileInput) {
+        documentFileInput.addEventListener('change', function() {
+            const fileDisplay = document.getElementById('file-display');
+            if (this.files.length > 0) {
+                if (this.files.length === 1) {
+                    fileDisplay.textContent = this.files[0].name;
+                } else {
+                    fileDisplay.textContent = `${this.files.length} files selected`;
+                }
+                fileDisplay.classList.remove('text-muted');
+                fileDisplay.classList.add('text-primary');
+            } else {
+                fileDisplay.textContent = 'No file chosen';
+                fileDisplay.classList.add('text-muted');
+                fileDisplay.classList.remove('text-primary');
             }
         });
     }

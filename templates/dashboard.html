@@ -60,7 +60,11 @@
                         <div class="upload-section mb-4">
                             <label for="documentFile" class="form-label text-muted small mb-2">SUPPORTED FORMATS: PDF, DOC, DOCX, TXT</label>
                             <div class="upload-zone">
-                                <input type="file" class="form-control custom-file-button" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required multiple>
+                                <input type="file" class="form-control d-none" id="documentFile" name="document" accept=".pdf,.doc,.docx,.txt" required multiple>
+                                <button type="button" class="btn btn-primary upload-trigger" onclick="document.getElementById('documentFile').click()">
+                                    <i class="fas fa-upload me-2"></i>Choose Files
+                                </button>
+                                <span id="file-display" class="ms-3 small text-muted">No file chosen</span>
                             </div>
                         </div>
                         <div class="analysis-query mb-4">
