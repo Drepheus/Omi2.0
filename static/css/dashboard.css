@@ -50,21 +50,21 @@
 }
 
 .upload-zone input[type="file"] {
-    border-radius: 20px;
+    border-radius: 30px;
 }
 
 /* Style the file input button */
 .upload-zone input[type="file"]::-webkit-file-upload-button {
-    border-radius: 20px;
-    padding: 8px 16px;
+    border-radius: 30px;
+    padding: 8px 20px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: #fff;
     transition: all 0.3s ease;
 }
 
 .upload-zone input[type="file"]::file-selector-button {
-    border-radius: 20px;
-    padding: 8px 16px;
+    border-radius: 30px;
+    padding: 8px 20px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: #fff;
     transition: all 0.3s ease;
