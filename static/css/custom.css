@@ -31,6 +31,9 @@ html.light-theme {
     --card-hover: var(--light-card-hover);
     --text-primary: var(--light-text-primary);
     --text-secondary: var(--light-text-secondary);
+    --bs-dark-text-emphasis: var(--light-text-primary);
+    --bs-body-bg: var(--light-bg);
+    --bs-body-color: var(--light-text-primary);
 }
 
 html.light-theme body {
@@ -208,9 +211,18 @@ html.light-theme .dashboard-card {
     color: var(--text-primary) !important;
 }
 
+html.light-theme .gov-dashboard .query-history .accordion-button {
+    background: var(--light-card-bg) !important;
+    color: var(--light-text-primary) !important;
+}
+
 .gov-dashboard .query-history .accordion-button:not(.collapsed) {
     background: var(--card-hover) !important;
     box-shadow: none;
+}
+
+html.light-theme .gov-dashboard .query-history .accordion-button:not(.collapsed) {
+    background: var(--light-card-hover) !important;
 }
 
 /* Simple Dashboard specific styles */
@@ -278,6 +290,11 @@ html.light-theme .dashboard-card {
     color: rgba(255, 255, 255, 0.6);
 }
 
+html.light-theme #query-input::placeholder,
+html.light-theme #queryInput::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
 #query-input:focus::placeholder,
 #queryInput:focus::placeholder {
     opacity: 0.3;
@@ -339,6 +356,7 @@ html.light-theme .query-history .accordion-button::after {
 }
 
 html.light-theme .query-history .accordion-item {
+    background: var(--light-card-bg);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -346,6 +364,11 @@ html.light-theme .query-history .accordion-item {
     padding: 1rem;
     background: var(--card-bg);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html.light-theme .query-history .accordion-body {
+    background: var(--light-card-bg);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .query-details p {
