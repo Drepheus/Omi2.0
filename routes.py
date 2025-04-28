@@ -424,19 +424,19 @@ def register_routes(app):
     @app.route('/admin')
     @login_required
     def admin_dashboard():
-        # Check if user is admin (for this example, we'll just check if user.id is 1)
-        if current_user.id != 1:  # You should replace this with a proper admin check
-            flash('Unauthorized access')
-            return redirect(url_for('index'))
+        # Check if user has admin email (andregreengp@gmail.com)
+        if current_user.email != 'andregreengp@gmail.com':
+            flash('Unauthorized access. This area is restricted to administrators.')
+            return redirect(url_for('dashboard'))
         return render_template('admin_dashboard.html')
 
     # Admin API endpoints
     @app.route('/api/admin/users')
     @login_required
     def admin_users():
-        # Check if user is admin
-        if current_user.id != 1:  # You should replace this with a proper admin check
-            return jsonify(error="Unauthorized"), 403
+        # Check if user has admin email (andregreengp@gmail.com)
+        if current_user.email != 'andregreengp@gmail.com':
+            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
 
         page = request.args.get('page', 1, type=int)
         search = request.args.get('search', '')
@@ -496,9 +496,9 @@ def register_routes(app):
     @app.route('/api/admin/recent-queries')
     @login_required
     def admin_recent_queries():
-        # Check if user is admin
-        if current_user.id != 1:  # You should replace this with a proper admin check
-            return jsonify(error="Unauthorized"), 403
+        # Check if user has admin email (andregreengp@gmail.com)
+        if current_user.email != 'andregreengp@gmail.com':
+            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
 
         # Get the 20 most recent queries across all users
         recent_queries = db.session.query(Query, User.username).\
@@ -522,9 +522,9 @@ def register_routes(app):
     @app.route('/api/admin/user/<int:user_id>/details')
     @login_required
     def admin_user_details(user_id):
-        # Check if user is admin
-        if current_user.id != 1:  # You should replace this with a proper admin check
-            return jsonify(error="Unauthorized"), 403
+        # Check if user has admin email (andregreengp@gmail.com)
+        if current_user.email != 'andregreengp@gmail.com':
+            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
 
         # Get user
         user = User.query.get_or_404(user_id)
