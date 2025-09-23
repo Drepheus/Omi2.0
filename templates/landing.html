@@ -2,10 +2,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='js/index-QOld6qMM.css') }}">
 <div class="landing-container">
-  <video autoplay muted loop playsinline id="bgVideo" class="background-video">
-    <source src="{{ url_for('static', filename='videos/14618955-uhd_2160_3840_24fps.mp4') }}" type="video/mp4">
-  </video>
+  <div id="liquid-chrome-background"></div>
   <div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
     <!-- Logo Container -->
     <div class="logo-container">
@@ -25,4 +24,5 @@
     <a href="{{ url_for('dashboard') }}">Government Contractors -> </a>
   </div>
 </div>
+<script type="module" src="{{ url_for('static', filename='js/index-wOUy7CKZ.js') }}"></script>
 {% endblock %}
