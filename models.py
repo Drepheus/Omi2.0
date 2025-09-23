@@ -43,10 +43,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-        
-    def is_admin_user(self):
-        """Check if the user has admin privileges based on the email"""
-        return self.email == 'andregreengp@gmail.com'
 
 class Query(db.Model):
     id = db.Column(db.Integer, primary_key=True)

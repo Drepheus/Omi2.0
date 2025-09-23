@@ -1,7 +1,7 @@
+
 /* Main Dashboard Styles */
 .dashboard-container {
     padding: 20px;
-    position: relative; /* Added to allow absolute positioning of account status card */
 }
 
 .dashboard-card {
@@ -14,56 +14,14 @@
 /* SAM.gov Data Styling */
 .sam-data-section {
     background-color: #f8f9fa;
-    border-left: 3px solid #0066cc;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 0 4px 4px 0;
-    font-size: 0.9rem;
+    border-left: 4px solid #0066cc;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 0 8px 8px 0;
 }
 
 .sam-data-card {
     border-left: 3px solid #0066cc;
-}
-
-/* Document Analysis Styling */
-.document-analysis-form {
-    max-width: 100%;
-}
-
-.upload-zone {
-    background-color: rgba(0, 0, 0, 0.02);
-    border: 2px dashed rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 1rem;
-    transition: all 0.3s ease;
-}
-
-.upload-zone:hover {
-    border-color: var(--gov-blue);
-    background-color: rgba(0, 102, 204, 0.02);
-}
-
-.upload-zone .form-control {
-    border: none;
-    background: transparent;
-    padding: 0;
-}
-
-.analysis-query textarea {
-    border-radius: 8px;
-    resize: none;
-    font-size: 0.95rem;
-}
-
-.analysis-query textarea:focus {
-    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
-}
-
-.document-analysis-form .badge {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-    letter-spacing: 0.5px;
 }
 
 .award-card {
@@ -123,41 +81,4 @@
     color: #6c757d;
     margin-top: 20px;
     text-align: right;
-}
-
-.account-status-card {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    width: auto;
-    min-width: 150px;
-    z-index: 1000;
-}
-
-.premium-badge-sm {
-    background: linear-gradient(135deg, var(--gov-blue), #60a5fa);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.upload-zone input[type="file"]::-webkit-file-upload-button,
-.upload-zone input[type="file"]::file-selector-button {
-    background: var(--gov-blue) !important;
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 25px !important;
-    padding: 12px 24px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-}
-
-.upload-zone input[type="file"]::-webkit-file-upload-button:hover,
-.upload-zone input[type="file"]::file-selector-button:hover {
-    opacity: 0.9 !important;
-    transform: translateY(-1px) !important;
 }

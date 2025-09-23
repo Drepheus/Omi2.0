@@ -2,7 +2,6 @@ modules = ["python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["file"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -34,15 +33,6 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "python main.py"
 waitForPort = 8080
-
-[[workflows.workflow]]
-name = "Flask Dev Server"
-author = 11463564
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
 
 [[ports]]
 localPort = 3000

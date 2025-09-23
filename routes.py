@@ -14,7 +14,7 @@ def register_routes(app):
 
     @app.route('/')
     def index():
-        return redirect(url_for('login'))
+        return render_template('landing.html')
 
     @app.route('/home')
     def home():
@@ -40,10 +40,10 @@ def register_routes(app):
                 # Set admin status in session
                 session['is_admin'] = user.is_admin
                 next_page = request.args.get('next')
-                if next_page and next_page != url_for('index'):
+                if next_page:
                     return redirect(next_page)
                 else:
-                    return redirect(url_for('dashboard'))
+                    return redirect(url_for('simple_dashboard'))
             flash('Invalid email or password')
         return render_template('login.html')
 
@@ -97,7 +97,7 @@ def register_routes(app):
             db.session.add(user)
             db.session.commit()
             login_user(user)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('simple_dashboard'))
         return render_template('register.html')
 
     @app.route('/logout')
@@ -308,10 +308,9 @@ def register_routes(app):
             from services.web_service import get_sam_solicitations
             solicitations = get_sam_solicitations(query_text)
 
-            # Format for display
-            formatted_results = []
-            
             if solicitations:
+                # Format for display
+                formatted_results = []
                 for sol in solicitations:
                     formatted_results.append({
                         'title': sol.get('title', 'N/A'),
@@ -321,69 +320,17 @@ def register_routes(app):
                         'due_date': sol.get('due_date', 'N/A'),
                         'url': sol.get('url', '#')
                     })
-            
-            # If no results found, provide sample data related to the query
-            if not formatted_results:
-                # Create relevant sample results based on query terms
-                logger.info(f"No SAM.gov results found for '{query_text}', providing sample data")
-                
-                sample_data = []
-                
-                # Create sample data related to common government contract areas
-                if any(term in query_text.lower() for term in ['it', 'software', 'tech', 'computer']):
-                    sample_data.append({
-                        'title': 'IT Services and Solutions',
-                        'agency': 'General Services Administration',
-                        'solicitation_number': 'GSA-IT-2025-01',
-                        'posted_date': datetime.now().strftime("%Y-%m-%d"),
-                        'due_date': (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
-                        'url': 'https://sam.gov/'
-                    })
-                    
-                if any(term in query_text.lower() for term in ['construction', 'build', 'facility']):
-                    sample_data.append({
-                        'title': 'Facility Construction and Renovation Services',
-                        'agency': 'Department of Defense',
-                        'solicitation_number': 'DOD-CONST-2025-03',
-                        'posted_date': datetime.now().strftime("%Y-%m-%d"),
-                        'due_date': (datetime.now() + timedelta(days=45)).strftime("%Y-%m-%d"),
-                        'url': 'https://sam.gov/'
-                    })
-                    
-                if any(term in query_text.lower() for term in ['consult', 'service', 'advisor']):
-                    sample_data.append({
-                        'title': 'Professional Consulting Services',
-                        'agency': 'Department of Health and Human Services',
-                        'solicitation_number': 'HHS-CONSULT-2025-02',
-                        'posted_date': datetime.now().strftime("%Y-%m-%d"),
-                        'due_date': (datetime.now() + timedelta(days=21)).strftime("%Y-%m-%d"),
-                        'url': 'https://sam.gov/'
-                    })
-                
-                # Always include at least one generic result if no specific matches
-                if not sample_data:
-                    sample_data.append({
-                        'title': f"Government Contracting Opportunity: {query_text}",
-                        'agency': 'Multiple Agencies',
-                        'solicitation_number': 'GOV-2025-' + query_text[:5].upper(),
-                        'posted_date': datetime.now().strftime("%Y-%m-%d"),
-                        'due_date': (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
-                        'url': 'https://sam.gov/'
-                    })
-                
-                formatted_results = sample_data
-                
-                return jsonify({
-                    'status': 'success',
-                    'results': formatted_results,
-                    'count': len(formatted_results),
-                    'note': 'These are sample results to demonstrate the interface. For actual solicitations, please ensure your SAM.gov API connection is properly configured.'
-                })
-            else:
+
                 return jsonify({
                     'status': 'success',
                     'results': formatted_results,
                     'count': len(formatted_results)
+                })
+            else:
+                return jsonify({
+                    'status': 'warning',
+                    'message': 'No solicitations found matching your criteria',
+                    'results': []
                 })
 
         except Exception as e:
@@ -424,19 +371,19 @@ def register_routes(app):
     @app.route('/admin')
     @login_required
     def admin_dashboard():
-        # Check if user has admin email (andregreengp@gmail.com)
-        if current_user.email != 'andregreengp@gmail.com':
-            flash('Unauthorized access. This area is restricted to administrators.')
-            return redirect(url_for('dashboard'))
+        # Check if user is admin (for this example, we'll just check if user.id is 1)
+        if current_user.id != 1:  # You should replace this with a proper admin check
+            flash('Unauthorized access')
+            return redirect(url_for('index'))
         return render_template('admin_dashboard.html')
 
     # Admin API endpoints
     @app.route('/api/admin/users')
     @login_required
     def admin_users():
-        # Check if user has admin email (andregreengp@gmail.com)
-        if current_user.email != 'andregreengp@gmail.com':
-            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
+        # Check if user is admin
+        if current_user.id != 1:  # You should replace this with a proper admin check
+            return jsonify(error="Unauthorized"), 403
 
         page = request.args.get('page', 1, type=int)
         search = request.args.get('search', '')
@@ -496,9 +443,9 @@ def register_routes(app):
     @app.route('/api/admin/recent-queries')
     @login_required
     def admin_recent_queries():
-        # Check if user has admin email (andregreengp@gmail.com)
-        if current_user.email != 'andregreengp@gmail.com':
-            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
+        # Check if user is admin
+        if current_user.id != 1:  # You should replace this with a proper admin check
+            return jsonify(error="Unauthorized"), 403
 
         # Get the 20 most recent queries across all users
         recent_queries = db.session.query(Query, User.username).\
@@ -522,9 +469,9 @@ def register_routes(app):
     @app.route('/api/admin/user/<int:user_id>/details')
     @login_required
     def admin_user_details(user_id):
-        # Check if user has admin email (andregreengp@gmail.com)
-        if current_user.email != 'andregreengp@gmail.com':
-            return jsonify(error="Unauthorized access. This area is restricted to administrators."), 403
+        # Check if user is admin
+        if current_user.id != 1:  # You should replace this with a proper admin check
+            return jsonify(error="Unauthorized"), 403
 
         # Get user
         user = User.query.get_or_404(user_id)

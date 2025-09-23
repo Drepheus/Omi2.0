@@ -12,6 +12,9 @@ function initializeGovConDashboard() {
     const samSearchForm = document.getElementById('samSearchForm');
     const searchResults = document.getElementById('searchResults');
 
+    // Initialize SAM.gov status card
+    loadSamStatus();
+
     // Initialize recent awards
     loadRecentAwards();
 
@@ -65,17 +68,6 @@ function initializeGovConDashboard() {
                     });
 
                     resultsHtml += `</div>`;
-                    
-                    // If there's a note about sample data, display it
-                    if (data.note) {
-                        resultsHtml += `
-                            <div class="alert alert-info mt-3">
-                                <i class="fas fa-info-circle me-2"></i>
-                                ${data.note}
-                            </div>
-                        `;
-                    }
-                    
                     searchResults.innerHTML = resultsHtml;
                 } else {
                     searchResults.innerHTML = `
@@ -217,86 +209,68 @@ function initializeGovConDashboard() {
     // Handle document upload form if it exists
     const documentUploadForm = document.getElementById('documentUploadForm');
     if (documentUploadForm) {
-        documentUploadForm.addEventListener('submit', async function(e) {
+        documentUploadForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const formData = new FormData(this);
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            
-            try {
-                loadingSpinner.classList.remove('d-none');
-                
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Document uploaded successfully!');
-                    this.reset();
-                    document.getElementById('file-display').textContent = 'No file chosen';
-                    document.getElementById('file-display').classList.add('text-muted');
-                    document.getElementById('file-display').classList.remove('text-primary');
-                } else {
-                    alert(result.error || 'Failed to upload document');
-                }
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('Error uploading document. Please try again.');
-            } finally {
-                loadingSpinner.classList.add('d-none');
-            }
-        });
-    }
-    
-    // Handle file input change for custom file button
-    const documentFileInput = document.getElementById('documentFile');
-    if (documentFileInput) {
-        documentFileInput.addEventListener('change', function() {
-            const fileDisplay = document.getElementById('file-display');
-            if (this.files.length > 0) {
-                if (this.files.length === 1) {
-                    fileDisplay.textContent = this.files[0].name;
-                } else {
-                    fileDisplay.textContent = `${this.files.length} files selected`;
-                }
-                fileDisplay.classList.remove('text-muted');
-                fileDisplay.classList.add('text-primary');
-            } else {
-                fileDisplay.textContent = 'No file chosen';
-                fileDisplay.classList.add('text-muted');
-                fileDisplay.classList.remove('text-primary');
-            }
+            alert('Document analysis feature is coming soon!');
         });
     }
 }
 
 function loadSamStatus() {
-    const samStatusBadge = document.getElementById('samStatusBadge');
-    
-    if (!samStatusBadge) return;
-    
-    // Show loading indicator
-    samStatusBadge.innerHTML = `
-        <div class="spinner-border spinner-border-sm text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    `;
+    const samStatusLoading = document.getElementById('samStatusLoading');
+    const samStatusContent = document.getElementById('samStatusContent');
+    const samDataContent = document.getElementById('samDataContent');
+    const samLastUpdate = document.getElementById('samLastUpdate');
+
+    if (!samStatusLoading || !samStatusContent || !samDataContent) return;
 
     fetch('/api/sam/status')
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
-                samStatusBadge.innerHTML = `<span class="badge bg-success">Connected</span>`;
+            samStatusLoading.classList.add('d-none');
+            samStatusContent.classList.remove('d-none');
+
+            if (data.status === 'success' && data.entities && data.entities.length > 0) {
+                let entitiesHtml = '<h6 class="mb-3">Registered Entities</h6><div class="sam-entities">';
+
+                data.entities.forEach(entity => {
+                    entitiesHtml += `
+                        <div class="sam-entity mb-2">
+                            <div class="d-flex justify-content-between">
+                                <span><strong>${entity.entity_name}</strong></span>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            <small class="text-muted">DUNS: ${entity.duns}</small>
+                        </div>
+                    `;
+                });
+
+                entitiesHtml += '</div>';
+                samDataContent.innerHTML = entitiesHtml;
+
+                if (samLastUpdate) {
+                    samLastUpdate.textContent = new Date().toLocaleString();
+                }
             } else {
-                samStatusBadge.innerHTML = `<span class="badge bg-danger">Not Connected</span>`;
+                samDataContent.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No entity data available.
+                    </div>
+                `;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            samStatusBadge.innerHTML = `<span class="badge bg-danger">Not Connected</span>`;
+            samStatusLoading.classList.add('d-none');
+            samStatusContent.classList.remove('d-none');
+
+            samDataContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Failed to load SAM.gov data. Please try again later.
+                </div>
+            `;
         });
 }
 
