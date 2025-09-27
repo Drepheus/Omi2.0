@@ -1,0 +1,30 @@
+.shiny-text {
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0, #c0c0c0, #a8a8a8, #f5f5f5);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine infinite linear;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.shiny-text:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
+.shiny-text.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

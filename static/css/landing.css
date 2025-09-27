@@ -1,4 +1,12 @@
 /* Landing Page Styles - Black and White Theme */
+/* Prevent scrolling on landing page */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .landing-container {
   min-height: 100vh;
   height: 100vh;
@@ -49,13 +57,13 @@
 
 .btn-use-omi {
   display: inline-block;
-  padding: 15px 40px; /* Larger padding */
-  font-size: 1.5rem; /* Larger font */
+  padding: 8px 20px; /* Smaller padding */
+  font-size: 1.1rem; /* Smaller font */
   font-weight: bold;
   color: #ffffff;
   background-color: #1A1A1A;
-  border: 3px solid #888888;
-  border-radius: 30px;
+  border: 2px solid #888888; /* Thinner border */
+  border-radius: 20px; /* Smaller border radius */
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);

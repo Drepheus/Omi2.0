@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
+from flask import render_template, redirect, url_for, flash, request, jsonify, session, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from app import db
@@ -49,8 +49,8 @@ def register_routes(app):
 
     @app.route('/tool-hub')
     def tool_hub():
-        tools = [tool.to_dict() for tool in AITool.query.all()]
-        return render_template('tool_hub.html', tools=tools)
+        # Serve the static HTML page with embedded JavaScript
+        return send_from_directory('static', 'tool_hub.html')
 
     @app.route('/api/tools', methods=['POST'])
     @login_required

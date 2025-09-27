@@ -1,0 +1,203 @@
+/* Clean landing page styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0a0a0a;
+  color: white;
+  overflow-x: hidden;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.landing-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a0a;
+}
+
+.orb-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+}
+
+.content h1 {
+  font-size: 4rem;
+  font-weight: 100;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0, #c0c0c0, #a8a8a8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(200, 200, 200, 0.3);
+}
+
+.content p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  font-weight: 300;
+  color: #b0b0b0;
+  margin-bottom: 3rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.use-omi-button {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 30px 30px;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  border-radius: 12px;
+  min-width: 90px;
+  min-height: 90px;
+}
+
+.shape-blur-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.button-text {
+  position: relative;
+  z-index: 2;
+  font-size: 1.1rem;
+  font-weight: 100;
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0, #c0c0c0, #a8a8a8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(200, 200, 200, 0.2);
+}
+
+.use-omi-button:hover .button-text {
+  text-shadow: 0 0 30px rgba(200, 200, 200, 0.4);
+}
+
+.start-button {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.start-button:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+}
+
+.start-button-text {
+  font-size: 1.1rem;
+  font-weight: 300;
+}
+
+/* Page transition animations */
+.page-transition {
+  width: 100vw;
+  height: 100vh;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Disable button during transition */
+.start-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .content p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .use-omi-button {
+    padding: 25px 25px;
+    min-width: 80px;
+    min-height: 80px;
+  }
+  
+  .button-text {
+    font-size: 1rem;
+  }
+  
+  .start-button {
+    padding: 12px 24px;
+  }
+  
+  .start-button-text {
+    font-size: 1rem;
+  }
+}
