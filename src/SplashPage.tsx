@@ -792,22 +792,42 @@ function SplashPage() {
               {
                 link: '#',
                 text: 'Currently Trending',
-                image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop'
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png'
               },
               {
                 link: '#',
                 text: 'AI News',
-                image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=400&fit=crop'
+                image: 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg'
               },
               {
                 link: '#',
                 text: 'LLM Updates',
-                image: 'https://images.unsplash.com/photo-1655635949384-f737c5133dfe?w=400&h=400&fit=crop'
+                image: 'https://companieslogo.com/img/orig/MSFT-a203b22d.png'
               },
               {
                 link: '#',
                 text: 'AI Content',
-                image: 'https://images.unsplash.com/photo-1676573409772-45f0a65b98e1?w=400&h=400&fit=crop'
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png'
+              },
+              {
+                link: '#',
+                text: 'Grok AI',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.png/1200px-X_logo_2023_%28white%29.png'
+              },
+              {
+                link: '#',
+                text: 'Claude AI',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/ChatGPT-Logo.png/1200px-ChatGPT-Logo.png'
+              },
+              {
+                link: '#',
+                text: 'Midjourney',
+                image: 'https://seeklogo.com/images/M/midjourney-logo-156382BA01-seeklogo.com.png'
+              },
+              {
+                link: '#',
+                text: 'Perplexity AI',
+                image: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/perplexity-ai-icon.png'
               }
             ]}
           />
