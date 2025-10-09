@@ -19,15 +19,26 @@ export default function LoginPage({ onLoginSuccess, onGuestMode }: LoginPageProp
   }, [session, onLoginSuccess])
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    console.log('Attempting Google sign in...')
+    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL)
+    console.log('Redirect URL:', window.location.origin)
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: window.location.origin,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
       }
     })
+    
     if (error) {
-      console.error('Error signing in with Google:', error.message)
-      alert('Error signing in with Google. Please try again.')
+      console.error('Error signing in with Google:', error)
+      alert(`Error signing in with Google: ${error.message}\n\nPlease check the console for more details.`)
+    } else {
+      console.log('Google OAuth redirect initiated:', data)
     }
   }
 
