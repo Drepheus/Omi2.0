@@ -25,19 +25,24 @@ const LandingPage: React.FC = () => {
       
       if (hasAuthParams) {
         console.log('OAuth callback detected, processing...');
+        console.log('Current URL:', window.location.href);
+        console.log('Hash params:', Object.fromEntries(hashParams.entries()));
+        
+        // Clear the hash from the URL
+        window.history.replaceState(null, '', window.location.pathname);
         
         // Let Supabase handle the callback
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error processing OAuth callback:', error);
-          alert(`Authentication error: ${error.message}`);
+          alert(`Authentication error: ${error.message}\n\nIf you see a "try again" page, please check:\n1. Your Vercel URL is added to Google Cloud Console\n2. Your Vercel URL is added to Supabase redirect URLs`);
           setShowLogin(true);
         } else if (data.session) {
-          console.log('OAuth successful, redirecting to chat...');
+          console.log('OAuth successful! User:', data.session.user.email);
           setShowSplash(true);
         } else {
-          console.log('No session found, showing login...');
+          console.log('No session found after OAuth, showing login...');
           setShowLogin(true);
         }
       } else if (session) {

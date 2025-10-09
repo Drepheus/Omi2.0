@@ -248,52 +248,59 @@ function SplashPage() {
 
   const callGeminiAPI = async (message: string): Promise<string> => {
     try {
-      console.log('Sending message to Gemini:', message);
+      console.log('🚀 Starting Gemini API call...');
+      console.log('📝 Message:', message);
+      console.log('🔑 API Key (first 10 chars):', GEMINI_API_KEY.substring(0, 10) + '...');
+      console.log('🌐 API URL:', GEMINI_API_URL.split('?')[0]); // Don't log full URL with key
       
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              {
+                text: `Please respond to this message using markdown formatting when appropriate. Use **bold** for emphasis, *italic* for subtle emphasis, \`code\` for technical terms, and • for bullet points when listing items. Here's the message: ${message}`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.9,
+          topK: 1,
+          topP: 1,
+          maxOutputTokens: 2048,
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
+      };
+
+      console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
+
       const response = await fetch(GEMINI_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Please respond to this message using markdown formatting when appropriate. Use **bold** for emphasis, *italic* for subtle emphasis, \`code\` for technical terms, and • for bullet points when listing items. Here's the message: ${message}`
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.9,
-            topK: 1,
-            topP: 1,
-            maxOutputTokens: 2048,
-          },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        })
+        body: JSON.stringify(requestBody)
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response ok:', response.ok);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -344,15 +351,22 @@ function SplashPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSubmit called - Input:', inputValue.trim(), '| isLoading:', isLoading);
+    
     if (inputValue.trim() && !isLoading) {
+      console.log('Processing message submission...');
+      
       // Create a new conversation if this is the first message and user is logged in
       if (user && !currentConversationId && messages.length === 0) {
+        console.log('Creating new conversation for logged-in user...');
         const title = db.generateConversationTitle(inputValue.trim());
         const newConversation = await db.createConversation(user.id, title, selectedModel);
         if (newConversation) {
           setCurrentConversationId(newConversation.id);
           await loadConversations(); // Refresh sidebar
         }
+      } else if (!user) {
+        console.log('Guest mode - no conversation to create');
       }
 
       const userMessage: ChatMessage = {
@@ -361,6 +375,8 @@ function SplashPage() {
         timestamp: new Date()
       };
 
+      console.log('Adding user message to chat:', userMessage);
+      
       // Add user message to both chats
       setMessages(prev => [...prev, userMessage]);
       if (isCompareMode) {
@@ -377,9 +393,10 @@ function SplashPage() {
       }
 
       try {
+        console.log('Calling Gemini API...');
         // Get primary AI response
         const aiResponse = await callGeminiAPI(userMessage.content);
-        console.log('Raw AI Response:', aiResponse);
+        console.log('Got AI Response:', aiResponse);
         const assistantMessage: ChatMessage = {
           role: 'assistant',
           content: aiResponse,
@@ -387,13 +404,15 @@ function SplashPage() {
         };
 
         // Add primary AI response to chat
+        console.log('Adding assistant message to chat');
         setMessages(prev => [...prev, assistantMessage]);
         setIsLoading(false);
 
         // Get secondary AI response if in compare mode
         if (isCompareMode && secondaryModel) {
+          console.log('Getting secondary AI response...');
           const secondaryResponse = await callSecondaryAPI(userMessage.content, secondaryModel);
-          console.log('Raw Secondary AI Response:', secondaryResponse);
+          console.log('Got Secondary AI Response:', secondaryResponse);
           const secondaryAssistantMessage: ChatMessage = {
             role: 'assistant',
             content: secondaryResponse,
@@ -408,7 +427,10 @@ function SplashPage() {
         setIsLoading(false);
         setSecondaryLoading(false);
         console.error('Error in handleSubmit:', error);
+        alert(`Error getting AI response: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
+    } else {
+      console.log('Submit blocked - Empty input or already loading');
     }
   };
 
