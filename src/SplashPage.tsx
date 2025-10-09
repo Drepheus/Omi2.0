@@ -517,27 +517,29 @@ function SplashPage() {
         <div className="chat-interface">
           <div className="chat-header">
             <div className="header-left">
-              {user && (
+              <div className="header-top">
+                {user && (
+                  <button 
+                    className="conversations-btn"
+                    onClick={() => setShowConversations(true)}
+                    title="Conversations"
+                  >
+                    ≡
+                  </button>
+                )}
+                <h1 className="chat-title">Omi AI</h1>
+              </div>
+              <div className="selected-model">
+                <span className="model-label">Active Model:</span>
+                <span className="model-name">{selectedModel}</span>
                 <button 
-                  className="conversations-btn"
-                  onClick={() => setShowConversations(true)}
-                  title="Conversations"
+                  className="model-change-btn"
+                  onClick={() => setShowAIModels(true)}
+                  title="Change AI model"
                 >
-                  ≡
+                  ⚙️
                 </button>
-              )}
-              <h1 className="chat-title">Omi AI</h1>
-            </div>
-            <div className="selected-model">
-              <span className="model-label">Active Model:</span>
-              <span className="model-name">{selectedModel}</span>
-              <button 
-                className="model-change-btn"
-                onClick={() => setShowAIModels(true)}
-                title="Change AI model"
-              >
-                ⚙️
-              </button>
+              </div>
             </div>
           </div>
 
