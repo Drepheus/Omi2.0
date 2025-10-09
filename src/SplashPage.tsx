@@ -6,6 +6,8 @@ import InfiniteMenu from './InfiniteMenu';
 import LaserFlow from './LaserFlow';
 import ChromaGrid from './ChromaGrid';
 import FlowingMenu from './FlowingMenu';
+import Auth, { useAuth } from './Auth';
+import { supabase } from './supabaseClient';
 import './SplashPage.css';
 
 // Gemini API configuration
@@ -19,6 +21,10 @@ interface ChatMessage {
 }
 
 function SplashPage() {
+  // Authentication
+  const { user, session } = useAuth();
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  
   const [showAIModels, setShowAIModels] = useState(false);
   const [viewMode, setViewMode] = useState<'chat' | 'models'>('chat');
   const [selectedModel, setSelectedModel] = useState<string>('Gemini Pro'); // Default model
@@ -408,16 +414,19 @@ function SplashPage() {
         <div className="chat-interface">
           <div className="chat-header">
             <h1 className="chat-title">Omi AI</h1>
-            <div className="selected-model">
-              <span className="model-label">Active Model:</span>
-              <span className="model-name">{selectedModel}</span>
-              <button 
-                className="model-change-btn"
-                onClick={() => setShowAIModels(true)}
-                title="Change AI model"
-              >
-                ⚙️
-              </button>
+            <div className="header-right">
+              <div className="selected-model">
+                <span className="model-label">Active Model:</span>
+                <span className="model-name">{selectedModel}</span>
+                <button 
+                  className="model-change-btn"
+                  onClick={() => setShowAIModels(true)}
+                  title="Change AI model"
+                >
+                  ⚙️
+                </button>
+              </div>
+              <Auth />
             </div>
           </div>
 

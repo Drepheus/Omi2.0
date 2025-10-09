@@ -4,9 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Omi-AI-1/', // Replace with your repository name
+  base: '/', // Changed from '/Omi-AI-1/' for Vercel deployment
   build: {
     outDir: 'dist',
     sourcemap: true
-  }
+  },
+  // Explicitly define env prefix (default is VITE_)
+  envPrefix: 'VITE_'
 })
