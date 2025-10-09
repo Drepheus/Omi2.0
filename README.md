@@ -1,4 +1,6 @@
-# Omi AI - Advanced AI Chat Interface
+# Omi AI
+
+An innovative conversational AI experience powered by multiple LLMs. - Advanced AI Chat Interface
 
 A sophisticated AI chat interface with multiple interactive modes including DeepSearch, Compare, Synthesize, Create, Personas, and Pulse features.
 
