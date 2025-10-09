@@ -6,8 +6,11 @@ import InfiniteMenu from './InfiniteMenu';
 import LaserFlow from './LaserFlow';
 import ChromaGrid from './ChromaGrid';
 import FlowingMenu from './FlowingMenu';
+import ConversationSidebar from './ConversationSidebar';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
+import * as db from './databaseService';
+import type { DbConversation } from './databaseService';
 import './SplashPage.css';
 
 // Gemini API configuration
@@ -43,6 +46,11 @@ function SplashPage() {
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [isSynthesizeActive, setIsSynthesizeActive] = useState(false);
   const [isPulseActive, setIsPulseActive] = useState(false);
+
+  // Conversation management
+  const [conversations, setConversations] = useState<DbConversation[]>([]);
+  const [showConversations, setShowConversations] = useState(false);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(false);
 
   // Feature buttons data
   const featureButtons = [
@@ -147,6 +155,78 @@ function SplashPage() {
     document.addEventListener('keydown', handleEscapeKey);
     return () => document.removeEventListener('keydown', handleEscapeKey);
   }, [showAIModels, showCreateMenu, isPulseActive]);
+
+  // Load conversations when user logs in
+  useEffect(() => {
+    if (user) {
+      loadConversations();
+    }
+  }, [user]);
+
+  // Auto-save messages to database when user is logged in
+  useEffect(() => {
+    if (user && currentConversationId && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      // Save the last message to database
+      db.saveMessage(currentConversationId, lastMessage.role, lastMessage.content);
+    }
+  }, [messages, currentConversationId, user]);
+
+  const loadConversations = async () => {
+    if (!user) return;
+    
+    setIsLoadingConversations(true);
+    const userConversations = await db.getUserConversations(user.id);
+    setConversations(userConversations);
+    setIsLoadingConversations(false);
+
+    // If no current conversation and we have conversations, load the most recent
+    if (!currentConversationId && userConversations.length > 0) {
+      await loadConversation(userConversations[0].id);
+    }
+  };
+
+  const loadConversation = async (conversationId: string) => {
+    setCurrentConversationId(conversationId);
+    const dbMessages = await db.getConversationMessages(conversationId);
+    
+    // Convert database messages to ChatMessage format
+    const chatMessages: ChatMessage[] = dbMessages.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp)
+    }));
+    
+    setMessages(chatMessages);
+  };
+
+  const createNewConversation = async () => {
+    if (!user) {
+      // Guest mode - just clear messages
+      setMessages([]);
+      setCurrentConversationId(null);
+      return;
+    }
+
+    const newConversation = await db.createConversation(user.id, 'New Conversation', selectedModel);
+    if (newConversation) {
+      setCurrentConversationId(newConversation.id);
+      setMessages([]);
+      await loadConversations(); // Refresh list
+    }
+  };
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    await db.deleteConversation(conversationId);
+    
+    // If deleting current conversation, clear it
+    if (conversationId === currentConversationId) {
+      setCurrentConversationId(null);
+      setMessages([]);
+    }
+    
+    await loadConversations(); // Refresh list
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -265,6 +345,16 @@ function SplashPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() && !isLoading) {
+      // Create a new conversation if this is the first message and user is logged in
+      if (user && !currentConversationId && messages.length === 0) {
+        const title = db.generateConversationTitle(inputValue.trim());
+        const newConversation = await db.createConversation(user.id, title, selectedModel);
+        if (newConversation) {
+          setCurrentConversationId(newConversation.id);
+          await loadConversations(); // Refresh sidebar
+        }
+      }
+
       const userMessage: ChatMessage = {
         role: 'user',
         content: inputValue.trim(),
@@ -410,10 +500,34 @@ function SplashPage() {
 
   return (
     <>
+      {/* Conversation Sidebar */}
+      {user && (
+        <ConversationSidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={loadConversation}
+          onNewConversation={createNewConversation}
+          onDeleteConversation={handleDeleteConversation}
+          isOpen={showConversations}
+          onClose={() => setShowConversations(false)}
+        />
+      )}
+
       <div className="splash-page">
         <div className="chat-interface">
           <div className="chat-header">
-            <h1 className="chat-title">Omi AI</h1>
+            <div className="header-left">
+              {user && (
+                <button 
+                  className="conversations-btn"
+                  onClick={() => setShowConversations(true)}
+                  title="Conversations"
+                >
+                  ≡
+                </button>
+              )}
+              <h1 className="chat-title">Omi AI</h1>
+            </div>
             <div className="selected-model">
               <span className="model-label">Active Model:</span>
               <span className="model-name">{selectedModel}</span>

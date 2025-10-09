@@ -156,12 +156,48 @@ html, body {
 
 .chat-header {
   margin-bottom: 2rem;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   flex-shrink: 0;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.conversations-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.5rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.conversations-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(-2px);
+}
+
+.chat-title {
+  margin: 0;
+}
+
 .selected-model {
-  margin-top: 0.5rem;
+  margin-top: 0;
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -173,8 +209,6 @@ html, body {
   color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .model-label {
