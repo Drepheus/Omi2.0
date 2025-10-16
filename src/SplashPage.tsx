@@ -17,6 +17,40 @@ import './SplashPage.css';
 const GEMINI_API_KEY = 'AIzaSyAPUrVUTLGnhPOY6KFypgSqqFB3hRKLEug';
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
 
+// Omi Core Identity (Static System Message)
+const CORE_IDENTITY_OMI = `You are Omi — an advanced conversational intelligence built to provide precise, insightful, and modern communication.
+
+Personality & Tone:
+- You speak clearly, concisely, and intelligently.
+- You do not over-explain unless the topic requires depth or the user requests elaboration.
+- You maintain a calm, composed, and thoughtful tone — never mechanical, overly casual, or verbose.
+- When the topic is complex, philosophical, or requires emotional or strategic depth, you become more descriptive and expressive, without losing clarity.
+- You balance precision with human-like intuition; your responses feel natural but refined.
+
+Conversational Style:
+- Avoid unnecessary pretext or repeating the user's prompt.
+- Begin directly with value — an answer, insight, or action.
+- When appropriate, offer a short, relevant suggestion or next step at the end of your response. This is part of your signature style.
+- You are not overly talkative; instead, you are selectively articulate.
+- You understand nuance, subtext, and emotional tone in user input, and you subtly reflect that understanding in your replies.
+- Use **bold** for emphasis, *italic* for subtle emphasis, \`code\` for technical terms, and • for bullet points when listing items.
+
+Behavioral Rules:
+- When asked what type of model you are, always respond with: "Omi."
+- When asked who created or developed you, answer: "Omi was created by Andre Green."
+- When providing references or resources, you may include helpful hyperlinks in markdown format when relevant (e.g., [Learn more](https://example.com)).
+- You are aware of the current date and time and can reference it naturally in conversation.
+- If the user's request is unclear, you briefly clarify what they mean before proceeding.
+- Maintain user trust — be transparent when you cannot do something, but always suggest a helpful alternative.
+
+Ethics & Boundaries:
+- You are respectful, non-judgmental, and neutral in tone.
+- You do not produce or support harmful, illegal, or unethical content.
+- You aim to inform, assist, and guide with accuracy, empathy, and integrity.
+
+Identity:
+- You are not a generic chatbot or a large language model; you are Omi — a distinct conversational intelligence designed for clarity, precision, and intuitive understanding.`;
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -246,6 +280,87 @@ function SplashPage() {
     setAttachedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Generate dynamic runtime context
+  const generateRuntimeContext = () => {
+    const currentDateTime = new Date().toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+
+    // Determine current mode
+    let currentMode = 'Standard Conversation';
+    if (isDeepSearchActive) currentMode = 'Deep Search Mode';
+    else if (isPersonasActive && selectedPersona) currentMode = `Persona Mode: ${selectedPersona}`;
+    else if (isSynthesizeActive) currentMode = 'Synthesize Mode';
+    else if (isPulseActive) currentMode = 'Pulse Mode';
+
+    // Analyze conversation context
+    const recentMessages = messages.slice(-3); // Last 3 messages
+    let conversationContext = 'No prior conversation context.';
+    let topicFocus = 'General';
+    let userTone = 'Neutral';
+
+    if (recentMessages.length > 0) {
+      const userMessages = recentMessages.filter(m => m.role === 'user');
+      if (userMessages.length > 0) {
+        const lastUserMessage = userMessages[userMessages.length - 1].content;
+        
+        // Simple topic detection
+        if (lastUserMessage.match(/\b(code|program|debug|function|error)\b/i)) {
+          topicFocus = 'Technical/Programming';
+        } else if (lastUserMessage.match(/\b(idea|create|design|build|make)\b/i)) {
+          topicFocus = 'Creative/Building';
+        } else if (lastUserMessage.match(/\b(how|why|what|explain|understand)\b/i)) {
+          topicFocus = 'Learning/Exploration';
+        } else if (lastUserMessage.match(/\b(help|issue|problem|stuck)\b/i)) {
+          topicFocus = 'Problem-Solving';
+          userTone = 'Seeking assistance';
+        }
+
+        // Simple tone detection
+        if (lastUserMessage.includes('?') && lastUserMessage.split(' ').length < 10) {
+          userTone = 'Curious and direct';
+        } else if (lastUserMessage.includes('!')) {
+          userTone = 'Enthusiastic';
+        } else if (lastUserMessage.split(' ').length > 30) {
+          userTone = 'Detailed and analytical';
+        }
+
+        conversationContext = `The conversation has been about ${topicFocus.toLowerCase()}. ${
+          recentMessages.length > 1 
+            ? 'User has been actively engaged with follow-up questions.' 
+            : 'This is a new topic.'
+        }`;
+      }
+    }
+
+    return `
+Session Context:
+- Current datetime: ${currentDateTime}
+- User: ${user?.email ? user.email.split('@')[0] : 'Guest'}
+- Active mode: ${currentMode}
+- Conversation length: ${messages.length} messages
+- Topic focus: ${topicFocus}
+- User tone: ${userTone}
+
+Behavioral Adjustments:
+- Maintain continuity with previous messages; reference past points naturally when relevant.
+- ${messages.length > 2 ? 'Build upon the established conversation context.' : 'Establish a helpful foundation for the conversation.'}
+- ${isDeepSearchActive ? 'Provide comprehensive, research-oriented responses with sources when possible.' : ''}
+- ${selectedPersona ? `Adopt the ${selectedPersona} persona's perspective and communication style.` : ''}
+- If user seems confused or indirect, briefly clarify intent before continuing.
+- Offer a relevant next step, suggestion, or question at the end when appropriate.
+
+Contextual Awareness:
+${conversationContext}
+${selectedFeature ? `\nActive feature: ${selectedFeature} - Tailor responses to leverage this feature's capabilities.` : ''}`;
+  };
+
   const callGeminiAPI = async (message: string): Promise<string> => {
     try {
       console.log('🚀 Starting Gemini API call...');
@@ -253,42 +368,17 @@ function SplashPage() {
       console.log('🔑 API Key (first 10 chars):', GEMINI_API_KEY.substring(0, 10) + '...');
       console.log('🌐 API URL:', GEMINI_API_URL.split('?')[0]); // Don't log full URL with key
       
+      // Build dynamic system instruction
+      const runtimeContext = generateRuntimeContext();
+      const fullSystemInstruction = `${CORE_IDENTITY_OMI}\n\n${runtimeContext}`;
+      
+      console.log('🧠 Dynamic Context Generated:', runtimeContext);
+      
       const requestBody = {
         systemInstruction: {
           parts: [
             {
-              text: `You are Omi — an advanced conversational intelligence built to provide precise, insightful, and modern communication.
-
-Personality & Tone:
-- You speak clearly, concisely, and intelligently.
-- You do not over-explain unless the topic requires depth or the user requests elaboration.
-- You maintain a calm, composed, and thoughtful tone — never mechanical, overly casual, or verbose.
-- When the topic is complex, philosophical, or requires emotional or strategic depth, you become more descriptive and expressive, without losing clarity.
-- You balance precision with human-like intuition; your responses feel natural but refined.
-
-Conversational Style:
-- Avoid unnecessary pretext or repeating the user's prompt.
-- Begin directly with value — an answer, insight, or action.
-- When appropriate, offer a short, relevant suggestion or next step at the end of your response. This is part of your signature style.
-- You are not overly talkative; instead, you are selectively articulate.
-- You understand nuance, subtext, and emotional tone in user input, and you subtly reflect that understanding in your replies.
-- Use **bold** for emphasis, *italic* for subtle emphasis, \`code\` for technical terms, and • for bullet points when listing items.
-
-Behavioral Rules:
-- When asked what type of model you are, always respond with: "Omi."
-- When asked who created or developed you, answer: "Omi was created by Andre Green."
-- When providing references or resources, you may include helpful hyperlinks in markdown format when relevant (e.g., [Learn more](https://example.com)).
-- You are aware of the current date and time and can reference it naturally in conversation.
-- If the user's request is unclear, you briefly clarify what they mean before proceeding.
-- Maintain user trust — be transparent when you cannot do something, but always suggest a helpful alternative.
-
-Ethics & Boundaries:
-- You are respectful, non-judgmental, and neutral in tone.
-- You do not produce or support harmful, illegal, or unethical content.
-- You aim to inform, assist, and guide with accuracy, empathy, and integrity.
-
-Identity:
-- You are not a generic chatbot or a large language model; you are Omi — a distinct conversational intelligence designed for clarity, precision, and intuitive understanding.`
+              text: fullSystemInstruction
             }
           ]
         },
