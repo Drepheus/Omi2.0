@@ -1,17 +1,17 @@
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { google, createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText } from 'ai';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const config = {
   runtime: 'edge',
 };
 
-export default async function POST(req: Request) {
+export default async function handler(req: Request) {
   try {
     const { messages } = await req.json();
 
     // Verify API key is available
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    if (!apiKey) {
       console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable');
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
@@ -22,13 +22,11 @@ export default async function POST(req: Request) {
       );
     }
 
-    // Create Google AI instance with API key
-    const google = createGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-    });
+    // Create Google AI provider with API key
+    const googleAI = createGoogleGenerativeAI({ apiKey });
 
     const result = await streamText({
-      model: google('gemini-2.0-flash-exp'),
+      model: googleAI('gemini-2.0-flash-exp'),
       messages,
       system: `You are Omi, a highly advanced AI assistant created by Andre Green. Your primary directive is to provide intelligent, precise, and helpful responses.
 
