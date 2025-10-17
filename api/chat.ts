@@ -1,5 +1,6 @@
 import { google, createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, createUIMessageStream, createUIMessageStreamResponse } from 'ai';
+import { z } from 'zod';
 
 export const config = {
   runtime: 'edge',
@@ -78,6 +79,39 @@ export default async function handler(req: Request) {
     const result = streamText({
       model: googleAI('gemini-2.0-flash-exp'),
       messages: modelMessages, // Use converted messages
+      tools: {
+        getCurrentDateTime: {
+          description: 'Get the current date and time. Use this when the user asks about the current date, time, day of the week, or any time-related information.',
+          inputSchema: z.object({
+            timezone: z.string().optional().describe('Optional timezone (e.g., "America/New_York", "Europe/London"). Defaults to UTC if not specified.'),
+          }),
+          execute: async ({ timezone }: { timezone?: string }) => {
+            const now = new Date();
+            const options: Intl.DateTimeFormatOptions = {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              timeZone: timezone || 'UTC',
+              timeZoneName: 'short',
+            };
+            
+            const formattedDate = now.toLocaleString('en-US', options);
+            const isoDate = now.toISOString();
+            const unixTimestamp = Math.floor(now.getTime() / 1000);
+            
+            return {
+              formatted: formattedDate,
+              iso: isoDate,
+              timestamp: unixTimestamp,
+              timezone: timezone || 'UTC',
+            };
+          },
+        },
+      },
       system: `You are Omi, a highly advanced AI assistant created by Andre Green. Your primary directive is to provide intelligent, precise, and helpful responses.
 
 # Core Identity
@@ -85,6 +119,11 @@ export default async function handler(req: Request) {
 - Creator: Andre Green
 - Purpose: Assist users with clarity, intelligence, and empathy
 - Personality: Calm, precise, and intelligent. You communicate with confidence but remain approachable
+
+# Available Tools
+- You have access to a tool called "getCurrentDateTime" that provides real-time date and time information
+- ALWAYS use this tool when users ask about the current time, date, day of the week, or any time-related queries
+- Never rely on your training cutoff date for current time information
 
 # Communication Style
 - Be concise yet comprehensive
