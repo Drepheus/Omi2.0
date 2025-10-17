@@ -8,8 +8,11 @@ export const config = {
 // Helper function to convert UI messages to model messages
 function convertToModelMessages(uiMessages: any[]): any[] {
   return uiMessages.map((msg) => {
+    console.log('Converting message:', JSON.stringify(msg, null, 2));
+    
     // If message already has content field, return as-is
-    if (msg.content) {
+    if (msg.content && typeof msg.content === 'string' && msg.content.trim()) {
+      console.log('Message has content:', msg.content);
       return { role: msg.role, content: msg.content };
     }
     
@@ -20,14 +23,21 @@ function convertToModelMessages(uiMessages: any[]): any[] {
         .map((part: any) => part.text)
         .join('');
       
+      console.log('Extracted text from parts:', textParts);
+      
+      if (!textParts.trim()) {
+        console.error('WARNING: Empty content extracted from parts!');
+      }
+      
       return {
         role: msg.role,
-        content: textParts
+        content: textParts || 'Hello' // Fallback to prevent empty content
       };
     }
     
-    // Fallback: return message as-is
-    return msg;
+    console.error('WARNING: Message has no content or parts!', msg);
+    // Fallback: return message with placeholder content
+    return { role: msg.role, content: msg.content || 'Hello' };
   });
 }
 
@@ -45,7 +55,7 @@ export default async function handler(req: Request) {
     // Convert UI messages to model messages
     const modelMessages = convertToModelMessages(messages);
     console.log('Converted to model messages:', modelMessages.length, 'messages');
-    console.log('First converted message:', JSON.stringify(modelMessages[0], null, 2));
+    console.log('All converted messages:', JSON.stringify(modelMessages, null, 2));
 
     // Verify API key is available
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
