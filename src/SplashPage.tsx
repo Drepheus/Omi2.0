@@ -55,11 +55,20 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-// Helper function to extract text from v5 UIMessage parts
+// Helper function to extract text from v5 UIMessage (handles both parts and content format)
 function getMessageText(message: any): string {
-  if (!message.parts) return '';
-  const textParts = message.parts.filter((p: any) => p.type === 'text');
-  return textParts.map((p: any) => p.text).join('');
+  // Handle content field (from API responses)
+  if (message.content) {
+    return typeof message.content === 'string' ? message.content : '';
+  }
+  
+  // Handle parts array (from UI state)
+  if (message.parts) {
+    const textParts = message.parts.filter((p: any) => p.type === 'text');
+    return textParts.map((p: any) => p.text).join('');
+  }
+  
+  return '';
 }
 
 function SplashPage() {
