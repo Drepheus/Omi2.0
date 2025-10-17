@@ -137,6 +137,7 @@ function SplashPage() {
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [isSynthesizeActive, setIsSynthesizeActive] = useState(false);
   const [isPulseActive, setIsPulseActive] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Conversation management
   const [conversations, setConversations] = useState<DbConversation[]>([]);
@@ -230,10 +231,12 @@ function SplashPage() {
     }
   ];
 
-  // Handle Escape key to close AI Models screen and Create menu
+  // Handle Escape key to close AI Models screen, Create menu, and fullscreen
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showAIModels) {
+      if (event.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      } else if (event.key === 'Escape' && showAIModels) {
         setShowAIModels(false);
       } else if (event.key === 'Escape' && showCreateMenu) {
         setShowCreateMenu(false);
@@ -245,7 +248,7 @@ function SplashPage() {
 
     document.addEventListener('keydown', handleEscapeKey);
     return () => document.removeEventListener('keydown', handleEscapeKey);
-  }, [showAIModels, showCreateMenu, isPulseActive]);
+  }, [isFullscreen, showAIModels, showCreateMenu, isPulseActive]);
 
   // Load conversations when user logs in
   useEffect(() => {
@@ -547,7 +550,7 @@ function SplashPage() {
           
           {/* Chat Container - Show in Compare Mode or when messages exist */}
           {(messages.length > 0 || isCompareMode) && (
-            <div className={`chat-container ${isCompareMode ? 'compare-mode' : ''}`}>
+            <div className={`chat-container ${isCompareMode ? 'compare-mode' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
               {/* Primary Chat Panel */}
               <div className="chat-panel primary-panel">
                 <div className="panel-header">
@@ -567,6 +570,13 @@ function SplashPage() {
                       selectedModel || 'Primary AI'
                     )}
                   </h3>
+                  <button 
+                    className="fullscreen-toggle"
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    title={isFullscreen ? "Exit Fullscreen (ESC)" : "Fullscreen"}
+                  >
+                    {isFullscreen ? '⤓' : '⤢'}
+                  </button>
                 </div>
                 <div className="chat-messages">
                   {messages.length === 0 && isCompareMode ? (
