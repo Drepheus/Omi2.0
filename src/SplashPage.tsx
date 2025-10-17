@@ -68,10 +68,13 @@ function SplashPage() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   
   // Create Chat instance with transport for v5
-  const chat = useMemo(() => new Chat({
-    messages: [],
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  }), []);
+  const chat = useMemo(() => {
+    console.log('Creating Chat instance with API route: /api/chat');
+    return new Chat({
+      messages: [],
+      transport: new DefaultChatTransport({ api: '/api/chat' }),
+    });
+  }, []);
   
   // Vercel AI SDK v5's useChat hook
   const {
@@ -80,6 +83,14 @@ function SplashPage() {
     status,
     setMessages,
   } = useChat({ chat });
+
+  // Debug chat hook initialization
+  useEffect(() => {
+    console.log('useChat hook initialized');
+    console.log('sendMessage function:', typeof sendMessage);
+    console.log('Initial status:', status);
+    console.log('Initial messages:', messages);
+  }, []);
 
   // Local input state (v5 doesn't provide input helpers, we manage ourselves)
   const [input, setInput] = useState('');
@@ -311,6 +322,8 @@ function SplashPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('handleSubmit called - Input:', input.trim(), '| isLoading:', isLoading);
+    console.log('Current status:', status);
+    console.log('Messages count:', messages.length);
     
     if (input.trim() && !isLoading) {
       console.log('Processing message submission...');
@@ -328,12 +341,22 @@ function SplashPage() {
         console.log('Guest mode - no conversation to create');
       }
 
-      // Use v5's sendMessage API with text format
-      await sendMessage({ text: input.trim() });
-      
-      // Clear input and attached files
-      setInput('');
-      setAttachedFiles([]);
+      try {
+        console.log('About to call sendMessage with:', { text: input.trim() });
+        // Use v5's sendMessage API with text format
+        const result = await sendMessage({ text: input.trim() });
+        console.log('sendMessage result:', result);
+        
+        // Clear input and attached files
+        setInput('');
+        setAttachedFiles([]);
+      } catch (error) {
+        console.error('Error in sendMessage:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
     } else {
       console.log('Submit blocked - Empty input or already loading');
     }
