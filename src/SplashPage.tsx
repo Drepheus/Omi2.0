@@ -173,41 +173,6 @@ function SplashPage() {
       }
     },
     {
-      name: 'Image Gen',
-      icon: '⚡',
-      description: isInstantGenActive ? 'Image generation active - type a prompt!' : 'Real-time AI image generation',
-      onClick: () => {
-        const isActivating = selectedFeature !== 'Image Gen';
-        setSelectedFeature(isActivating ? 'Image Gen' : null);
-        setIsInstantGenActive(isActivating);
-        setIsDeepSearchActive(false);
-        setIsPersonasActive(false);
-        setIsSynthesizeActive(false);
-        setIsPulseActive(false);
-        if (!isActivating) {
-          setGeneratedImage(null); // Clear image when deactivating
-        }
-        console.log('Image Gen mode', isActivating ? 'activated' : 'deactivated');
-      }
-    },
-    {
-      name: 'Video Gen',
-      icon: '🎬',
-      description: 'Generate AI videos from text prompts',
-      onClick: () => {
-        const isActivating = selectedFeature !== 'Video Gen';
-        setSelectedFeature(isActivating ? 'Video Gen' : null);
-        setIsDeepSearchActive(false);
-        setIsPersonasActive(false);
-        setIsSynthesizeActive(isActivating); // Keep the electric border animation
-        setIsVideoGenActive(isActivating);
-        if (!isActivating) {
-          setGeneratedVideo(null); // Clear video when deactivating
-        }
-        console.log('Video Gen clicked');
-      }
-    },
-    {
       name: 'DeepSearch',
       icon: '◎',
       description: 'Explore beyond surface answers with advanced queries',
@@ -257,6 +222,41 @@ function SplashPage() {
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
         setIsPulseActive(isActivating); // Toggle FlowingMenu
         console.log('Pulse clicked - FlowingMenu', isActivating ? 'activated' : 'deactivated');
+      }
+    },
+    {
+      name: 'Image Gen',
+      icon: '⚡',
+      description: isInstantGenActive ? 'Image generation active - type a prompt!' : 'Real-time AI image generation',
+      onClick: () => {
+        const isActivating = selectedFeature !== 'Image Gen';
+        setSelectedFeature(isActivating ? 'Image Gen' : null);
+        setIsInstantGenActive(isActivating);
+        setIsDeepSearchActive(false);
+        setIsPersonasActive(false);
+        setIsSynthesizeActive(false);
+        setIsPulseActive(false);
+        if (!isActivating) {
+          setGeneratedImage(null); // Clear image when deactivating
+        }
+        console.log('Image Gen mode', isActivating ? 'activated' : 'deactivated');
+      }
+    },
+    {
+      name: 'Video Gen',
+      icon: '🎬',
+      description: 'Generate AI videos from text prompts',
+      onClick: () => {
+        const isActivating = selectedFeature !== 'Video Gen';
+        setSelectedFeature(isActivating ? 'Video Gen' : null);
+        setIsDeepSearchActive(false);
+        setIsPersonasActive(false);
+        setIsSynthesizeActive(isActivating); // Keep the electric border animation
+        setIsVideoGenActive(isActivating);
+        if (!isActivating) {
+          setGeneratedVideo(null); // Clear video when deactivating
+        }
+        console.log('Video Gen clicked');
       }
     }
   ];
