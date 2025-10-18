@@ -1464,42 +1464,55 @@ html, body {
 
 /* Instant Gen Mode Styles */
 .instant-gen-indicator {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.55rem;
-  max-width: 280px;
-  margin: 0 auto 0.5rem;
-  background: rgba(138, 43, 226, 0.05);
-  border: none;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  width: fit-content;
+  margin: 0 auto 0.65rem;
+  background: linear-gradient(135deg, 
+    rgba(138, 43, 226, 0.08) 0%,
+    rgba(138, 43, 226, 0.12) 100%);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
   box-shadow: 
-    0 1px 4px rgba(138, 43, 226, 0.1),
-    inset 0 0 8px rgba(138, 43, 226, 0.05);
-  transition: all 0.3s ease;
+    0 2px 8px rgba(138, 43, 226, 0.12),
+    0 0 20px rgba(138, 43, 226, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .instant-gen-indicator:hover {
-  background: rgba(138, 43, 226, 0.08);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, 
+    rgba(138, 43, 226, 0.12) 0%,
+    rgba(138, 43, 226, 0.16) 100%);
+  border-color: rgba(138, 43, 226, 0.35);
   box-shadow: 
-    0 2px 6px rgba(138, 43, 226, 0.15),
-    inset 0 0 10px rgba(138, 43, 226, 0.08);
+    0 4px 12px rgba(138, 43, 226, 0.18),
+    0 0 25px rgba(138, 43, 226, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .instant-gen-icon {
-  font-size: 0.75rem;
-  filter: drop-shadow(0 0 2px rgba(138, 43, 226, 0.3));
-  opacity: 0.9;
+  font-size: 0.85rem;
+  filter: drop-shadow(0 0 4px rgba(138, 43, 226, 0.5));
+  animation: subtlePulse 2s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
 }
 
 .instant-gen-text {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.65rem;
-  font-weight: 400;
-  text-shadow: none;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .chat-input-container.instant-gen-active {
@@ -1784,42 +1797,50 @@ html, body {
 
 /* Video Gen Mode Styles - Similar to Instant Gen but with blue/teal theme */
 .video-gen-indicator {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.55rem;
-  max-width: 280px;
-  margin: 0 auto 0.5rem;
-  background: rgba(0, 191, 255, 0.05);
-  border: none;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  width: fit-content;
+  margin: 0 auto 0.65rem;
+  background: linear-gradient(135deg, 
+    rgba(0, 191, 255, 0.08) 0%,
+    rgba(0, 191, 255, 0.12) 100%);
+  border: 1px solid rgba(0, 191, 255, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
   box-shadow: 
-    0 1px 4px rgba(0, 191, 255, 0.1),
-    inset 0 0 8px rgba(0, 191, 255, 0.05);
-  transition: all 0.3s ease;
+    0 2px 8px rgba(0, 191, 255, 0.12),
+    0 0 20px rgba(0, 191, 255, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .video-gen-indicator:hover {
-  background: rgba(0, 191, 255, 0.08);
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, 
+    rgba(0, 191, 255, 0.12) 0%,
+    rgba(0, 191, 255, 0.16) 100%);
+  border-color: rgba(0, 191, 255, 0.35);
   box-shadow: 
-    0 2px 6px rgba(0, 191, 255, 0.15),
-    inset 0 0 10px rgba(0, 191, 255, 0.08);
+    0 4px 12px rgba(0, 191, 255, 0.18),
+    0 0 25px rgba(0, 191, 255, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 .video-gen-icon {
-  font-size: 0.75rem;
-  filter: drop-shadow(0 0 2px rgba(0, 191, 255, 0.3));
-  opacity: 0.9;
+  font-size: 0.85rem;
+  filter: drop-shadow(0 0 4px rgba(0, 191, 255, 0.5));
+  animation: subtlePulse 2s ease-in-out infinite;
 }
 
 .video-gen-text {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.65rem;
-  font-weight: 400;
-  text-shadow: none;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .chat-input-container.video-gen-active {
