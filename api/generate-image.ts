@@ -1,4 +1,4 @@
-import Replicate from 'replicate';
+const Replicate = require('replicate').default;
 
 export const config = {
   runtime: 'nodejs',
