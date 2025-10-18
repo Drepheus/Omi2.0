@@ -142,6 +142,10 @@ function SplashPage() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [isVideoGenActive, setIsVideoGenActive] = useState(false);
+  const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Conversation management
   const [conversations, setConversations] = useState<DbConversation[]>([]);
@@ -169,16 +173,20 @@ function SplashPage() {
       }
     },
     {
-      name: 'Synthesize',
-      icon: '⟳',
-      description: 'Merge responses into one distilled insight',
+      name: 'Video Gen',
+      icon: '🎬',
+      description: 'Generate AI videos from text prompts',
       onClick: () => {
-        const isActivating = selectedFeature !== 'Synthesize';
-        setSelectedFeature(isActivating ? 'Synthesize' : null);
-        setIsDeepSearchActive(false); // Turn off laser animation
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        setIsSynthesizeActive(isActivating); // Toggle ElectricBorder animation
-        console.log('Synthesize clicked - ElectricBorder', isActivating ? 'activated' : 'deactivated');
+        const isActivating = selectedFeature !== 'Video Gen';
+        setSelectedFeature(isActivating ? 'Video Gen' : null);
+        setIsDeepSearchActive(false);
+        setIsPersonasActive(false);
+        setIsSynthesizeActive(isActivating); // Keep the electric border animation
+        setIsVideoGenActive(isActivating);
+        if (!isActivating) {
+          setGeneratedVideo(null); // Clear video when deactivating
+        }
+        console.log('Video Gen clicked');
       }
     },
     {
@@ -376,7 +384,47 @@ function SplashPage() {
     console.log('Current status:', status);
     console.log('Messages count:', messages.length);
     
-    if (input.trim() && !isLoading && !isGeneratingImage) {
+    if (input.trim() && !isLoading && !isGeneratingImage && !isGeneratingVideo) {
+      // If Video Gen mode is active, generate a video instead of sending a chat message
+      if (isVideoGenActive) {
+        console.log('Generating video with prompt:', input.trim());
+        setIsGeneratingVideo(true);
+        setGeneratedVideo(null);
+        
+        try {
+          const response = await fetch('/api/generate-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: input.trim() }),
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.videoUrl) {
+            console.log('Video generated successfully:', data.videoUrl);
+            setGeneratedVideo(data.videoUrl);
+            
+            // Scroll to video after a short delay to allow render
+            setTimeout(() => {
+              videoContainerRef.current?.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+            }, 100);
+          } else {
+            console.error('Video generation failed:', data.error);
+            alert('Failed to generate video: ' + (data.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error generating video:', error);
+          alert('Failed to generate video. Please try again.');
+        } finally {
+          setIsGeneratingVideo(false);
+          setInput(''); // Clear input after generation
+        }
+        return;
+      }
+      
       // If Instant Gen mode is active, generate an image instead of sending a chat message
       if (isInstantGenActive) {
         console.log('Generating image with prompt:', input.trim());
@@ -774,8 +822,18 @@ function SplashPage() {
                 </span>
               </div>
             )}
+
+            {/* Video Gen Mode Indicator */}
+            {isVideoGenActive && (
+              <div className="video-gen-indicator">
+                <span className="video-gen-icon">🎬</span>
+                <span className="video-gen-text">
+                  Video Gen Mode Active - Describe the video scene you want to create
+                </span>
+              </div>
+            )}
             
-            <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''} ${isInstantGenActive ? 'instant-gen-active' : ''}`}>
+            <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''} ${isInstantGenActive ? 'instant-gen-active' : ''} ${isVideoGenActive ? 'video-gen-active' : ''}`}>
               <input
                 type="file"
                 id="file-input"
@@ -801,7 +859,9 @@ function SplashPage() {
                 value={input}
                 onChange={handleInputChange}
                 placeholder={
-                  isInstantGenActive 
+                  isVideoGenActive
+                    ? "🎬 Describe your video scene (e.g., 'a woman walking through Tokyo at night')..."
+                    : isInstantGenActive 
                     ? "⚡ Describe your image (e.g., 'A sunset over mountains')..." 
                     : isSynthesizeActive 
                       ? "Type your message in Synthesize mode..." 
@@ -809,12 +869,12 @@ function SplashPage() {
                 }
                 className="chat-input"
                 autoFocus
-                disabled={isLoading || isGeneratingImage}
+                disabled={isLoading || isGeneratingImage || isGeneratingVideo}
               />
               <button 
                 type="submit" 
                 className="chat-submit"
-                disabled={!input.trim() || isLoading || isGeneratingImage}
+                disabled={!input.trim() || isLoading || isGeneratingImage || isGeneratingVideo}
               >
                 {isLoading ? (
                   <div className="loading-spinner">
@@ -942,6 +1002,66 @@ function SplashPage() {
                   <div className="placeholder-icon">⚡</div>
                   <p className="placeholder-text">Enter a prompt above to generate an image</p>
                   <p className="placeholder-subtext">Describe what you want to see and press enter</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Generated Video Display */}
+          {isVideoGenActive && (
+            <div className="generated-video-container" ref={videoContainerRef}>
+              {isGeneratingVideo ? (
+                <div className="generating-indicator">
+                  <div className="generating-spinner">
+                    <div className="spinner-ring"></div>
+                    <span className="generating-icon">🎬</span>
+                  </div>
+                  <p className="generating-text">Generating your video... This may take 1-2 minutes</p>
+                </div>
+              ) : generatedVideo ? (
+                <div className="generated-video-wrapper">
+                  <div className="generated-video-header">
+                    <h3>🎬 Generated Video</h3>
+                    <div className="generated-video-actions">
+                      <a 
+                        href={generatedVideo} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="video-action-btn"
+                        title="Open in new tab"
+                      >
+                        🔗 Open
+                      </a>
+                      <a 
+                        href={generatedVideo} 
+                        download="generated-video.mp4"
+                        className="video-action-btn"
+                        title="Download video"
+                      >
+                        ⬇ Download
+                      </a>
+                      <button
+                        className="video-action-btn"
+                        onClick={() => setGeneratedVideo(null)}
+                        title="Clear video"
+                      >
+                        ✕ Clear
+                      </button>
+                    </div>
+                  </div>
+                  <video 
+                    src={generatedVideo} 
+                    controls
+                    className="generated-video"
+                    autoPlay
+                    loop
+                  />
+                </div>
+              ) : (
+                <div className="video-gen-placeholder">
+                  <div className="placeholder-icon">🎬</div>
+                  <p className="placeholder-text">Enter a prompt above to generate a video</p>
+                  <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
                 </div>
               )}
             </div>
