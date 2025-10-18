@@ -1,42 +1,24 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 const Replicate = require('replicate').default;
 
-export const config = {
-  runtime: 'nodejs',
-};
-
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('=== IMAGE GENERATION API CALLED ===');
   
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { prompt, aspectRatio = '3:2' } = await req.json();
+    const { prompt, aspectRatio = '3:2' } = req.body;
 
     if (!prompt || typeof prompt !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Prompt is required' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      return res.status(400).json({ error: 'Prompt is required' });
     }
 
     const apiToken = process.env.REPLICATE_API_TOKEN;
     if (!apiToken) {
       console.error('Missing REPLICATE_API_TOKEN environment variable');
-      return new Response(
-        JSON.stringify({ error: 'API token not configured' }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      return res.status(500).json({ error: 'API token not configured' });
     }
 
     console.log('Generating image with prompt:', prompt);
@@ -54,28 +36,16 @@ export default async function handler(req: Request) {
 
     console.log('Image generated successfully');
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        imageUrl: output.url ? output.url() : (output[0] || output),
-        prompt,
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return res.status(200).json({
+      success: true,
+      imageUrl: output.url ? output.url() : (output[0] || output),
+      prompt,
+    });
   } catch (error) {
     console.error('Image generation error:', error);
-    return new Response(
-      JSON.stringify({
-        error: 'Failed to generate image',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return res.status(500).json({
+      error: 'Failed to generate image',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
