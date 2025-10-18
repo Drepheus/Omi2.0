@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 const Replicate = require('replicate').default;
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   console.log('=== IMAGE GENERATION API CALLED ===');
   
   if (req.method !== 'POST') {
@@ -32,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           aspect_ratio: aspectRatio,
         },
       }
-    ) as any;
+    );
 
     console.log('Image generated successfully');
 
@@ -48,4 +47,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-}
+};
