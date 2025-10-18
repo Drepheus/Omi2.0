@@ -905,6 +905,15 @@ function SplashPage() {
                     <h3>⚡ Generated Image</h3>
                     <div className="generated-image-actions">
                       <a 
+                        href="https://percify.io" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="image-action-btn percify-btn"
+                        title="Edit with Percify"
+                      >
+                        ✨ Percify It
+                      </a>
+                      <a 
                         href={generatedImage} 
                         target="_blank" 
                         rel="noopener noreferrer"
