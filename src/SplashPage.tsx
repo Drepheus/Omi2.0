@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useChat, Chat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import FormattedText from './FormattedText';
@@ -141,6 +141,7 @@ function SplashPage() {
   const [isInstantGenActive, setIsInstantGenActive] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Conversation management
   const [conversations, setConversations] = useState<DbConversation[]>([]);
@@ -394,6 +395,14 @@ function SplashPage() {
           if (response.ok && data.imageUrl) {
             console.log('Image generated successfully:', data.imageUrl);
             setGeneratedImage(data.imageUrl);
+            
+            // Scroll to image after a short delay to allow render
+            setTimeout(() => {
+              imageContainerRef.current?.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+            }, 100);
           } else {
             console.error('Image generation failed:', data.error);
             alert('Failed to generate image: ' + (data.error || 'Unknown error'));
@@ -881,7 +890,7 @@ function SplashPage() {
 
           {/* Generated Image Display */}
           {isInstantGenActive && (
-            <div className="generated-image-container">
+            <div className="generated-image-container" ref={imageContainerRef}>
               {isGeneratingImage ? (
                 <div className="generating-indicator">
                   <div className="generating-spinner">
