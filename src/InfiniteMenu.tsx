@@ -967,7 +967,7 @@ const defaultItems = [
   {
     image: 'https://picsum.photos/903/900?grayscale',
     link: 'https://percify.io/',
-    title: 'Percify Avatars',
+    title: 'Generate Avatars',
     description: 'Create digital personas with Percify'
   },
   {

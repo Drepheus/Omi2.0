@@ -138,6 +138,9 @@ function SplashPage() {
   const [isSynthesizeActive, setIsSynthesizeActive] = useState(false);
   const [isPulseActive, setIsPulseActive] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isInstantGenActive, setIsInstantGenActive] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   // Conversation management
   const [conversations, setConversations] = useState<DbConversation[]>([]);
@@ -232,16 +235,19 @@ function SplashPage() {
     {
       name: 'Instant Gen',
       icon: '⚡',
-      description: 'Real-time AI image generation with Leonardo',
+      description: isInstantGenActive ? 'Image generation active - type a prompt!' : 'Real-time AI image generation',
       onClick: () => {
-        // Open Leonardo AI in a new tab since iframe embedding is blocked
-        window.open('https://app.leonardo.ai/realtime-gen', '_blank', 'noopener,noreferrer');
-        setSelectedFeature('Instant Gen');
+        const isActivating = selectedFeature !== 'Instant Gen';
+        setSelectedFeature(isActivating ? 'Instant Gen' : null);
+        setIsInstantGenActive(isActivating);
         setIsDeepSearchActive(false);
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
-        console.log('Instant Gen clicked - opening Leonardo AI in new tab');
+        if (!isActivating) {
+          setGeneratedImage(null); // Clear image when deactivating
+        }
+        console.log('Instant Gen mode', isActivating ? 'activated' : 'deactivated');
       }
     }
   ];
@@ -369,7 +375,39 @@ function SplashPage() {
     console.log('Current status:', status);
     console.log('Messages count:', messages.length);
     
-    if (input.trim() && !isLoading) {
+    if (input.trim() && !isLoading && !isGeneratingImage) {
+      // If Instant Gen mode is active, generate an image instead of sending a chat message
+      if (isInstantGenActive) {
+        console.log('Generating image with prompt:', input.trim());
+        setIsGeneratingImage(true);
+        setGeneratedImage(null);
+        
+        try {
+          const response = await fetch('/api/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: input.trim(), aspectRatio: '3:2' }),
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok && data.imageUrl) {
+            console.log('Image generated successfully:', data.imageUrl);
+            setGeneratedImage(data.imageUrl);
+          } else {
+            console.error('Image generation failed:', data.error);
+            alert('Failed to generate image: ' + (data.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Error generating image:', error);
+          alert('Failed to generate image. Please try again.');
+        } finally {
+          setIsGeneratingImage(false);
+          setInput(''); // Clear input after generation
+        }
+        return;
+      }
+      
       console.log('Processing message submission...');
       
       // Create a new conversation if this is the first message and user is logged in
@@ -718,7 +756,17 @@ function SplashPage() {
               </div>
             )}
             
-            <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''}`}>
+            {/* Instant Gen Mode Indicator */}
+            {isInstantGenActive && (
+              <div className="instant-gen-indicator">
+                <span className="instant-gen-icon">⚡</span>
+                <span className="instant-gen-text">
+                  Instant Gen Mode Active - Describe the image you want to create
+                </span>
+              </div>
+            )}
+            
+            <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''} ${isInstantGenActive ? 'instant-gen-active' : ''}`}>
               <input
                 type="file"
                 id="file-input"
@@ -728,28 +776,36 @@ function SplashPage() {
                 accept="image/*,video/*,.pdf,.doc,.docx,.txt"
                 style={{ display: 'none' }}
               />
-              <button
-                type="button"
-                className="attach-file-btn"
-                onClick={() => document.getElementById('file-input')?.click()}
-                title="Attach files"
-                disabled={isLoading}
-              >
-                📎
-              </button>
+              {!isInstantGenActive && (
+                <button
+                  type="button"
+                  className="attach-file-btn"
+                  onClick={() => document.getElementById('file-input')?.click()}
+                  title="Attach files"
+                  disabled={isLoading}
+                >
+                  📎
+                </button>
+              )}
               <input
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                placeholder={isSynthesizeActive ? "Type your message in Synthesize mode..." : "Type your message..."}
+                placeholder={
+                  isInstantGenActive 
+                    ? "⚡ Describe your image (e.g., 'A sunset over mountains')..." 
+                    : isSynthesizeActive 
+                      ? "Type your message in Synthesize mode..." 
+                      : "Type your message..."
+                }
                 className="chat-input"
                 autoFocus
-                disabled={isLoading}
+                disabled={isLoading || isGeneratingImage}
               />
               <button 
                 type="submit" 
                 className="chat-submit"
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || isGeneratingImage}
               >
                 {isLoading ? (
                   <div className="loading-spinner">
@@ -822,6 +878,56 @@ function SplashPage() {
               )}
             </div>
           </form>
+
+          {/* Generated Image Display */}
+          {isInstantGenActive && (
+            <div className="generated-image-container">
+              {isGeneratingImage ? (
+                <div className="generating-indicator">
+                  <div className="generating-spinner">
+                    <div className="spinner-ring"></div>
+                    <span className="generating-icon">⚡</span>
+                  </div>
+                  <p className="generating-text">Generating your image...</p>
+                </div>
+              ) : generatedImage ? (
+                <div className="generated-image-wrapper">
+                  <div className="generated-image-header">
+                    <h3>⚡ Generated Image</h3>
+                    <div className="generated-image-actions">
+                      <a 
+                        href={generatedImage} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="image-action-btn"
+                        title="Open in new tab"
+                      >
+                        🔗 Open
+                      </a>
+                      <button
+                        className="image-action-btn"
+                        onClick={() => setGeneratedImage(null)}
+                        title="Clear image"
+                      >
+                        ✕ Clear
+                      </button>
+                    </div>
+                  </div>
+                  <img 
+                    src={generatedImage} 
+                    alt="Generated" 
+                    className="generated-image"
+                  />
+                </div>
+              ) : (
+                <div className="instant-gen-placeholder">
+                  <div className="placeholder-icon">⚡</div>
+                  <p className="placeholder-text">Enter a prompt above to generate an image</p>
+                  <p className="placeholder-subtext">Describe what you want to see and press enter</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       
       {/* AI Models Section */}
