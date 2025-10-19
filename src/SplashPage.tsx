@@ -554,18 +554,98 @@ function SplashPage() {
         console.log('DeepSearch active:', isDeepSearchActive);
         console.log('Using API route:', apiRoute);
         
-        // Use v5's sendMessage API with text format
-        const result = await sendMessage({ text: input.trim() });
-        console.log('sendMessage result:', result);
-        
-        // Increment usage after successful message
-        if (user && result) {
-          await incrementUsage(user.id, 'chat');
+        // If DeepSearch is active, manually call the deep-search API
+        if (isDeepSearchActive) {
+          console.log('=== USING DEEP SEARCH API ===');
+          
+          // Add user message to UI immediately
+          const userMessage = {
+            id: `user-${Date.now()}`,
+            role: 'user' as const,
+            content: input.trim(),
+            parts: [{ type: 'text' as const, text: input.trim() }],
+          };
+          
+          setMessages([...messages, userMessage]);
+          setInput(''); // Clear input immediately
+          
+          // Call DeepSearch API
+          const response = await fetch('/api/deep-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: [...messages, userMessage]
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('DeepSearch API call failed');
+          }
+          
+          // Handle streaming response
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+          let assistantText = '';
+          const assistantId = `assistant-${Date.now()}`;
+          
+          if (reader) {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              
+              const chunk = decoder.decode(value);
+              const lines = chunk.split('\n');
+              
+              for (const line of lines) {
+                if (line.startsWith('0:')) {
+                  try {
+                    const jsonStr = line.substring(2);
+                    const data = JSON.parse(jsonStr);
+                    
+                    if (data.type === 'text-delta' && data.delta) {
+                      assistantText += data.delta;
+                      
+                      // Update messages with accumulated text
+                      setMessages((prev) => {
+                        const withoutLastAssistant = prev.filter(m => m.id !== assistantId);
+                        return [
+                          ...withoutLastAssistant,
+                          {
+                            id: assistantId,
+                            role: 'assistant' as const,
+                            content: assistantText,
+                            parts: [{ type: 'text' as const, text: assistantText }],
+                          }
+                        ];
+                      });
+                    }
+                  } catch (e) {
+                    // Ignore parse errors for incomplete chunks
+                  }
+                }
+              }
+            }
+          }
+          
+          // Increment usage after successful message
+          if (user) {
+            await incrementUsage(user.id, 'chat');
+          }
+          
+        } else {
+          // Use regular chat API via useChat hook
+          const result = await sendMessage({ text: input.trim() });
+          console.log('sendMessage result:', result);
+          
+          // Increment usage after successful message
+          if (user && result) {
+            await incrementUsage(user.id, 'chat');
+          }
+          
+          // Clear input and attached files
+          setInput('');
+          setAttachedFiles([]);
         }
-        
-        // Clear input and attached files
-        setInput('');
-        setAttachedFiles([]);
       } catch (error) {
         console.error('Error in sendMessage:', error);
         console.error('Error details:', {
