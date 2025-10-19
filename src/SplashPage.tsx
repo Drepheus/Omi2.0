@@ -78,16 +78,17 @@ function SplashPage() {
   const { user } = useAuth();
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   
+  // Determine API route based on active mode
+  const apiRoute = isDeepSearchActive ? '/api/deep-search' : '/api/chat';
+  
   // Create Chat instance with transport for v5
   const chat = useMemo(() => {
-    // Use DeepSearch API when DeepSearch mode is active
-    const apiRoute = isDeepSearchActive ? '/api/deep-search' : '/api/chat';
     console.log('Creating Chat instance with API route:', apiRoute);
     return new Chat({
       messages: [],
       transport: new DefaultChatTransport({ api: apiRoute }),
     });
-  }, [isDeepSearchActive]);
+  }, [apiRoute]);
   
   // Vercel AI SDK v5's useChat hook
   const {
@@ -96,6 +97,14 @@ function SplashPage() {
     status,
     setMessages,
   } = useChat({ chat });
+
+  // Update chat transport when DeepSearch mode changes
+  useEffect(() => {
+    console.log('=== API ROUTE CHANGED ===');
+    console.log('isDeepSearchActive:', isDeepSearchActive);
+    console.log('New API route:', apiRoute);
+    console.log('Chat instance updated');
+  }, [isDeepSearchActive, apiRoute]);
 
   // Debug chat hook initialization
   useEffect(() => {
@@ -542,6 +551,9 @@ function SplashPage() {
 
       try {
         console.log('About to call sendMessage with:', { text: input.trim() });
+        console.log('DeepSearch active:', isDeepSearchActive);
+        console.log('Using API route:', apiRoute);
+        
         // Use v5's sendMessage API with text format
         const result = await sendMessage({ text: input.trim() });
         console.log('sendMessage result:', result);
