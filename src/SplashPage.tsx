@@ -531,6 +531,11 @@ function SplashPage() {
       }
       
       console.log('Processing message submission...');
+      console.log('=== CURRENT STATE CHECK ===');
+      console.log('isDeepSearchActive:', isDeepSearchActive);
+      console.log('isVideoGenActive:', isVideoGenActive);
+      console.log('isImageGenActive:', isImageGenActive);
+      console.log('selectedFeature:', selectedFeature);
       
       // Check usage limit for chat before proceeding
       const canProceed = await checkAndShowPaywall('chat');
