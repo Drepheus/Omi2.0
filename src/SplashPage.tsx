@@ -80,12 +80,14 @@ function SplashPage() {
   
   // Create Chat instance with transport for v5
   const chat = useMemo(() => {
-    console.log('Creating Chat instance with API route: /api/chat');
+    // Use DeepSearch API when DeepSearch mode is active
+    const apiRoute = isDeepSearchActive ? '/api/deep-search' : '/api/chat';
+    console.log('Creating Chat instance with API route:', apiRoute);
     return new Chat({
       messages: [],
-      transport: new DefaultChatTransport({ api: '/api/chat' }),
+      transport: new DefaultChatTransport({ api: apiRoute }),
     });
-  }, []);
+  }, [isDeepSearchActive]);
   
   // Vercel AI SDK v5's useChat hook
   const {
