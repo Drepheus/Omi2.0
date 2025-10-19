@@ -7,6 +7,7 @@ import LaserFlow from './LaserFlow';
 import ChromaGrid from './ChromaGrid';
 import FlowingMenu from './FlowingMenu';
 import ConversationSidebar from './ConversationSidebar';
+import CommandHub from './CommandHub';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
@@ -118,6 +119,9 @@ function SplashPage() {
 
   // Settings modal
   const [showSettings, setShowSettings] = useState(false);
+
+  // Command Hub
+  const [showCommandHub, setShowCommandHub] = useState(false);
 
   // Feature buttons data
   const featureButtons = [
@@ -581,19 +585,7 @@ function SplashPage() {
       icon: '⌘',
       label: 'Command',
       onClick: () => {
-        setViewMode('models');
-        setShowAIModels(true);
-        // Smooth scroll animation to models view
-        setTimeout(() => {
-          const aiModelsSection = document.getElementById('ai-models-section');
-          if (aiModelsSection) {
-            // Smooth scroll to center the models section on screen
-            aiModelsSection.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'center'
-            });
-          }
-        }, 100);
+        setShowCommandHub(true);
       }
     },
     {
@@ -663,6 +655,33 @@ function SplashPage() {
 
   return (
     <>
+      {/* Command Hub - Full screen overlay */}
+      {showCommandHub && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000 }}>
+          <CommandHub />
+          <button
+            onClick={() => setShowCommandHub(false)}
+            style={{
+              position: 'fixed',
+              top: '1.5rem',
+              left: '1.5rem',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              padding: '10px 20px',
+              color: '#fff',
+              fontSize: '14px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              zIndex: 2001,
+            }}
+          >
+            ← Back to Chat
+          </button>
+        </div>
+      )}
+
       {/* Conversation Sidebar */}
       {user && (
         <ConversationSidebar
