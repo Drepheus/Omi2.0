@@ -33,7 +33,7 @@ export default function CommandHub() {
             enableTilt={false}
             clickEffect={true}
             enableMagnetism={true}
-            glowColor="132, 0, 255"
+            glowColor="192, 192, 192"
             particleCount={12}
             spotlightRadius={300}
           />

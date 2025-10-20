@@ -4,42 +4,42 @@ import './MagicBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = '132, 0, 255';
+const DEFAULT_GLOW_COLOR = '192, 192, 192'; // Silver/Chrome
 const MOBILE_BREAKPOINT = 768;
 
 const cardData = [
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'Omi Chat',
     description: 'Conversational AI with advanced reasoning',
     label: 'Intelligence'
   },
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'DeepSearch',
     description: 'Real-time web search powered by Tavily',
     label: 'Discovery'
   },
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'Image Generation',
     description: 'Create stunning visuals with AI',
     label: 'Creative'
   },
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'Video Generation',
     description: 'Transform ideas into motion',
     label: 'Production'
   },
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'Personas',
     description: 'Specialized AI personalities',
     label: 'Character'
   },
   {
-    color: '#060010',
+    color: '#0a0a0a',
     title: 'Analytics',
     description: 'Track usage and insights',
     label: 'Metrics'

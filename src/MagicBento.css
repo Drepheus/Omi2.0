@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
 }
 
 .card-grid {
@@ -29,8 +29,8 @@
   cursor: pointer;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(6, 0, 16, 0.5);
+  border: 1px solid rgba(192, 192, 192, 0.2);
+  background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(20px);
 }
 
@@ -42,9 +42,9 @@
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0) 50%,
-    rgba(255, 255, 255, 0.1) 100%
+    rgba(192, 192, 192, 0.4) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(192, 192, 192, 0.4) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -64,7 +64,7 @@
   --glow-x: 50%;
   --glow-y: 50%;
   --glow-intensity: 0;
-  --glow-color: 132, 0, 255;
+  --glow-color: 192, 192, 192;
   --glow-radius: 300px;
 }
 
@@ -176,7 +176,7 @@
 /* Animation Enhancements */
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(132, 0, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(192, 192, 192, 0.3);
 }
 
 .card:active {
