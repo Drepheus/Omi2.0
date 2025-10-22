@@ -123,6 +123,9 @@ function SplashPage() {
   // Command Hub
   const [showCommandHub, setShowCommandHub] = useState(false);
 
+  // Subscription tier
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro'>('free');
+
   // Feature buttons data
   const featureButtons = [
     {
@@ -284,8 +287,29 @@ function SplashPage() {
       setCurrentConversationId(null);
       // Just load the list, don't auto-load a conversation
       loadConversationsOnly();
+      // Fetch subscription tier
+      fetchSubscriptionTier();
     }
   }, [user]);
+
+  // Fetch subscription tier
+  const fetchSubscriptionTier = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('subscription_tier')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) throw error;
+      setSubscriptionTier(data?.subscription_tier || 'free');
+    } catch (error) {
+      console.error('Error fetching subscription tier:', error);
+      setSubscriptionTier('free');
+    }
+  };
 
   // Auto-save messages to database when user is logged in
   useEffect(() => {
@@ -709,6 +733,32 @@ function SplashPage() {
 
         {/* Top Right Action Buttons - Fixed to top-right corner */}
         <div className="top-right-actions">
+          {/* Account Tier Indicator (for free users) */}
+          {user && subscriptionTier === 'free' && (
+            <>
+              <div className="account-tier-badge">
+                <span className="tier-icon">🆓</span>
+                <span className="tier-text">Free Account</span>
+              </div>
+              <button
+                className="header-action-btn upgrade-btn"
+                onClick={() => setShowPaywall(true)}
+                title="Upgrade to Pro"
+              >
+                <span className="header-btn-icon">⚡</span>
+                <span className="header-btn-text">Upgrade</span>
+              </button>
+            </>
+          )}
+
+          {/* Account Tier Indicator (for pro users) */}
+          {user && subscriptionTier === 'pro' && (
+            <div className="account-tier-badge pro-badge">
+              <span className="tier-icon">✨</span>
+              <span className="tier-text">Pro Account</span>
+            </div>
+          )}
+
           {/* New Conversation Button */}
           <button
             className="header-action-btn new-conversation-btn"
