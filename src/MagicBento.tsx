@@ -16,8 +16,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    title: 'DeepSearch',
-    description: 'Real-time web search powered by Tavily',
+    title: 'Web Search',
+    description: 'Search the web with AI-powered insights',
     label: 'Discovery'
   },
   {

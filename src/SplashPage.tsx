@@ -88,7 +88,6 @@ function SplashPage() {
   const [secondaryMessages, setSecondaryMessages] = useState<ChatMessage[]>([]);
   const [secondaryLoading, setSecondaryLoading] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
-  const [isDeepSearchActive, setIsDeepSearchActive] = useState(false);
   const [isPersonasActive, setIsPersonasActive] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
   const [isSynthesizeActive, setIsSynthesizeActive] = useState(false);
@@ -136,7 +135,6 @@ function SplashPage() {
         const isActivating = selectedFeature !== 'Compare';
         setSelectedFeature(isActivating ? 'Compare' : null);
         setIsCompareMode(isActivating);
-        setIsDeepSearchActive(false); // Turn off laser animation
         setIsPersonasActive(false); // Turn off ChromaGrid animation
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
         if (!isActivating) {
@@ -147,25 +145,11 @@ function SplashPage() {
       }
     },
     {
-      name: 'DeepSearch',
-      icon: '◎',
-      description: 'Explore beyond surface answers with advanced queries',
-      onClick: () => {
-        const isActivating = selectedFeature !== 'DeepSearch';
-        setSelectedFeature(isActivating ? 'DeepSearch' : null);
-        setIsDeepSearchActive(isActivating);
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        console.log('DeepSearch clicked');
-      }
-    },
-    {
       name: 'Create',
       icon: '◇',
       description: 'Generate visuals, stories, or creative ideas',
       onClick: () => {
         setShowCreateMenu(true);
-        setIsDeepSearchActive(false); // Turn off laser animation
         setIsPersonasActive(false); // Turn off ChromaGrid animation
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
         console.log('Create clicked - showing infinite menu');
@@ -178,7 +162,6 @@ function SplashPage() {
       onClick: () => {
         const isActivating = selectedFeature !== 'Personas';
         setSelectedFeature(isActivating ? 'Personas' : null);
-        setIsDeepSearchActive(false); // Turn off laser animation
         setIsPersonasActive(isActivating); // Toggle ChromaGrid overlay
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
         console.log('Personas clicked - ChromaGrid', isActivating ? 'activated' : 'deactivated');
@@ -191,7 +174,6 @@ function SplashPage() {
       onClick: () => {
         const isActivating = selectedFeature !== 'Pulse';
         setSelectedFeature(isActivating ? 'Pulse' : null);
-        setIsDeepSearchActive(false); // Turn off laser animation
         setIsPersonasActive(false); // Turn off ChromaGrid animation
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
         setIsPulseActive(isActivating); // Toggle FlowingMenu
@@ -206,7 +188,6 @@ function SplashPage() {
         const isActivating = selectedFeature !== 'Image Gen';
         setSelectedFeature(isActivating ? 'Image Gen' : null);
         setIsInstantGenActive(isActivating);
-        setIsDeepSearchActive(false);
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
@@ -223,7 +204,6 @@ function SplashPage() {
       onClick: () => {
         const isActivating = selectedFeature !== 'Video Gen';
         setSelectedFeature(isActivating ? 'Video Gen' : null);
-        setIsDeepSearchActive(false);
         setIsPersonasActive(false);
         setIsSynthesizeActive(isActivating); // Keep the electric border animation
         setIsVideoGenActive(isActivating);
@@ -517,7 +497,6 @@ function SplashPage() {
       
       console.log('Processing message submission...');
       console.log('=== CURRENT STATE CHECK ===');
-      console.log('isDeepSearchActive:', isDeepSearchActive);
       console.log('isVideoGenActive:', isVideoGenActive);
       console.log('isInstantGenActive:', isInstantGenActive);
       console.log('selectedFeature:', selectedFeature);
@@ -542,7 +521,6 @@ function SplashPage() {
       try {
         setIsLoading(true);
         console.log('Sending message:', { text: input.trim() });
-        console.log('DeepSearch active:', isDeepSearchActive);
         
         // Add user message to UI immediately
         const userMessage: Message = {
@@ -555,12 +533,8 @@ function SplashPage() {
         setInput(''); // Clear input immediately
         setAttachedFiles([]);
         
-        // Determine which API to call
-        const apiRoute = isDeepSearchActive ? '/api/deep-search' : '/api/chat';
-        console.log('Using API route:', apiRoute);
-        
-        // Call API
-        const response = await fetch(apiRoute, {
+        // Call chat API
+        const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1263,22 +1237,6 @@ function SplashPage() {
         </div>
       )}
     </div>
-      
-      {/* LaserFlow Background Animation for DeepSearch */}
-      {isDeepSearchActive && (
-        <div className="laser-flow-background">
-          <LaserFlow
-            color="#e5e5e5"
-            fogIntensity={0.15}
-            wispIntensity={1.5}
-            flowSpeed={0.3}
-            horizontalBeamOffset={0.0}
-            verticalBeamOffset={0.1}
-            verticalSizing={0.75}
-            horizontalSizing={0.4}
-          />
-        </div>
-      )}
       
       {/* ChromaGrid Overlay Animation for Personas */}
       {isPersonasActive && (

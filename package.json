@@ -17,7 +17,6 @@
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.74.0",
-    "@tavily/core": "^0.5.12",
     "@types/gl-matrix": "^2.4.5",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
