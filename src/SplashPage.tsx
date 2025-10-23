@@ -702,6 +702,16 @@ function SplashPage() {
 
         {/* Top Right Action Buttons - Fixed to top-right corner */}
         <div className="top-right-actions">
+          {/* New Conversation Button - FIRST */}
+          <button
+            className="header-action-btn new-conversation-btn"
+            onClick={createNewConversation}
+            title="Start new conversation"
+          >
+            <span className="header-btn-icon">✦</span>
+            <span className="header-btn-text">New Chat</span>
+          </button>
+
           {/* Account Tier Indicator (for free users) */}
           {user && subscriptionTier === 'free' && (
             <>
@@ -727,16 +737,6 @@ function SplashPage() {
               <span className="tier-text">Pro Account</span>
             </div>
           )}
-
-          {/* New Conversation Button */}
-          <button
-            className="header-action-btn new-conversation-btn"
-            onClick={createNewConversation}
-            title="Start new conversation"
-          >
-            <span className="header-btn-icon">✦</span>
-            <span className="header-btn-text">New Chat</span>
-          </button>
 
           {/* Account Button */}
           {user ? (
