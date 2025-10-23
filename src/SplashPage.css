@@ -286,35 +286,35 @@ html, body {
 .account-tier-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 3px;
+  padding: 3px 8px;
   background: rgba(0, 255, 170, 0.08);
   border: 1px solid rgba(0, 255, 170, 0.25);
-  border-radius: 8px;
+  border-radius: 6px;
   backdrop-filter: blur(10px);
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   color: rgba(0, 255, 170, 0.95);
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   transition: all 0.3s ease;
-  box-shadow: 0 0 8px rgba(0, 255, 170, 0.15);
+  box-shadow: 0 0 6px rgba(0, 255, 170, 0.15);
 }
 
 .account-tier-badge.pro-badge {
   background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 223, 0, 0.1) 100%);
   border: 1px solid rgba(255, 215, 0, 0.4);
   color: rgba(255, 215, 0, 1);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3), 0 4px 12px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3), 0 4px 10px rgba(255, 215, 0, 0.2);
 }
 
 .tier-icon {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   line-height: 1;
 }
 
 .tier-text {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   white-space: nowrap;
 }
 
