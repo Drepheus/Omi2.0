@@ -124,7 +124,7 @@ export default function SettingsModal({ isOpen, onClose, user }: SettingsModalPr
         </div>
 
         <div className="settings-modal-footer">
-          <p className="settings-footer-text">Omi AI • Created by Andre Green</p>
+          <p className="settings-footer-text">Omi AI • Created by Drepheus</p>
         </div>
       </div>
     </div>

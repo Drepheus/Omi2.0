@@ -1,6 +1,6 @@
-const Replicate = require('replicate');
+import Replicate from 'replicate';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   console.log('=== IMAGE GENERATION API CALLED ===');
   
   if (req.method !== 'POST') {
@@ -47,4 +47,4 @@ module.exports = async function handler(req, res) {
       details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-};
+}

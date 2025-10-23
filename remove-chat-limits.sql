@@ -3,16 +3,16 @@
 -- ========================================
 -- Only track image_gen and video_gen, chat is now unlimited
 
--- Update the usage_type constraint to only allow image_gen and video_gen
+-- FIRST: Clean up any existing chat usage records (must be done before adding constraint)
+DELETE FROM public.usage_tracking WHERE usage_type = 'chat';
+
+-- THEN: Update the usage_type constraint to only allow image_gen and video_gen
 ALTER TABLE public.usage_tracking
 DROP CONSTRAINT IF EXISTS usage_tracking_usage_type_check;
 
 ALTER TABLE public.usage_tracking
 ADD CONSTRAINT usage_tracking_usage_type_check
 CHECK (usage_type IN ('image_gen', 'video_gen'));
-
--- Clean up any existing chat usage records
-DELETE FROM public.usage_tracking WHERE usage_type = 'chat';
 
 -- Update the can_user_perform_action function to only handle image/video
 CREATE OR REPLACE FUNCTION public.can_user_perform_action(
