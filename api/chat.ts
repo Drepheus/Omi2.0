@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 interface Message {
@@ -5,38 +6,23 @@ interface Message {
   content: string;
 }
 
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('=== CHAT API ROUTE CALLED ===');
   console.log('Request method:', req.method);
-  console.log('Request URL:', req.url);
   
   if (req.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      {
-        status: 405,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return res.status(405).json({ error: 'Method not allowed' });
   }
   
   try {
-    const body = await req.json();
-    console.log('Request body received');
-    const { messages } = body as { messages: Message[] };
+    const { messages } = req.body as { messages: Message[] };
     console.log('Messages extracted:', messages?.length, 'messages');
 
     // Verify API key is available
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) {
       console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable');
-      return new Response(
-        JSON.stringify({ error: 'API key not configured' }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      return res.status(500).json({ error: 'API key not configured' });
     }
 
     console.log('API key found, initializing Gemini...');
@@ -113,29 +99,17 @@ Remember: You represent Andre Green's vision for helpful, intelligent AI. Mainta
     
     console.log('Response received from Gemini');
 
-    return new Response(
-      JSON.stringify({ 
-        message: text,
-        role: 'assistant'
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return res.status(200).json({ 
+      message: text,
+      role: 'assistant'
+    });
   } catch (error) {
     console.error('=== CHAT API ERROR ===');
     console.error('Chat API error:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to process chat request',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return res.status(500).json({ 
+      error: 'Failed to process chat request',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
