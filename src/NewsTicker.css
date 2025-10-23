@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   height: 100%;
-  animation: scroll 40s linear infinite;
+  animation: scroll 10s linear infinite;
   will-change: transform;
 }
 
