@@ -22,9 +22,9 @@ export default function NewsTicker() {
 
   const fetchAINews = async () => {
     try {
-      // Using HackerNews Algolia API for tech news (includes AI articles)
+      // Using HackerNews Algolia API for tech news
       const response = await fetch(
-        `https://hn.algolia.com/api/v1/search?query=artificial%20intelligence%20OR%20AI%20OR%20ChatGPT%20OR%20OpenAI%20OR%20machine%20learning&tags=story&hitsPerPage=30`
+        `https://hn.algolia.com/api/v1/search?query=AI%20artificial%20intelligence&tags=story&hitsPerPage=30`
       );
       
       if (!response.ok) {
@@ -33,15 +33,23 @@ export default function NewsTicker() {
 
       const data = await response.json();
       
+      console.log('HackerNews API response:', data); // Debug log
+      
       // Filter out items without URLs and map to our format
       const newsItems: NewsItem[] = data.hits
         .filter((hit: any) => hit.url && hit.title)
         .map((hit: any) => ({
           title: hit.title,
           url: hit.url,
-          source: new URL(hit.url).hostname.replace('www.', ''),
+          source: hit.url ? new URL(hit.url).hostname.replace('www.', '') : 'HackerNews',
           publishedAt: hit.created_at,
         }));
+
+      console.log('Mapped news items:', newsItems); // Debug log
+      
+      if (newsItems.length === 0) {
+        throw new Error('No news items found');
+      }
 
       setNews(newsItems);
       setIsLoading(false);
@@ -50,21 +58,27 @@ export default function NewsTicker() {
       // Fallback to actual tech news sites
       setNews([
         { 
-          title: 'OpenAI announces GPT-5 with breakthrough capabilities', 
+          title: 'Latest developments in artificial intelligence and machine learning', 
           url: 'https://techcrunch.com/tag/artificial-intelligence/', 
           source: 'TechCrunch', 
           publishedAt: new Date().toISOString() 
         },
         { 
-          title: 'Google DeepMind unveils new AI research breakthrough', 
+          title: 'AI breakthroughs reshape technology landscape', 
           url: 'https://www.theverge.com/ai-artificial-intelligence', 
           source: 'The Verge', 
           publishedAt: new Date().toISOString() 
         },
         { 
-          title: 'Anthropic releases Claude 4 with enhanced reasoning', 
+          title: 'How artificial intelligence is transforming industries', 
           url: 'https://www.wired.com/tag/artificial-intelligence/', 
           source: 'Wired', 
+          publishedAt: new Date().toISOString() 
+        },
+        { 
+          title: 'OpenAI continues to push boundaries of AI capabilities', 
+          url: 'https://www.engadget.com/tag/ai/', 
+          source: 'Engadget', 
           publishedAt: new Date().toISOString() 
         },
       ]);
