@@ -713,25 +713,19 @@ function SplashPage() {
             <span className="header-btn-text">New Chat</span>
           </button>
 
-          {/* Account Tier Indicator (for free users) */}
+          {/* Upgrade Button (for free users) - No badge in header */}
           {user && subscriptionTier === 'free' && (
-            <>
-              <div className="account-tier-badge">
-                <span className="tier-icon">◎</span>
-                <span className="tier-text">Free Account</span>
-              </div>
-              <button
-                className="header-action-btn upgrade-btn"
-                onClick={() => setShowPaywall(true)}
-                title="Upgrade to Pro"
-              >
-                <span className="header-btn-icon">◈</span>
-                <span className="header-btn-text">Upgrade</span>
-              </button>
-            </>
+            <button
+              className="header-action-btn upgrade-btn"
+              onClick={() => setShowPaywall(true)}
+              title="Upgrade to Pro"
+            >
+              <span className="header-btn-icon">◈</span>
+              <span className="header-btn-text">Upgrade</span>
+            </button>
           )}
 
-          {/* Account Tier Indicator (for pro users) */}
+          {/* Account Tier Indicator (for pro users only) */}
           {user && subscriptionTier === 'pro' && (
             <div className="account-tier-badge pro-badge">
               <span className="tier-icon">◆</span>
@@ -755,6 +749,14 @@ function SplashPage() {
             </div>
           )}
         </div>
+
+        {/* Free Account Badge - Bottom Left Corner */}
+        {user && subscriptionTier === 'free' && (
+          <div className="account-tier-badge-fixed">
+            <span className="tier-icon">◎</span>
+            <span className="tier-text">Free Account</span>
+          </div>
+        )}
 
         <div className="chat-interface">
           <div className="chat-header">

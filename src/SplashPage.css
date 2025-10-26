@@ -308,6 +308,40 @@ html, body {
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.3), 0 4px 10px rgba(255, 215, 0, 0.2);
 }
 
+/* Fixed Free Account Badge - Bottom Left */
+.account-tier-badge-fixed {
+  position: fixed;
+  bottom: 52px; /* Above news ticker */
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  background: rgba(0, 255, 170, 0.08);
+  border: 1px solid rgba(0, 255, 170, 0.25);
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+  font-size: 0.55rem;
+  color: rgba(0, 255, 170, 0.95);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  z-index: 9998; /* Below news ticker */
+  box-shadow: 0 0 6px rgba(0, 255, 170, 0.15);
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .tier-icon {
   font-size: 0.65rem;
   line-height: 1;
