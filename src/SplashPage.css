@@ -65,6 +65,7 @@ html, body {
   align-items: flex-start;
   justify-content: center;
   padding-top: 2rem;
+  padding-bottom: 4rem; /* Extra bottom padding for scrolling clearance */
 }
 
 /* LaserFlow Background Animation */
@@ -1758,7 +1759,7 @@ html, body {
 }
 
 .generated-image-container {
-  margin: 1.5rem auto 3rem;
+  margin: 1.5rem auto 6rem; /* Increased bottom margin for button visibility */
   padding: 1.75rem;
   max-width: 700px;
   background: linear-gradient(135deg,
@@ -1986,6 +1987,8 @@ html, body {
 .generated-image {
   width: 100%;
   height: auto;
+  max-height: 60vh; /* Limit image height to allow button visibility */
+  object-fit: contain; /* Maintain aspect ratio */
   border-radius: 12px;
   border: 2px solid rgba(138, 43, 226, 0.3);
   box-shadow: 
@@ -2098,7 +2101,7 @@ html, body {
 }
 
 .generated-video-container {
-  margin: 1.5rem auto 3rem;
+  margin: 1.5rem auto 6rem; /* Increased bottom margin for button visibility */
   padding: 1.75rem;
   max-width: 800px;
   background: linear-gradient(135deg,
@@ -2195,7 +2198,8 @@ html, body {
 .generated-video {
   width: 100%;
   height: auto;
-  max-height: 600px;
+  max-height: 60vh; /* Limit video height to allow button visibility */
+  object-fit: contain; /* Maintain aspect ratio */
   border-radius: 12px;
   border: 2px solid rgba(0, 191, 255, 0.3);
   box-shadow: 
