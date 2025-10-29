@@ -9,6 +9,7 @@ import FlowingMenu from './FlowingMenu';
 import ConversationSidebar from './ConversationSidebar';
 import CommandHub from './CommandHub';
 import NewsTicker from './NewsTicker';
+import MediaGallery from './MediaGallery';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
@@ -16,6 +17,7 @@ import type { DbConversation } from './databaseService';
 import PaywallModal from './PaywallModal';
 import SettingsModal from './SettingsModal';
 import { checkUsageLimit, incrementUsage, UsageType } from './usageTracking';
+import { saveGeneratedMedia } from './mediaService';
 import './SplashPage.css';
 
 // Omi Core Identity (Static System Message) - now used server-side
@@ -122,6 +124,14 @@ function SplashPage() {
 
   // Command Hub
   const [showCommandHub, setShowCommandHub] = useState(false);
+
+  // Media Gallery
+  const [showMediaGallery, setShowMediaGallery] = useState(false);
+
+  // Debug log for gallery state
+  useEffect(() => {
+    console.log('🎨 Media Gallery State:', showMediaGallery);
+  }, [showMediaGallery]);
 
   // Subscription tier
   const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro'>('free');
@@ -421,6 +431,16 @@ function SplashPage() {
             console.log('Video generated successfully:', data.videoUrl);
             setGeneratedVideo(data.videoUrl);
             
+            // Save generated video to database
+            if (user) {
+              try {
+                await saveGeneratedMedia(user.id, 'video', data.videoUrl, input.trim());
+                console.log('Video saved to gallery');
+              } catch (saveError) {
+                console.error('Failed to save video to gallery:', saveError);
+              }
+            }
+            
             // Increment usage after successful generation
             if (user) {
               await incrementUsage(user.id, 'video_gen');
@@ -469,6 +489,16 @@ function SplashPage() {
           if (response.ok && data.imageUrl) {
             console.log('Image generated successfully:', data.imageUrl);
             setGeneratedImage(data.imageUrl);
+            
+            // Save generated image to database
+            if (user) {
+              try {
+                await saveGeneratedMedia(user.id, 'image', data.imageUrl, input.trim());
+                console.log('Image saved to gallery');
+              } catch (saveError) {
+                console.error('Failed to save image to gallery:', saveError);
+              }
+            }
             
             // Increment usage after successful generation
             if (user) {
@@ -584,8 +614,11 @@ function SplashPage() {
     },
     {
       icon: '◐',
-      label: 'Theme',
-      onClick: () => console.log('Theme clicked')
+      label: 'Gallery',
+      onClick: () => {
+        console.log('Gallery button clicked!');
+        setShowMediaGallery(true);
+      }
     },
     {
       icon: '⚡',
@@ -1350,6 +1383,13 @@ function SplashPage() {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         user={user}
+      />
+
+      {/* Media Gallery */}
+      <MediaGallery
+        isOpen={showMediaGallery}
+        userId={user?.id || ''}
+        onClose={() => setShowMediaGallery(false)}
       />
 
       {/* News Ticker - Fixed at bottom */}
