@@ -613,7 +613,7 @@ function SplashPage() {
       }
     },
     {
-      icon: '◐',
+      icon: '⊞',
       label: 'Gallery',
       onClick: () => {
         console.log('Gallery button clicked!');
