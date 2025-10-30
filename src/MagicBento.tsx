@@ -22,26 +22,26 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    title: 'Image Generation',
-    description: 'Create stunning visuals with AI',
+    title: 'Custom Omi\'s',
+    description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
     label: 'Creative'
   },
   {
     color: '#0a0a0a',
-    title: 'Video Generation',
-    description: 'Transform ideas into motion',
+    title: 'AI Playground',
+    description: 'Experiment with cutting-edge models, generative tools, and experimental features',
     label: 'Production'
   },
   {
     color: '#0a0a0a',
-    title: 'Personas',
-    description: 'Specialized AI personalities',
+    title: 'Workflows',
+    description: 'Automate complex tasks or multi-step reasoning with agentic systems',
     label: 'Character'
   },
   {
     color: '#0a0a0a',
-    title: 'Analytics',
-    description: 'Track usage and insights',
+    title: 'API Settings',
+    description: 'Configure API\'s',
     label: 'Metrics'
   }
 ];
