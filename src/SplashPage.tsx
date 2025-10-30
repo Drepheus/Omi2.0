@@ -10,6 +10,7 @@ import ConversationSidebar from './ConversationSidebar';
 import CommandHub from './CommandHub';
 import NewsTicker from './NewsTicker';
 import MediaGallery from './MediaGallery';
+import SearchModal from './SearchModal';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
@@ -127,6 +128,9 @@ function SplashPage() {
 
   // Media Gallery
   const [showMediaGallery, setShowMediaGallery] = useState(false);
+
+  // Search Modal
+  const [showSearch, setShowSearch] = useState(false);
 
   // Debug log for gallery state
   useEffect(() => {
@@ -621,9 +625,12 @@ function SplashPage() {
       }
     },
     {
-      icon: '⚡',
-      label: 'Quick',
-      onClick: () => console.log('Quick clicked')
+      icon: '🔍',
+      label: 'Search',
+      onClick: () => {
+        console.log('Search button clicked!');
+        setShowSearch(true);
+      }
     },
     {
       icon: '⚙',
@@ -1390,6 +1397,12 @@ function SplashPage() {
         isOpen={showMediaGallery}
         userId={user?.id || ''}
         onClose={() => setShowMediaGallery(false)}
+      />
+
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
       />
 
       {/* News Ticker - Fixed at bottom */}
