@@ -625,7 +625,7 @@ function SplashPage() {
       }
     },
     {
-      icon: '🔍',
+      icon: '◈',
       label: 'Search',
       onClick: () => {
         console.log('Search button clicked!');
