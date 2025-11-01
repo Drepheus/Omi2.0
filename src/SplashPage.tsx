@@ -103,6 +103,7 @@ function SplashPage() {
   const [isVideoGenActive, setIsVideoGenActive] = useState(false);
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Paywall and subscription management
@@ -702,6 +703,30 @@ function SplashPage() {
       )}
 
       <div className="splash-page">
+        {/* Video Gen Background Video */}
+        {selectedFeature === 'Video Gen' && !isInputFocused && (
+          <video
+            className="video-gen-background"
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              zIndex: 0,
+              opacity: 0.4,
+              pointerEvents: 'none'
+            }}
+          >
+            <source src="/static/videos/video-gen-bg.mp4" type="video/mp4" />
+          </video>
+        )}
+
         {/* Hamburger Menu - Fixed to top-left corner */}
         {user && (
           <button 
@@ -1014,6 +1039,8 @@ function SplashPage() {
                 type="text"
                 value={input}
                 onChange={handleInputChange}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
                 placeholder={
                   isVideoGenActive
                     ? "🎬 Describe your video scene (e.g., 'a woman walking through Tokyo at night')..."
