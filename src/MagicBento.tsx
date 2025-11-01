@@ -20,7 +20,7 @@ const cardData = [
     color: '#0a0a0a',
     icon: '🌐',
     title: 'Web Search',
-    description: 'Search the web with AI-powered insights',
+    description: 'Search that thinks. Navigate the web like intelligence, not keywords.',
     label: 'Discovery'
   },
   {
@@ -545,14 +545,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   // Handle card clicks
   const handleCardClick = (card: typeof cardData[0]) => {
     if (card.action === 'chat') {
-      // Close Command Hub and return to chat interface
-      const commandHubClose = document.querySelector('.command-hub-back') as HTMLButtonElement;
-      if (commandHubClose) {
-        commandHubClose.click();
-      } else {
-        // Fallback: navigate back
-        window.history.back();
-      }
+      // Navigate to the root/main chat interface
+      window.location.href = '/';
     }
     // Add more actions here as needed for other cards
   };
