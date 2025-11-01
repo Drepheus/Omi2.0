@@ -548,8 +548,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   // Handle card clicks
   const handleCardClick = (card: typeof cardData[0]) => {
     if (card.action === 'chat') {
-      // Navigate to the root/main chat interface
-      window.location.href = '/';
+      // Navigate to chat (handled by parent)
+      window.location.href = '/chat';
     } else if (card.action === 'websearch' && onWebSearchClick) {
       // Trigger the web search page
       onWebSearchClick();

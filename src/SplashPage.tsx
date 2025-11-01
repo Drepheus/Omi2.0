@@ -1,17 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormattedText from './FormattedText';
 import Dock from './Dock';
 import InfiniteScroll from './InfiniteScroll';
 import InfiniteMenu from './InfiniteMenu';
-import LaserFlow from './LaserFlow';
 import ChromaGrid from './ChromaGrid';
 import FlowingMenu from './FlowingMenu';
 import ConversationSidebar from './ConversationSidebar';
-import CommandHub from './CommandHub';
 import NewsTicker from './NewsTicker';
 import MediaGallery from './MediaGallery';
 import SearchModal from './SearchModal';
-import WebSearch from './WebSearch';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
@@ -124,15 +122,14 @@ function SplashPage() {
   // Settings modal
   const [showSettings, setShowSettings] = useState(false);
 
-  // Command Hub
-  const [showCommandHub, setShowCommandHub] = useState(false);
-  const [showWebSearch, setShowWebSearch] = useState(false);
-
   // Media Gallery
   const [showMediaGallery, setShowMediaGallery] = useState(false);
 
   // Search Modal
   const [showSearch, setShowSearch] = useState(false);
+
+  // Navigation
+  const navigate = useNavigate();
 
   // Debug log for gallery state
   useEffect(() => {
@@ -615,7 +612,7 @@ function SplashPage() {
       icon: '⌘',
       label: 'Command',
       onClick: () => {
-        setShowCommandHub(true);
+        navigate('/command-hub');
       }
     },
     {
@@ -691,41 +688,6 @@ function SplashPage() {
 
   return (
     <>
-      {/* Command Hub - Full screen overlay */}
-      {showCommandHub && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000 }}>
-          <CommandHub onWebSearchClick={() => {
-            setShowCommandHub(false);
-            setShowWebSearch(true);
-          }} />
-          <button
-            onClick={() => setShowCommandHub(false)}
-            style={{
-              position: 'fixed',
-              top: '1.5rem',
-              left: '1.5rem',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '12px',
-              padding: '10px 20px',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              zIndex: 2001,
-            }}
-          >
-            ← Back to Chat
-          </button>
-        </div>
-      )}
-
-      {/* Web Search - Full screen overlay */}
-      {showWebSearch && (
-        <WebSearch onClose={() => setShowWebSearch(false)} />
-      )}
-
       {/* Conversation Sidebar */}
       {user && (
         <ConversationSidebar

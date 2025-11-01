@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MagicBento from './MagicBento';
 import './CommandHub.css';
 
@@ -8,6 +9,7 @@ interface CommandHubProps {
 
 export default function CommandHub({ onWebSearchClick }: CommandHubProps) {
   const [showHub, setShowHub] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <div className="command-hub-container">
@@ -16,7 +18,7 @@ export default function CommandHub({ onWebSearchClick }: CommandHubProps) {
           {/* Back button */}
           <button 
             className="command-hub-back"
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/chat')}
             title="Back to chat"
           >
             ← Back
