@@ -18,6 +18,7 @@ import PaywallModal from './PaywallModal';
 import SettingsModal from './SettingsModal';
 import { checkUsageLimit, incrementUsage, UsageType } from './usageTracking';
 import { saveGeneratedMedia } from './mediaService';
+import videoPreview from './assets/vidpreview.mp4';
 import './SplashPage.css';
 
 // Omi Core Identity (Static System Message) - now used server-side
@@ -1224,6 +1225,7 @@ function SplashPage() {
                     muted
                     playsInline
                     key="video-preview"
+                    src={videoPreview}
                     style={{
                       width: '100%',
                       maxWidth: '800px',
@@ -1233,11 +1235,7 @@ function SplashPage() {
                       margin: '0 auto 20px',
                       display: input.length === 0 ? 'block' : 'none'
                     }}
-                  >
-                    <source src="./static/videos/vidpreview.mp4" type="video/mp4" />
-                    <source src="../static/videos/vidpreview.mp4" type="video/mp4" />
-                    <source src="../../static/videos/vidpreview.mp4" type="video/mp4" />
-                  </video>
+                  />
                   {input.length > 0 && (
                     <>
                       <div className="placeholder-icon">🎬</div>
