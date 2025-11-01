@@ -139,7 +139,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
               color="#C0C0C0"
               speed={1}
               chaos={0.5}
-              thickness={2}
+              thickness={3.5}
               style={{ borderRadius: 20 }}
             >
               <div className="ultra-plan-card">
