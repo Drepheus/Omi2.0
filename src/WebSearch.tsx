@@ -9,34 +9,57 @@ interface WebSearchProps {
 const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const searchBoxRef = useRef<HTMLDivElement>(null);
 
-  // Featured search categories
+  // Search modes
+  const searchModes = [
+    {
+      name: 'Search + Summarize',
+      icon: '◈',
+      description: 'AI-powered contextual summaries'
+    },
+    {
+      name: 'Auto Deep Dive',
+      icon: '🧭',
+      description: 'Smart context navigation'
+    },
+    {
+      name: 'Continuous Research',
+      icon: '◇',
+      description: '60-second deep research mode'
+    },
+    {
+      name: 'Cited Sources',
+      icon: '◆',
+      description: 'PDF export with citations'
+    },
+    {
+      name: 'Research Chains',
+      icon: '⚡',
+      description: 'Pro: Sequential research flow'
+    },
+    {
+      name: 'Developer Mode',
+      icon: '◐',
+      description: 'Coming: API & automation access'
+    }
+  ];
+
+  // Featured search capabilities
   const searchCategories = [
     {
-      icon: '◈',
-      title: 'Quick Search',
-      description: 'Get instant AI-powered results',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(128, 128, 128, 0.1))'
+      icon: '✨',
+      title: 'AI-Powered Search',
+      description: 'Omi summarizes live info with citations (Perplexity style)',
+      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(138, 43, 226, 0.1))'
     },
     {
-      icon: '◇',
-      title: 'Deep Research',
-      description: 'Comprehensive analysis and insights',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.12), rgba(128, 128, 128, 0.08))'
-    },
-    {
-      icon: '◆',
-      title: 'News & Trends',
-      description: 'Latest updates and breaking stories',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(128, 128, 128, 0.06))'
-    },
-    {
-      icon: '⚡',
-      title: 'Tech & Science',
-      description: 'Discoveries and innovations',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.08), rgba(128, 128, 128, 0.04))'
+      icon: '🧭',
+      title: 'Smart Context Navigation',
+      description: 'Click any result to let Omi explore that site in depth using a headless browser',
+      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.12), rgba(0, 191, 255, 0.08))'
     }
   ];
 
@@ -110,6 +133,27 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
 
       {/* Main Search Box */}
       <div className="websearch-main" ref={searchBoxRef}>
+        {/* Search modes */}
+        <div className="search-modes">
+          {searchModes.map((mode, index) => {
+            const isPro = mode.name === 'Research Chains';
+            const isComingSoon = mode.name === 'Developer Mode';
+            return (
+              <button
+                key={index}
+                className={`search-mode-button ${selectedMode === mode.name ? 'active' : ''} ${isPro ? 'pro' : ''} ${isComingSoon ? 'coming-soon' : ''}`}
+                onClick={() => !isComingSoon && setSelectedMode(selectedMode === mode.name ? null : mode.name)}
+                disabled={isComingSoon}
+              >
+                <span className="mode-icon">{mode.icon}</span>
+                <span className="mode-name">{mode.name}</span>
+                {isPro && <span className="pro-badge">PRO</span>}
+                {isComingSoon && <span className="coming-soon-badge">Soon</span>}
+              </button>
+            );
+          })}
+        </div>
+
         <form onSubmit={handleSearch} className="search-form">
           <div className="search-input-wrapper">
             <div className="search-icon">◈</div>
@@ -135,6 +179,15 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
           </div>
           <div className="search-border-glow"></div>
         </form>
+
+        {selectedMode && (
+          <div className="selected-mode-info">
+            <span className="info-icon">→</span>
+            <span className="info-text">
+              {searchModes.find(m => m.name === selectedMode)?.description}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Search Categories */}
