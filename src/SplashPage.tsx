@@ -18,7 +18,6 @@ import PaywallModal from './PaywallModal';
 import SettingsModal from './SettingsModal';
 import { checkUsageLimit, incrementUsage, UsageType } from './usageTracking';
 import { saveGeneratedMedia } from './mediaService';
-import videoPreview from './assets/vidpreview.mp4';
 import './SplashPage.css';
 
 // Omi Core Identity (Static System Message) - now used server-side
@@ -1216,33 +1215,10 @@ function SplashPage() {
                   />
                 </div>
               ) : (
-                <div className="video-gen-placeholder" style={{ padding: '40px', textAlign: 'center' }}>
-                  {/* Always show video preview first, then text when typing */}
-                  <video
-                    className="video-gen-preview"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    key="video-preview"
-                    src={videoPreview}
-                    style={{
-                      width: '100%',
-                      maxWidth: '800px',
-                      height: 'auto',
-                      borderRadius: '16px',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-                      margin: '0 auto 20px',
-                      display: input.length === 0 ? 'block' : 'none'
-                    }}
-                  />
-                  {input.length > 0 && (
-                    <>
-                      <div className="placeholder-icon">🎬</div>
-                      <p className="placeholder-text">Enter a prompt above to generate a video</p>
-                      <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
-                    </>
-                  )}
+                <div className="video-gen-placeholder">
+                  <div className="placeholder-icon">🎬</div>
+                  <p className="placeholder-text">Enter a prompt above to generate a video</p>
+                  <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
                 </div>
               )}
             </div>
