@@ -13,7 +13,8 @@ const cardData = [
     icon: '💬',
     title: 'Omi Chat',
     description: 'Conversational AI with advanced reasoning',
-    label: 'Intelligence'
+    label: 'Intelligence',
+    action: 'chat' // Add action identifier
   },
   {
     color: '#0a0a0a',
@@ -102,6 +103,7 @@ interface ParticleCardProps {
   enableTilt?: boolean;
   clickEffect?: boolean;
   enableMagnetism?: boolean;
+  onClick?: () => void;
 }
 
 const ParticleCard: React.FC<ParticleCardProps> = ({
@@ -113,7 +115,8 @@ const ParticleCard: React.FC<ParticleCardProps> = ({
   glowColor = DEFAULT_GLOW_COLOR,
   enableTilt = true,
   clickEffect = false,
-  enableMagnetism = false
+  enableMagnetism = false,
+  onClick
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const particlesRef = useRef<HTMLElement[]>([]);
@@ -335,6 +338,7 @@ const ParticleCard: React.FC<ParticleCardProps> = ({
       ref={cardRef}
       className={`${className} particle-container`}
       style={{ ...style, position: 'relative', overflow: 'hidden' }}
+      onClick={onClick}
     >
       {children}
     </div>
@@ -538,6 +542,21 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
+  // Handle card clicks
+  const handleCardClick = (card: typeof cardData[0]) => {
+    if (card.action === 'chat') {
+      // Close Command Hub and return to chat interface
+      const commandHubClose = document.querySelector('.command-hub-back') as HTMLButtonElement;
+      if (commandHubClose) {
+        commandHubClose.click();
+      } else {
+        // Fallback: navigate back
+        window.history.back();
+      }
+    }
+    // Add more actions here as needed for other cards
+  };
+
   return (
     <>
       {enableSpotlight && (
@@ -572,6 +591,11 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 enableTilt={enableTilt}
                 clickEffect={clickEffect}
                 enableMagnetism={enableMagnetism}
+                onClick={() => handleCardClick(card)}
+                style={{
+                  ...cardProps.style,
+                  cursor: card.action ? 'pointer' : 'default'
+                }}
               >
                 <div className="card__header">
                   <div className="card__label">{card.label}</div>
@@ -586,7 +610,15 @@ const MagicBento: React.FC<MagicBentoProps> = ({
           }
 
           return (
-            <div key={index} {...cardProps}>
+            <div 
+              key={index} 
+              {...cardProps}
+              onClick={() => handleCardClick(card)}
+              style={{
+                ...cardProps.style,
+                cursor: card.action ? 'pointer' : 'default'
+              }}
+            >
               <div className="card__header">
                 <div className="card__label">{card.label}</div>
               </div>

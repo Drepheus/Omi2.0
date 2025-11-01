@@ -1287,9 +1287,14 @@ function SplashPage() {
           selectedPersona={selectedPersona}
           onPersonaSelect={(persona) => {
             console.log('Persona selected in SplashPage:', persona.title);
-            setSelectedPersona(persona.title);
-            // Visual feedback is now handled by the ChromaGrid component
-            // No need for alert dialog - the checkmark and glow effect show selection
+            // Toggle persona selection - deselect if clicking the same persona
+            if (selectedPersona === persona.title) {
+              setSelectedPersona(null);
+              console.log('Persona deselected:', persona.title);
+            } else {
+              setSelectedPersona(persona.title);
+              console.log('Persona selected:', persona.title);
+            }
           }}
         />
       )}
