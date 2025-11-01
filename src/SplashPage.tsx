@@ -103,7 +103,7 @@ function SplashPage() {
   const [isVideoGenActive, setIsVideoGenActive] = useState(false);
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Paywall and subscription management
@@ -703,30 +703,6 @@ function SplashPage() {
       )}
 
       <div className="splash-page">
-        {/* Video Gen Background Video */}
-        {selectedFeature === 'Video Gen' && !isInputFocused && (
-          <video
-            className="video-gen-background"
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              zIndex: 0,
-              opacity: 0.4,
-              pointerEvents: 'none'
-            }}
-          >
-            <source src="/static/videos/vidpreview.mp4" type="video/mp4" />
-          </video>
-        )}
-
         {/* Hamburger Menu - Fixed to top-left corner */}
         {user && (
           <button 
@@ -1039,8 +1015,6 @@ function SplashPage() {
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                onFocus={() => setIsInputFocused(true)}
-                onBlur={() => setIsInputFocused(false)}
                 placeholder={
                   isVideoGenActive
                     ? "🎬 Describe your video scene (e.g., 'a woman walking through Tokyo at night')..."
@@ -1242,9 +1216,33 @@ function SplashPage() {
                 </div>
               ) : (
                 <div className="video-gen-placeholder">
-                  <div className="placeholder-icon">🎬</div>
-                  <p className="placeholder-text">Enter a prompt above to generate a video</p>
-                  <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
+                  {/* Show video preview when no input, fade out when typing */}
+                  {!input.trim() ? (
+                    <video
+                      className="video-gen-preview"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      style={{
+                        width: '100%',
+                        maxWidth: '800px',
+                        height: 'auto',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                        margin: '0 auto',
+                        display: 'block'
+                      }}
+                    >
+                      <source src="/static/videos/vidpreview.mp4" type="video/mp4" />
+                    </video>
+                  ) : (
+                    <>
+                      <div className="placeholder-icon">🎬</div>
+                      <p className="placeholder-text">Enter a prompt above to generate a video</p>
+                      <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
+                    </>
+                  )}
                 </div>
               )}
             </div>
