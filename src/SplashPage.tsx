@@ -104,7 +104,6 @@ function SplashPage() {
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
 
   // Paywall and subscription management
   const [showPaywall, setShowPaywall] = useState(false);
