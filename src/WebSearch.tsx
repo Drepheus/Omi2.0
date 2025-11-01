@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import './WebSearch.css';
 
+// Updated with search modes - v2
 interface WebSearchProps {
   onClose?: () => void;
 }
