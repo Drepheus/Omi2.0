@@ -7,6 +7,7 @@ import SplashPage from './SplashPage';
 import CommandHub from './CommandHub';
 import WebSearch from './WebSearch';
 import MediaStudio from './MediaStudio';
+import CustomOmis from './CustomOmis';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import './landing.css';
@@ -188,6 +189,18 @@ const AuthChecker: React.FC = () => {
           session ? (
             <div className="page-transition fade-in">
               <MediaStudio onClose={() => navigate(-1)} />
+            </div>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } 
+      />
+      <Route 
+        path="/custom-omis" 
+        element={
+          session ? (
+            <div className="page-transition fade-in">
+              <CustomOmis onClose={() => navigate(-1)} />
             </div>
           ) : (
             <Navigate to="/login" replace />

@@ -37,7 +37,8 @@ const cardData = [
     icon: '🧪',
     title: 'Custom Omi\'s',
     description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
-    label: 'Creative'
+    label: 'Creative',
+    action: 'customomis'
   },
   {
     color: '#0a0a0a',
@@ -557,6 +558,9 @@ const MagicBento: React.FC<MagicBentoProps> = ({
     } else if (card.action === 'mediastudio') {
       // Navigate to AI Media Studio
       window.location.href = '/media-studio';
+    } else if (card.action === 'customomis') {
+      // Navigate to Custom Omi's
+      window.location.href = '/custom-omis';
     }
     // Add more actions here as needed for other cards
   };
