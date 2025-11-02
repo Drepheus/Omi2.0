@@ -10,6 +10,7 @@ import ConversationSidebar from './ConversationSidebar';
 import NewsTicker from './NewsTicker';
 import MediaGallery from './MediaGallery';
 import SearchModal from './SearchModal';
+import ImagePreviewTooltip from './ImagePreviewTooltip';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
@@ -104,6 +105,7 @@ function SplashPage() {
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const [isHoveringImageGen, setIsHoveringImageGen] = useState(false);
 
   // Paywall and subscription management
   const [showPaywall, setShowPaywall] = useState(false);
@@ -792,11 +794,19 @@ function SplashPage() {
           <div className="feature-buttons-horizontal">
             {featureButtons.map((button, index) => {
               const isSelected = selectedFeature === button.name;
+              const isImageGenButton = button.name === 'Image Gen';
+              
               return (
                 <button
                   key={button.name}
                   className={`feature-button-horizontal ${isSelected ? 'selected' : 'unselected'}`}
                   onClick={button.onClick}
+                  onMouseEnter={() => {
+                    if (isImageGenButton) setIsHoveringImageGen(true);
+                  }}
+                  onMouseLeave={() => {
+                    if (isImageGenButton) setIsHoveringImageGen(false);
+                  }}
                   style={{
                     animationDelay: `${index * 0.1}s`
                   }}
@@ -804,9 +814,13 @@ function SplashPage() {
                   <span className={isSelected ? "feature-button-selected-text" : "feature-button-static-text"}>
                     {button.icon} {button.name}
                   </span>
-                  <div className="feature-button-tooltip">
-                    {button.description}
-                  </div>
+                  {isImageGenButton ? (
+                    <ImagePreviewTooltip isVisible={isHoveringImageGen} />
+                  ) : (
+                    <div className="feature-button-tooltip">
+                      {button.description}
+                    </div>
+                  )}
                 </button>
               );
             })}
