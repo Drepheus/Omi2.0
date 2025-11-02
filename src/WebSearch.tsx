@@ -65,19 +65,39 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
     }
   ];
 
-  // Featured search capabilities
+  // Featured tools to explore
   const searchCategories = [
     {
-      icon: '✨',
-      title: 'AI-Powered Search',
-      description: 'Omi summarizes live info with citations (Perplexity style)',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(138, 43, 226, 0.1))'
+      icon: '🗺️',
+      title: 'ChatGPT Atlas',
+      description: 'Browse the web with AI-powered context and understanding',
+      gradient: 'linear-gradient(135deg, rgba(16, 163, 127, 0.15), rgba(25, 195, 125, 0.1))',
+      url: 'https://chatgpt.com/atlas',
+      favicon: 'https://cdn.oaistatic.com/_next/static/media/apple-touch-icon.59f2e898.png'
     },
     {
-      icon: '🧭',
-      title: 'Smart Context Navigation',
-      description: 'Click any result to let Omi explore that site in depth using a headless browser',
-      gradient: 'linear-gradient(135deg, rgba(192, 192, 192, 0.12), rgba(0, 191, 255, 0.08))'
+      icon: '🔮',
+      title: 'Perplexity Comet',
+      description: 'AI search engine that delivers accurate answers with sources',
+      gradient: 'linear-gradient(135deg, rgba(32, 201, 151, 0.15), rgba(0, 180, 216, 0.1))',
+      url: 'https://www.perplexity.ai/',
+      favicon: 'https://www.perplexity.ai/favicon.ico'
+    },
+    {
+      icon: '⚡',
+      title: 'Sigma OS',
+      description: 'The browser that thinks like you do - workspace-first browsing',
+      gradient: 'linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(147, 51, 234, 0.1))',
+      url: 'https://sigmaos.com/',
+      favicon: 'https://sigmaos.com/favicon.ico'
+    },
+    {
+      icon: '🎯',
+      title: 'Manus',
+      description: 'Next-generation browser built for productivity and focus',
+      gradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1))',
+      url: 'https://manus.im/',
+      favicon: 'https://manus.im/favicon.ico'
     }
   ];
 
@@ -168,9 +188,8 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
     }
   };
 
-  const handleCategoryClick = (category: string) => {
-    console.log('Category clicked:', category);
-    // TODO: Implement category-specific search
+  const handleCategoryClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -334,7 +353,7 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
         </div>
       )}
 
-      {/* Search Categories */}
+      {/* Explore Tools */}
       {!searchResults && (
         <div className="search-categories">
           <h2 className="categories-title">Explore</h2>
@@ -343,10 +362,25 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
               <div
                 key={index}
                 className="search-category-card"
-                onClick={() => handleCategoryClick(category.title)}
+                onClick={() => handleCategoryClick(category.url)}
                 style={{ background: category.gradient }}
               >
-                <div className="category-icon">{category.icon}</div>
+                <div className="category-favicon">
+                  <img 
+                    src={category.favicon} 
+                    alt={`${category.title} icon`}
+                    className="favicon-img"
+                    onError={(e) => {
+                      // Fallback to emoji icon if favicon fails to load
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = category.icon;
+                        parent.style.fontSize = '2rem';
+                      }
+                    }}
+                  />
+                </div>
                 <h3 className="category-title">{category.title}</h3>
                 <p className="category-description">{category.description}</p>
                 <div className="category-arrow">→</div>
