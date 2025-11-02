@@ -6,6 +6,7 @@ import LoginPage from './LoginPage';
 import SplashPage from './SplashPage';
 import CommandHub from './CommandHub';
 import WebSearch from './WebSearch';
+import MediaStudio from './MediaStudio';
 import { useAuth } from './Auth';
 import { supabase } from './supabaseClient';
 import './landing.css';
@@ -175,6 +176,18 @@ const AuthChecker: React.FC = () => {
           session ? (
             <div className="page-transition fade-in">
               <WebSearch onClose={() => navigate(-1)} />
+            </div>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } 
+      />
+      <Route 
+        path="/media-studio" 
+        element={
+          session ? (
+            <div className="page-transition fade-in">
+              <MediaStudio onClose={() => navigate(-1)} />
             </div>
           ) : (
             <Navigate to="/login" replace />

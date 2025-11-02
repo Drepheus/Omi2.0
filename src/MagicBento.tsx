@@ -27,16 +27,17 @@ const cardData = [
   {
     color: '#0a0a0a',
     icon: '🎨',
-    title: 'Custom Omi\'s',
-    description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
-    label: 'Creative'
+    title: 'AI Media Studio',
+    description: 'Generate stunning AI images, videos, and avatars with advanced models',
+    label: 'Production',
+    action: 'mediastudio'
   },
   {
     color: '#0a0a0a',
     icon: '🧪',
-    title: 'AI Playground',
-    description: 'Experiment with cutting-edge models, generative tools, and experimental features',
-    label: 'Production'
+    title: 'Custom Omi\'s',
+    description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
+    label: 'Creative'
   },
   {
     color: '#0a0a0a',
@@ -553,6 +554,9 @@ const MagicBento: React.FC<MagicBentoProps> = ({
     } else if (card.action === 'websearch' && onWebSearchClick) {
       // Trigger the web search page
       onWebSearchClick();
+    } else if (card.action === 'mediastudio') {
+      // Navigate to AI Media Studio
+      window.location.href = '/media-studio';
     }
     // Add more actions here as needed for other cards
   };
