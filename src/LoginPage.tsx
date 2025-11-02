@@ -47,12 +47,18 @@ export default function LoginPage({ onLoginSuccess, onGuestMode }: LoginPageProp
   }
 
   const handleGuestMode = () => {
+    console.log('Guest mode button clicked')
     // Set guest mode in context and localStorage
     setGuestMode(true)
+    console.log('Guest mode set to true')
     
-    if (onGuestMode) {
-      onGuestMode()
-    }
+    // Use setTimeout to ensure state updates before navigation
+    setTimeout(() => {
+      if (onGuestMode) {
+        console.log('Navigating to chat as guest')
+        onGuestMode()
+      }
+    }, 100)
   }
 
   if (loading) {
