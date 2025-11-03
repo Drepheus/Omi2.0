@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './VideoPreviewTooltip.css';
 
 interface VideoPreviewTooltipProps {
@@ -6,7 +6,15 @@ interface VideoPreviewTooltipProps {
 }
 
 const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) => {
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Sample videos from the static/videos folder
+  const sampleVideos = [
+    '/videos/vidpreview.mp4',
+    '/videos/AI Intro.mp4',
+    '/videos/matrixcode.mp4',
+  ];
 
   useEffect(() => {
     if (!isVisible) {
@@ -17,13 +25,30 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
       return;
     }
 
-    // Play the video when visible
+    // Play the current video when visible
     if (videoRef.current) {
       videoRef.current.play().catch(err => {
         console.log('Video autoplay failed:', err);
       });
     }
-  }, [isVisible]);
+
+    // Change video every 4 seconds
+    const interval = setInterval(() => {
+      setCurrentVideoIndex((prev) => (prev + 1) % sampleVideos.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isVisible, sampleVideos.length]);
+
+  // When video index changes, load and play the new video
+  useEffect(() => {
+    if (videoRef.current && isVisible) {
+      videoRef.current.load();
+      videoRef.current.play().catch(err => {
+        console.log('Video autoplay failed:', err);
+      });
+    }
+  }, [currentVideoIndex, isVisible]);
 
   if (!isVisible) return null;
 
@@ -36,12 +61,13 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
             ref={videoRef}
             className="preview-video"
             muted
-            loop
+            loop={false}
             playsInline
             autoPlay
             preload="auto"
+            key={currentVideoIndex}
           >
-            <source src="/videos/vidpreview.mp4" type="video/mp4" />
+            <source src={sampleVideos[currentVideoIndex]} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="video-overlay-gradient"></div>
