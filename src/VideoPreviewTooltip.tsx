@@ -12,7 +12,7 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
   // Sample videos from the static/videos folder
   const sampleVideos = [
     '/videos/vidpreview.mp4',
-    '/videos/AI%20Intro.mp4', // URL encoded space
+    '/videos/ai-intro.mp4',
     '/videos/matrixcode.mp4',
   ];
 
@@ -45,21 +45,30 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
     if (videoRef.current && isVisible) {
       const video = videoRef.current;
       
+      console.log('Loading video:', sampleVideos[currentVideoIndex]);
+      
       // Add event listener to play once loaded
       const handleCanPlay = () => {
+        console.log('Video can play:', sampleVideos[currentVideoIndex]);
         video.play().catch(err => {
           console.log('Video autoplay failed:', err);
         });
       };
       
+      const handleError = () => {
+        console.error('Video load error:', sampleVideos[currentVideoIndex], video.error);
+      };
+      
       video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('error', handleError);
       video.load();
       
       return () => {
         video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('error', handleError);
       };
     }
-  }, [currentVideoIndex, isVisible]);
+  }, [currentVideoIndex, isVisible, sampleVideos]);
 
   if (!isVisible) return null;
 
