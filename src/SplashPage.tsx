@@ -158,23 +158,6 @@ function SplashPage() {
       }
     },
     {
-      name: 'Compare',
-      icon: '⚖',
-      description: 'Instantly query multiple LLMs side-by-side',
-      onClick: () => {
-        const isActivating = selectedFeature !== 'Compare';
-        setSelectedFeature(isActivating ? 'Compare' : null);
-        setIsCompareMode(isActivating);
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        if (!isActivating) {
-          setSecondaryMessages([]);
-          setSecondaryModel(null);
-        }
-        console.log('Compare Minds clicked');
-      }
-    },
-    {
       name: 'Image Gen',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
@@ -193,6 +176,23 @@ function SplashPage() {
           setGeneratedImage(null); // Clear image when deactivating
         }
         console.log('Image Gen mode', isActivating ? 'activated' : 'deactivated');
+      }
+    },
+    {
+      name: 'Compare',
+      icon: '⚖',
+      description: 'Instantly query multiple LLMs side-by-side',
+      onClick: () => {
+        const isActivating = selectedFeature !== 'Compare';
+        setSelectedFeature(isActivating ? 'Compare' : null);
+        setIsCompareMode(isActivating);
+        setIsPersonasActive(false); // Turn off ChromaGrid animation
+        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
+        if (!isActivating) {
+          setSecondaryMessages([]);
+          setSecondaryModel(null);
+        }
+        console.log('Compare Minds clicked');
       }
     },
     {
