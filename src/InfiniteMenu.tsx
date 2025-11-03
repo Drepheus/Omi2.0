@@ -1056,6 +1056,16 @@ export default function InfiniteMenu({ isVisible, onClose }: InfiniteMenuProps) 
       <div style={{ position: 'absolute', top: '10px', left: '10px', color: 'white', zIndex: 10001, fontSize: '12px' }}>
         Debug: InfiniteMenu Loaded - Items: {items.length} - Active: {activeItem?.title || 'None'}
       </div>
+      
+      {/* Close Button */}
+      <button 
+        onClick={onClose}
+        className="infinite-menu-close"
+        aria-label="Close menu"
+      >
+        ×
+      </button>
+      
       <canvas id="infinite-grid-menu-canvas" ref={canvasRef} style={{ width: '100%', height: '100%', cursor: 'grab' }} />
 
       {activeItem && (
