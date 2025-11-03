@@ -794,11 +794,13 @@ function SplashPage() {
               const isSelected = selectedFeature === button.name;
               const isImageGenButton = button.name === 'Image Gen';
               const isVideoGenButton = button.name === 'Video Gen';
+              const isCompareButton = button.name === 'Compare';
+              const isPro = isCompareButton || isVideoGenButton;
               
               return (
                 <button
                   key={button.name}
-                  className={`feature-button-horizontal ${isSelected ? 'selected' : 'unselected'}`}
+                  className={`feature-button-horizontal ${isSelected ? 'selected' : 'unselected'} ${isPro ? 'pro' : ''}`}
                   onClick={button.onClick}
                   onMouseEnter={() => {
                     if (isImageGenButton) setIsHoveringImageGen(true);
@@ -814,6 +816,7 @@ function SplashPage() {
                 >
                   <span className={isSelected ? "feature-button-selected-text" : "feature-button-static-text"}>
                     {button.icon} {button.name}
+                    {isPro && <span className="pro-badge-inline">PRO</span>}
                   </span>
                   {isImageGenButton ? (
                     <ImagePreviewTooltip isVisible={isHoveringImageGen} />

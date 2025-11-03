@@ -561,6 +561,37 @@ html, body {
   color: rgba(160, 160, 160, 0.9);
 }
 
+/* PRO Badge for feature buttons */
+.pro-badge-inline {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(75, 0, 130, 0.4));
+  border: 1px solid rgba(138, 43, 226, 0.5);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.95);
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+  animation: proBadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes proBadgePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+  }
+}
+
+.feature-button-horizontal.selected .pro-badge-inline {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.5), rgba(75, 0, 130, 0.6));
+  border-color: rgba(138, 43, 226, 0.7);
+}
+
 /* Tooltip Styles */
 .feature-button-tooltip {
   position: absolute;
