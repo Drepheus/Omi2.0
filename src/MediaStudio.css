@@ -177,88 +177,79 @@
 }
 
 .sidebar-title {
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
 }
 
-.view-modes {
+.creation-tools-list,
+.workflows-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
-.view-mode {
-  padding: 12px;
-  background: rgba(24, 24, 24, 0.6);
-  border: 1px solid rgba(128, 128, 128, 0.15);
-  border-radius: 12px;
+.tool-item {
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   text-align: left;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.view-mode:hover {
-  background: rgba(32, 32, 32, 0.8);
-  border-color: rgba(138, 43, 226, 0.3);
-}
-
-.view-mode.active {
-  background: rgba(138, 43, 226, 0.2);
-  border-color: rgba(138, 43, 226, 0.5);
-}
-
-.view-mode-label {
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 13px;
-  font-weight: 400;
+  position: relative;
+}
+
+.tool-item:hover {
+  background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 4px;
 }
 
-.view-mode-sublabel {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 300;
+.tool-item.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 1);
 }
 
-.how-to-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.step {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.step-number {
-  width: 24px;
-  height: 24px;
+.tool-icon {
+  font-size: 16px;
+  width: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(138, 43, 226, 0.2);
-  border: 1px solid rgba(138, 43, 226, 0.4);
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 500;
   flex-shrink: 0;
 }
 
-.step-text {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
-  font-weight: 300;
+.tool-name {
+  flex: 1;
+  font-weight: 400;
 }
 
-.step-subtext {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 11px;
+.tool-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 191, 255, 0.2);
+  color: rgba(0, 191, 255, 1);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.tool-badge.nano-banana {
+  background: rgba(138, 43, 226, 0.2);
+  color: rgba(138, 43, 226, 1);
+}
+
+.tool-badge.beta {
+  background: rgba(255, 193, 7, 0.2);
+  color: rgba(255, 193, 7, 1);
 }
 
 /* Center Content */

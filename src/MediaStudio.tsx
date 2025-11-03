@@ -7,12 +7,10 @@ interface MediaStudioProps {
 }
 
 type MediaType = 'image' | 'video' | 'audio' | 'avatar';
-type ViewMode = 'headshot' | 'upper-body' | 'full-body' | 'wide-shot';
 
 const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<MediaType>('image');
   const [prompt, setPrompt] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('headshot');
   const [model, setModel] = useState('Standard');
   const [ratio, setRatio] = useState('Square');
   const [outputs, setOutputs] = useState(2);
@@ -82,53 +80,56 @@ const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
 
       {/* Main Content */}
       <div className="media-studio-main">
-        {/* Left Sidebar - Field of View */}
+        {/* Left Sidebar - Creation Tools */}
         <aside className="left-sidebar">
           <div className="sidebar-section">
-            <h3 className="sidebar-title">Field of View</h3>
-            <div className="view-modes">
-              <button
-                className={`view-mode ${viewMode === 'headshot' ? 'active' : ''}`}
-                onClick={() => setViewMode('headshot')}
-              >
-                <div className="view-mode-label">Headshot</div>
-                <div className="view-mode-sublabel">Close-up</div>
+            <h3 className="sidebar-title">CREATION TOOLS</h3>
+            <div className="creation-tools-list">
+              <button className="tool-item">
+                <span className="tool-icon">🖼️</span>
+                <span className="tool-name">Image to Video</span>
               </button>
-              <button
-                className={`view-mode ${viewMode === 'upper-body' ? 'active' : ''}`}
-                onClick={() => setViewMode('upper-body')}
-              >
-                <div className="view-mode-label">Upper Body</div>
-                <div className="view-mode-sublabel">Shoulders up</div>
+              <button className="tool-item active">
+                <span className="tool-icon">T</span>
+                <span className="tool-name">Text to Video</span>
+                <span className="tool-badge">Audio</span>
               </button>
-              <button
-                className={`view-mode ${viewMode === 'full-body' ? 'active' : ''}`}
-                onClick={() => setViewMode('full-body')}
-              >
-                <div className="view-mode-label">Full Body</div>
-                <div className="view-mode-sublabel">Entire figure</div>
+              <button className="tool-item">
+                <span className="tool-icon">🎨</span>
+                <span className="tool-name">AI Image</span>
+                <span className="tool-badge nano-banana">Nano Banana</span>
               </button>
-              <button
-                className={`view-mode ${viewMode === 'wide-shot' ? 'active' : ''}`}
-                onClick={() => setViewMode('wide-shot')}
-              >
-                <div className="view-mode-label">Wide Shot</div>
-                <div className="view-mode-sublabel">With environment</div>
+              <button className="tool-item">
+                <span className="tool-icon">👤</span>
+                <span className="tool-name">AI Avatar</span>
+              </button>
+              <button className="tool-item">
+                <span className="tool-icon">✂️</span>
+                <span className="tool-name">AI Video Editor</span>
+              </button>
+              <button className="tool-item">
+                <span className="tool-icon">⭐</span>
+                <span className="tool-name">AI Effect</span>
               </button>
             </div>
           </div>
 
           <div className="sidebar-section">
-            <h3 className="sidebar-title">How to Use</h3>
-            <div className="how-to-steps">
-              <div className="step">
-                <div className="step-number">1</div>
-                <div className="step-text">Choose Your View<br/><span className="step-subtext">Select your preferred composition</span></div>
-              </div>
-              <div className="step">
-                <div className="step-number">2</div>
-                <div className="step-text">Describe Your Scene<br/><span className="step-subtext">Enter your prompt below</span></div>
-              </div>
+            <h3 className="sidebar-title">WORKFLOWS</h3>
+            <div className="workflows-list">
+              <button className="tool-item">
+                <span className="tool-icon">📹</span>
+                <span className="tool-name">Video Clone AI</span>
+                <span className="tool-badge beta">Beta</span>
+              </button>
+              <button className="tool-item">
+                <span className="tool-icon">📢</span>
+                <span className="tool-name">AI Ad</span>
+              </button>
+              <button className="tool-item">
+                <span className="tool-icon">🎬</span>
+                <span className="tool-name">AI Director</span>
+              </button>
             </div>
           </div>
         </aside>

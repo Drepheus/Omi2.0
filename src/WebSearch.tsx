@@ -52,9 +52,10 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
       isPro: true
     },
     {
-      name: 'Cited Sources',
-      icon: '◆',
-      description: 'PDF export with citations'
+      name: 'Browser Voice Control',
+      icon: '🎙️',
+      description: 'Voice commands for headless browser automation',
+      isPro: true
     },
     {
       name: 'Research Chains',
