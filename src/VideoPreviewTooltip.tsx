@@ -14,6 +14,7 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
     '/videos/vidpreview.mp4',
     '/videos/ai-intro.mp4',
     '/videos/matrixcode.mp4',
+    '/videos/dogclimb.mp4',
   ];
 
   useEffect(() => {
