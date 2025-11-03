@@ -135,12 +135,6 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
     e.preventDefault();
     if (!searchQuery.trim() || isSearching) return;
 
-    // Handle AI Web Task mode separately
-    if (selectedMode === 'AI Web Task') {
-      setShowWebTaskModal(true);
-      return;
-    }
-
     // Only Search + Summarize mode is implemented
     if (selectedMode !== 'Search + Summarize') {
       alert(`${selectedMode || 'This'} mode is coming soon! Please select "Search + Summarize" mode.`);
@@ -231,7 +225,18 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
               <button
                 key={index}
                 className={`search-mode-button ${selectedMode === mode.name ? 'active' : ''} ${isPro ? 'pro' : ''} ${isComingSoon ? 'coming-soon' : ''}`}
-                onClick={() => !isComingSoon && setSelectedMode(selectedMode === mode.name ? null : mode.name)}
+                onClick={() => {
+                  if (isComingSoon) return;
+                  
+                  // If clicking AI Web Task, open modal immediately
+                  if (mode.name === 'AI Web Task') {
+                    setShowWebTaskModal(true);
+                    setSelectedMode(mode.name);
+                    return;
+                  }
+                  
+                  setSelectedMode(selectedMode === mode.name ? null : mode.name);
+                }}
                 disabled={isComingSoon}
                 title={mode.description}
                 data-tooltip={mode.description}
