@@ -1,138 +1,82 @@
 import { useEffect, useState, useRef } from 'react';
 import './NewsTicker.css';
 
-interface NewsItem {
-  title: string;
-  url: string;
-  source: string;
-  publishedAt: string;
+interface ActivityItem {
+  username: string;
+  action: string;
+  timestamp: string;
 }
 
 export default function NewsTicker() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const tickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchAINews();
-    // Refresh news every 10 minutes
-    const interval = setInterval(fetchAINews, 600000);
+    generateActivities();
+    // Generate new activities every 30 seconds
+    const interval = setInterval(generateActivities, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchAINews = async () => {
-    try {
-      // Using HackerNews Algolia API for tech news
-      const response = await fetch(
-        `https://hn.algolia.com/api/v1/search?query=AI%20artificial%20intelligence&tags=story&hitsPerPage=50`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch news');
-      }
+  const generateActivities = () => {
+    const usernames = [
+      'Alex414', 'SamantaGlory', 'Pirateboy', 'tomandjarry', 'DataNinja', 'CodeWizard',
+      'AIEnthusiast', 'TechSavvy', 'PixelMaster', 'DevGuru', 'CloudRider', 'ByteHunter',
+      'CyberPhoenix', 'QuantumLeap', 'NeonDreamer', 'SyntaxKing', 'LogicLord', 'BinaryBoss',
+      'ScriptMage', 'DigitalDuke', 'AlgoAce', 'MatrixMind', 'VirtualVoyager', 'CryptoChamp',
+      'WebWarrior', 'CodeCrusader', 'TechTitan', 'PixelPirate', 'DataDragon', 'CloudChaser',
+      'ByteBender', 'CyberSamurai', 'QuantumQuest', 'NeonNinja', 'SyntaxSage', 'LogicLegend',
+      'BinaryBard', 'ScriptSensei', 'DigitalDynamo', 'AlgoArchitect', 'MatrixMaverick'
+    ];
 
-      const data = await response.json();
-      
-      console.log('HackerNews API response:', data); // Debug log
-      
-      // Filter out items without URLs and map to our format, take first 15
-      const newsItems: NewsItem[] = data.hits
-        .filter((hit: any) => hit.url && hit.title)
-        .slice(0, 15)
-        .map((hit: any) => ({
-          title: hit.title,
-          url: hit.url,
-          source: hit.url ? new URL(hit.url).hostname.replace('www.', '') : 'HackerNews',
-          publishedAt: hit.created_at,
-        }));
+    const actions = [
+      'just trained a Custom Omi',
+      'just chatted with Omi Chat',
+      'just generated a new image in the Media Studio',
+      'just Upgraded to the Pro Plan!',
+      'just created a new AI Workflow',
+      'just generated a stunning video',
+      'just completed a deep web search',
+      'just customized their AI assistant',
+      'just exported media from the gallery',
+      'just discovered a new feature',
+      'just integrated an API',
+      'just automated a complex task',
+      'just analyzed data with AI',
+      'just created research content',
+      'just generated code snippets',
+      'just trained a specialized model',
+      'just built a business workflow',
+      'just designed a creative project',
+      'just optimized their AI settings',
+      'just shared their Custom Omi',
+      'just completed an AI task',
+      'just explored the Command Hub',
+      'just unlocked advanced features',
+      'just personalized their workspace',
+      'just generated multiple images',
+      'just created AI-powered content',
+      'just enhanced their workflow',
+      'just automated data processing',
+      'just built an intelligent system',
+      'just mastered a new AI tool'
+    ];
 
-      console.log('Mapped news items:', newsItems); // Debug log
+    // Generate 40 random activities
+    const generatedActivities: ActivityItem[] = [];
+    for (let i = 0; i < 40; i++) {
+      const randomUsername = usernames[Math.floor(Math.random() * usernames.length)];
+      const randomAction = actions[Math.floor(Math.random() * actions.length)];
+      const randomMinutesAgo = Math.floor(Math.random() * 60) + 1;
       
-      if (newsItems.length === 0) {
-        throw new Error('No news items found');
-      }
-
-      setNews(newsItems);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching AI news:', error);
-      // Fallback to actual tech news sites - 12 articles
-      setNews([
-        { 
-          title: 'Latest developments in artificial intelligence and machine learning', 
-          url: 'https://techcrunch.com/tag/artificial-intelligence/', 
-          source: 'TechCrunch', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'AI breakthroughs reshape technology landscape', 
-          url: 'https://www.theverge.com/ai-artificial-intelligence', 
-          source: 'The Verge', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'How artificial intelligence is transforming industries', 
-          url: 'https://www.wired.com/tag/artificial-intelligence/', 
-          source: 'Wired', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'OpenAI continues to push boundaries of AI capabilities', 
-          url: 'https://www.engadget.com/tag/ai/', 
-          source: 'Engadget', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Machine learning algorithms advance at unprecedented pace', 
-          url: 'https://arstechnica.com/tag/artificial-intelligence/', 
-          source: 'Ars Technica', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Deep learning models achieve new milestones in accuracy', 
-          url: 'https://venturebeat.com/ai/', 
-          source: 'VentureBeat', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'AI ethics and governance take center stage in tech industry', 
-          url: 'https://www.technologyreview.com/topic/artificial-intelligence/', 
-          source: 'MIT Tech Review', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Neural networks demonstrate human-like reasoning abilities', 
-          url: 'https://www.nature.com/subjects/artificial-intelligence', 
-          source: 'Nature', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Generative AI tools transform creative workflows globally', 
-          url: 'https://www.theverge.com/generative-ai', 
-          source: 'The Verge', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Quantum computing meets artificial intelligence in breakthrough', 
-          url: 'https://www.scientificamerican.com/artificial-intelligence/', 
-          source: 'Scientific American', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'AI-powered robotics reach new levels of sophistication', 
-          url: 'https://spectrum.ieee.org/topic/artificial-intelligence/', 
-          source: 'IEEE Spectrum', 
-          publishedAt: new Date().toISOString() 
-        },
-        { 
-          title: 'Large language models continue evolution with multimodal capabilities', 
-          url: 'https://www.technologyreview.com/topic/ai/', 
-          source: 'MIT Tech Review', 
-          publishedAt: new Date().toISOString() 
-        },
-      ]);
-      setIsLoading(false);
+      generatedActivities.push({
+        username: randomUsername,
+        action: randomAction,
+        timestamp: new Date(Date.now() - randomMinutesAgo * 60000).toISOString()
+      });
     }
+
+    setActivities(generatedActivities);
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -143,21 +87,22 @@ export default function NewsTicker() {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
+    if (diffMins < 1) return 'just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     return `${diffDays}d ago`;
   };
 
-  if (isLoading) {
+  if (activities.length === 0) {
     return (
       <div className="news-ticker">
         <div className="news-ticker-container">
           <div className="news-ticker-label">
             <span className="ticker-icon">◈</span>
-            <span>AI NEWS</span>
+            <span>LIVE ACTIVITY</span>
           </div>
           <div className="news-ticker-content loading">
-            <span>Loading latest AI news...</span>
+            <span>Loading user activity...</span>
           </div>
         </div>
       </div>
@@ -169,26 +114,20 @@ export default function NewsTicker() {
       <div className="news-ticker-container">
         <div className="news-ticker-label">
           <span className="ticker-icon">◈</span>
-          <span>AI NEWS</span>
+          <span>LIVE ACTIVITY</span>
         </div>
         <div className="news-ticker-content" ref={tickerRef}>
           <div className="news-ticker-track">
             {/* Duplicate items for seamless loop */}
-            {[...news, ...news].map((item, index) => (
-              <a
-                key={index}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="news-item"
-              >
+            {[...activities, ...activities].map((item, index) => (
+              <div key={index} className="news-item">
                 <span className="news-bullet">●</span>
-                <span className="news-title">{item.title}</span>
+                <span className="activity-username">{item.username}</span>
+                <span className="activity-action">{item.action}</span>
                 <span className="news-meta">
-                  <span className="news-source">{item.source}</span>
-                  <span className="news-time">{formatTimeAgo(item.publishedAt)}</span>
+                  <span className="news-time">{formatTimeAgo(item.timestamp)}</span>
                 </span>
-              </a>
+              </div>
             ))}
           </div>
         </div>

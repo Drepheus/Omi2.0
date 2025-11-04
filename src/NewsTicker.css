@@ -6,7 +6,7 @@
   height: 42px;
   background: rgba(10, 10, 15, 0.95);
   backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(139, 92, 246, 0.2);
+  border-top: 1px solid rgba(192, 192, 192, 0.2);
   z-index: 9999;
   overflow: hidden;
 }
@@ -23,13 +23,13 @@
   align-items: center;
   gap: 8px;
   padding: 0 20px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.15));
-  border-right: 1px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(160, 160, 160, 0.15));
+  border-right: 1px solid rgba(192, 192, 192, 0.3);
   height: 100%;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
-  color: rgba(139, 92, 246, 1);
+  color: rgba(192, 192, 192, 1);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -83,7 +83,7 @@
 .news-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   padding: 0 24px;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.9);
@@ -94,17 +94,24 @@
 }
 
 .news-item:hover {
-  color: rgba(139, 92, 246, 1);
+  color: rgba(192, 192, 192, 1);
   transform: translateY(-1px);
 }
 
-.news-item:hover .news-title {
-  color: rgba(139, 92, 246, 1);
+.news-bullet {
+  color: rgba(192, 192, 192, 0.6);
+  font-size: 8px;
 }
 
-.news-bullet {
-  color: rgba(139, 92, 246, 0.6);
-  font-size: 8px;
+.activity-username {
+  color: rgba(192, 192, 192, 1);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.activity-action {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 400;
 }
 
 .news-title {
@@ -119,11 +126,12 @@
   gap: 10px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.4);
+  margin-left: 6px;
 }
 
 .news-source {
   padding: 2px 8px;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(192, 192, 192, 0.1);
   border-radius: 4px;
   font-weight: 600;
   text-transform: uppercase;
@@ -132,6 +140,7 @@
 
 .news-time {
   color: rgba(255, 255, 255, 0.35);
+  font-size: 10px;
 }
 
 /* Responsive adjustments */
