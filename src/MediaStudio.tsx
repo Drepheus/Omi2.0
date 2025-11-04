@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import './MediaStudio.css';
 
@@ -6,25 +6,70 @@ interface MediaStudioProps {
   onClose?: () => void;
 }
 
-type MediaType = 'image' | 'video' | 'audio' | 'avatar';
-
 const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<MediaType>('image');
-  const [prompt, setPrompt] = useState('');
-  const [model, setModel] = useState('Standard');
-  const [ratio, setRatio] = useState('Square');
-  const [outputs, setOutputs] = useState(2);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [activeNav, setActiveNav] = useState('Image');
+  const [activeFilter, setActiveFilter] = useState('All');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Art styles for the right panel
-  const artStyles = [
-    { name: 'Photo', image: '📷', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { name: 'Anime', image: '🎌', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { name: 'Digital Art', image: '🎨', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { name: '3D CGI', image: '🎭', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-    { name: 'Pop Art', image: '🎪', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-    { name: 'Standard Style', image: '✨', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' }
+  const navItems = [
+    { icon: '', name: 'Realtime Canvas' },
+    { icon: '', name: 'Flow State' },
+    { icon: '', name: 'Video' },
+    { icon: '', name: 'Image' },
+    { icon: '', name: 'Upscaler' },
+    { icon: '', name: 'Canvas Editor' },
+    { icon: '', name: 'More' }
+  ];
+
+  const featuredGuides = [
+    {
+      category: 'Upscaling',
+      title: 'YOUR IMAGES WITH LEONARDO.AI',
+      image: 'https://images.unsplash.com/photo-1601513445506-2ab0d4fb4229?w=300&h=200&fit=crop',
+      color: 'rgba(138, 43, 226, 0.8)'
+    },
+    {
+      category: 'How to Use',
+      title: 'STYLE REFERENCE',
+      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=200&fit=crop',
+      color: 'rgba(138, 43, 226, 0.8)'
+    },
+    {
+      category: 'Creating',
+      title: 'CONSISTENT CHARACTERS',
+      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=200&fit=crop',
+      color: 'rgba(255, 0, 255, 0.8)'
+    },
+    {
+      category: 'Using',
+      title: 'CONTENT REFERENCE',
+      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=200&fit=crop',
+      color: 'rgba(138, 43, 226, 0.8)'
+    }
+  ];
+
+  const filters = [
+    { icon: '', name: 'Trending' },
+    { icon: '', name: 'All' },
+    { icon: '', name: 'Video' },
+    { icon: '', name: 'Photography' },
+    { icon: '', name: 'Animals' },
+    { icon: '', name: 'Anime' },
+    { icon: '', name: 'Architecture' },
+    { icon: '', name: 'Character' },
+    { icon: '', name: 'Food' },
+    { icon: '', name: 'Sci-Fi' }
+  ];
+
+  const communityCreations = [
+    { image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', type: 'portrait' },
+    { image: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop', type: 'animal' },
+    { image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop', type: 'landscape' },
+    { image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=400&fit=crop', type: 'abstract' },
+    { image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop', type: 'portrait' },
+    { image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop', type: 'music' },
+    { image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop', type: 'landscape' },
+    { image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=400&fit=crop', type: 'tech' }
   ];
 
   useEffect(() => {
@@ -37,223 +82,89 @@ const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
     }
   }, []);
 
-  const handleGenerate = async () => {
-    if (!prompt.trim()) return;
-    setIsGenerating(true);
-    
-    // TODO: Integrate with your AI generation API
-    setTimeout(() => {
-      setIsGenerating(false);
-    }, 3000);
-  };
-
   return (
-    <div className="media-studio-container" ref={containerRef}>
-      {/* Header */}
-      <header className="media-studio-header">
-        <div className="header-left">
-          <div className="logo">
-            <span className="logo-icon">◈</span>
-            <span className="logo-text">Omi</span>
-          </div>
-          <nav className="nav-tabs">
-            <button className="nav-tab">Explore</button>
-            <button className="nav-tab active">Image</button>
-            <button className="nav-tab">Video</button>
-            <button className="nav-tab">Audio</button>
-            <button className="nav-tab">Avatars</button>
-            <button className="nav-tab">Templates</button>
-          </nav>
+    <div className="sora-container" ref={containerRef}>
+      <div className="sora-hero">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Meet <span className="hero-brand">Sora 2</span>: Next-gen video creation is here
+          </h1>
+          <p className="hero-subtitle">
+            Turn ideas into immersive, cinematic worlds with authentic motion and perfectly synced audio
+          </p>
+          <button className="hero-cta">Try Sora 2</button>
         </div>
-        <div className="header-right">
-          <button className="header-btn">Pricing</button>
-          <button className="header-btn">Discord</button>
-          <div className="credits-badge">
-            <span className="credits-icon">⚡</span>
-            <span className="credits-amount">1,800</span>
-          </div>
-          {onClose && (
-            <button className="close-btn" onClick={onClose}>✕</button>
-          )}
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="media-studio-main">
-        {/* Left Sidebar - Creation Tools */}
-        <aside className="left-sidebar">
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">CREATION TOOLS</h3>
-            <div className="creation-tools-list">
-              <button className="tool-item">
-                <span className="tool-icon">🖼️</span>
-                <span className="tool-name">Image to Video</span>
-              </button>
-              <button className="tool-item active">
-                <span className="tool-icon">T</span>
-                <span className="tool-name">Text to Video</span>
-                <span className="tool-badge">Audio</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">🎨</span>
-                <span className="tool-name">AI Image</span>
-                <span className="tool-badge nano-banana">Nano Banana</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">👤</span>
-                <span className="tool-name">AI Avatar</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">✂️</span>
-                <span className="tool-name">AI Video Editor</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">⭐</span>
-                <span className="tool-name">AI Effect</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">WORKFLOWS</h3>
-            <div className="workflows-list">
-              <button className="tool-item">
-                <span className="tool-icon">📹</span>
-                <span className="tool-name">Video Clone AI</span>
-                <span className="tool-badge beta">Beta</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">📢</span>
-                <span className="tool-name">AI Ad</span>
-              </button>
-              <button className="tool-item">
-                <span className="tool-icon">🎬</span>
-                <span className="tool-name">AI Director</span>
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* Center Area - Canvas and Controls */}
-        <main className="center-content">
-          {/* Canvas */}
-          <div className="canvas-area">
-            <div className="canvas-placeholder">
-              <div className="canvas-icon">🎨</div>
-              <p className="canvas-text">Describe your image...</p>
-            </div>
-          </div>
-
-          {/* Generation Controls */}
-          <div className="generation-panel">
-            <div className="generation-header">
-              <div className="generation-tabs">
-                <button className="gen-tab active">
-                  <span className="gen-tab-icon">✨</span>
-                  Text to Image
-                </button>
-              </div>
-              <button className="add-tab-btn">+</button>
-            </div>
-
-            <div className="prompt-area">
-              <textarea
-                className="prompt-input"
-                placeholder="Describe your image..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                rows={3}
-              />
-              <div className="prompt-footer">
-                <button className="enhance-btn">
-                  <span className="enhance-icon">✨</span>
-                  Enhance
-                </button>
-                <div className="char-count">0/500</div>
-              </div>
-            </div>
-
-            <div className="generation-settings">
-              <div className="setting-group">
-                <label className="setting-label">Model</label>
-                <select className="setting-select" value={model} onChange={(e) => setModel(e.target.value)}>
-                  <option>Standard</option>
-                  <option>Pro</option>
-                  <option>Ultra</option>
-                </select>
-              </div>
-              <div className="setting-group">
-                <label className="setting-label">Ratio</label>
-                <select className="setting-select" value={ratio} onChange={(e) => setRatio(e.target.value)}>
-                  <option>Square</option>
-                  <option>Portrait</option>
-                  <option>Landscape</option>
-                  <option>Widescreen</option>
-                </select>
-              </div>
-              <div className="setting-group">
-                <label className="setting-label">Outputs</label>
-                <div className="outputs-control">
-                  <button className="output-btn" onClick={() => setOutputs(Math.max(1, outputs - 1))}>−</button>
-                  <span className="output-value">{outputs}</span>
-                  <button className="output-btn" onClick={() => setOutputs(Math.min(4, outputs + 1))}>+</button>
-                </div>
-              </div>
-            </div>
-
-            <button
-              className="generate-btn"
-              onClick={handleGenerate}
-              disabled={isGenerating || !prompt.trim()}
-            >
-              {isGenerating ? (
-                <>
-                  <div className="spinner"></div>
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <span className="generate-icon">✨</span>
-                  Generate
-                  <span className="credits-cost">{outputs * 4} Credits</span>
-                </>
-              )}
-            </button>
-          </div>
-        </main>
-
-        {/* Right Sidebar - Art Styles */}
-        <aside className="right-sidebar">
-          <div className="sidebar-section">
-            <h3 className="sidebar-title">Art Style</h3>
-            <div className="art-styles-grid">
-              {artStyles.map((style, index) => (
-                <button key={index} className="art-style-card" style={{ background: style.gradient }}>
-                  <div className="art-style-preview">{style.image}</div>
-                  <div className="art-style-name">{style.name}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="sidebar-section">
-            <div className="photo-model-card">
-              <div className="model-badge">Photo Model: Standard</div>
-            </div>
-          </div>
-        </aside>
+        {onClose && (
+          <button className="sora-close-btn" onClick={onClose}></button>
+        )}
       </div>
 
-      {/* History Tabs */}
-      <div className="history-tabs">
-        <button className="history-tab active">
-          <span className="history-icon">✨</span>
-          Generate
-        </button>
-        <button className="history-tab">
-          <span className="history-icon">🕐</span>
-          History
-        </button>
+      <nav className="sora-nav">
+        {navItems.map((item, index) => (
+          <button
+            key={index}
+            className={`nav-item ${activeNav === item.name ? 'active' : ''}`}
+            onClick={() => setActiveNav(item.name)}
+          >
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.name}</span>
+          </button>
+        ))}
+      </nav>
+
+      <div className="sora-main">
+        <section className="featured-section">
+          <h2 className="section-title">
+            <span className="title-accent">Featured</span> Guides
+          </h2>
+          <div className="guides-grid">
+            {featuredGuides.map((guide, index) => (
+              <div key={index} className="guide-card">
+                <div className="guide-image-wrapper">
+                  <img src={guide.image} alt={guide.title} className="guide-image" />
+                  <div className="guide-overlay"></div>
+                </div>
+                <div className="guide-content">
+                  <span className="guide-category" style={{ backgroundColor: guide.color }}>
+                    {guide.category}
+                  </span>
+                  <h3 className="guide-title">{guide.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="community-section">
+          <h2 className="section-title">
+            <span className="title-accent">Community</span> Creations
+          </h2>
+          
+          <div className="filters-container">
+            {filters.map((filter, index) => (
+              <button
+                key={index}
+                className={`filter-pill ${activeFilter === filter.name ? 'active' : ''}`}
+                onClick={() => setActiveFilter(filter.name)}
+              >
+                <span className="filter-icon">{filter.icon}</span>
+                <span className="filter-label">{filter.name}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="gallery-grid">
+            {communityCreations.map((creation, index) => (
+              <div key={index} className="gallery-card">
+                <img src={creation.image} alt={`Creation ${index + 1}`} className="gallery-image" />
+                <div className="gallery-overlay">
+                  <button className="like-btn"></button>
+                  <button className="bookmark-btn"></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );
