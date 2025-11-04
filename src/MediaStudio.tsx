@@ -7,70 +7,51 @@ interface MediaStudioProps {
 }
 
 const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
-  const [activeNav, setActiveNav] = useState('Image');
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeTab, setActiveTab] = useState('Generate');
+  const [activeGenTab, setActiveGenTab] = useState('Image');
+  const [activeTool, setActiveTool] = useState('txt2img');
+  const [prompt, setPrompt] = useState('');
+  const [numOutputs, setNumOutputs] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const navItems = [
-    { icon: '', name: 'Realtime Canvas' },
-    { icon: '', name: 'Flow State' },
-    { icon: '', name: 'Video' },
-    { icon: '', name: 'Image' },
-    { icon: '', name: 'Upscaler' },
-    { icon: '', name: 'Canvas Editor' },
-    { icon: '', name: 'More' }
+  const navTabs = ['Generate', 'History', 'Collections'];
+
+  const creationTools = [
+    { icon: '🎨', name: 'Text to Image', id: 'txt2img' },
+    { icon: '🖼️', name: 'Image to Image', id: 'img2img' },
+    { icon: '🎬', name: 'Text to Video', id: 'txt2vid', badge: 'NEW' },
+    { icon: '📹', name: 'Image to Video', id: 'img2vid' },
+    { icon: '🔊', name: 'Text to Audio', id: 'txt2audio' },
+    { icon: '🎵', name: 'Music Generation', id: 'music' },
+    { icon: '✨', name: 'AI Upscaler', id: 'upscale' },
+    { icon: '🎭', name: 'Face Swap', id: 'faceswap', badge: 'BETA' }
   ];
 
-  const featuredGuides = [
-    {
-      category: 'Upscaling',
-      title: 'YOUR IMAGES WITH LEONARDO.AI',
-      image: 'https://images.unsplash.com/photo-1601513445506-2ab0d4fb4229?w=300&h=200&fit=crop',
-      color: 'rgba(138, 43, 226, 0.8)'
-    },
-    {
-      category: 'How to Use',
-      title: 'STYLE REFERENCE',
-      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=200&fit=crop',
-      color: 'rgba(138, 43, 226, 0.8)'
-    },
-    {
-      category: 'Creating',
-      title: 'CONSISTENT CHARACTERS',
-      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=200&fit=crop',
-      color: 'rgba(255, 0, 255, 0.8)'
-    },
-    {
-      category: 'Using',
-      title: 'CONTENT REFERENCE',
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=200&fit=crop',
-      color: 'rgba(138, 43, 226, 0.8)'
-    }
+  const workflows = [
+    { icon: '🏞️', name: 'Landscape Pro', id: 'landscape' },
+    { icon: '👤', name: 'Portrait Studio', id: 'portrait' },
+    { icon: '🎨', name: 'Artistic Style', id: 'artistic' },
+    { icon: '🌟', name: 'Fantasy Realm', id: 'fantasy' }
   ];
 
-  const filters = [
-    { icon: '', name: 'Trending' },
-    { icon: '', name: 'All' },
-    { icon: '', name: 'Video' },
-    { icon: '', name: 'Photography' },
-    { icon: '', name: 'Animals' },
-    { icon: '', name: 'Anime' },
-    { icon: '', name: 'Architecture' },
-    { icon: '', name: 'Character' },
-    { icon: '', name: 'Food' },
-    { icon: '', name: 'Sci-Fi' }
+  const artStyles = [
+    { emoji: '🎨', name: 'Artistic' },
+    { emoji: '📸', name: 'Photorealistic' },
+    { emoji: '🌸', name: 'Anime' },
+    { emoji: '✨', name: 'Fantasy' },
+    { emoji: '🎬', name: 'Cinematic' },
+    { emoji: '🌈', name: 'Vibrant' }
   ];
 
-  const communityCreations = [
-    { image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop', type: 'portrait' },
-    { image: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop', type: 'animal' },
-    { image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop', type: 'landscape' },
-    { image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=400&fit=crop', type: 'abstract' },
-    { image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop', type: 'portrait' },
-    { image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop', type: 'music' },
-    { image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop', type: 'landscape' },
-    { image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=400&fit=crop', type: 'tech' }
-  ];
+  const handleGenerate = () => {
+    if (!prompt.trim()) return;
+    setIsGenerating(true);
+    setTimeout(() => {
+      setIsGenerating(false);
+      alert('Generation complete! (This is a demo)');
+    }, 3000);
+  };
 
   useEffect(() => {
     if (containerRef.current) {
@@ -83,88 +64,224 @@ const MediaStudio: React.FC<MediaStudioProps> = ({ onClose }) => {
   }, []);
 
   return (
-    <div className="sora-container" ref={containerRef}>
-      <div className="sora-hero">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            Meet <span className="hero-brand">Sora 2</span>: Next-gen video creation is here
-          </h1>
-          <p className="hero-subtitle">
-            Turn ideas into immersive, cinematic worlds with authentic motion and perfectly synced audio
-          </p>
-          <button className="hero-cta">Try Sora 2</button>
-        </div>
-        {onClose && (
-          <button className="sora-close-btn" onClick={onClose}></button>
-        )}
-      </div>
-
-      <nav className="sora-nav">
-        {navItems.map((item, index) => (
-          <button
-            key={index}
-            className={`nav-item ${activeNav === item.name ? 'active' : ''}`}
-            onClick={() => setActiveNav(item.name)}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            <span className="nav-label">{item.name}</span>
-          </button>
-        ))}
-      </nav>
-
-      <div className="sora-main">
-        <section className="featured-section">
-          <h2 className="section-title">
-            <span className="title-accent">Featured</span> Guides
-          </h2>
-          <div className="guides-grid">
-            {featuredGuides.map((guide, index) => (
-              <div key={index} className="guide-card">
-                <div className="guide-image-wrapper">
-                  <img src={guide.image} alt={guide.title} className="guide-image" />
-                  <div className="guide-overlay"></div>
-                </div>
-                <div className="guide-content">
-                  <span className="guide-category" style={{ backgroundColor: guide.color }}>
-                    {guide.category}
-                  </span>
-                  <h3 className="guide-title">{guide.title}</h3>
-                </div>
-              </div>
-            ))}
+    <div className="media-studio-container" ref={containerRef}>
+      {/* Header */}
+      <header className="media-studio-header">
+        <div className="header-left">
+          <div className="logo">
+            <span className="logo-icon">✨</span>
+            <span className="logo-text">MEDIA STUDIO</span>
           </div>
-        </section>
-
-        <section className="community-section">
-          <h2 className="section-title">
-            <span className="title-accent">Community</span> Creations
-          </h2>
           
-          <div className="filters-container">
-            {filters.map((filter, index) => (
+          <div className="nav-tabs">
+            {navTabs.map((tab) => (
               <button
-                key={index}
-                className={`filter-pill ${activeFilter === filter.name ? 'active' : ''}`}
-                onClick={() => setActiveFilter(filter.name)}
+                key={tab}
+                className={`nav-tab ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab)}
               >
-                <span className="filter-icon">{filter.icon}</span>
-                <span className="filter-label">{filter.name}</span>
+                {tab}
               </button>
             ))}
           </div>
+        </div>
 
-          <div className="gallery-grid">
-            {communityCreations.map((creation, index) => (
-              <div key={index} className="gallery-card">
-                <img src={creation.image} alt={`Creation ${index + 1}`} className="gallery-image" />
-                <div className="gallery-overlay">
-                  <button className="like-btn"></button>
-                  <button className="bookmark-btn"></button>
+        <div className="header-right">
+          <button className="header-btn">📚 Tutorials</button>
+          <div className="credits-badge">
+            <span className="credits-icon">⚡</span>
+            <span className="credits-amount">1,250</span>
+          </div>
+          {onClose && (
+            <button className="close-btn" onClick={onClose}>✕</button>
+          )}
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="media-studio-main">
+        {/* Left Sidebar */}
+        <aside className="left-sidebar">
+          <div className="sidebar-section">
+            <h3 className="sidebar-title">Creation Tools</h3>
+            <div className="creation-tools-list">
+              {creationTools.map((tool) => (
+                <button
+                  key={tool.id}
+                  className={`tool-item ${activeTool === tool.id ? 'active' : ''}`}
+                  onClick={() => setActiveTool(tool.id)}
+                >
+                  <span className="tool-icon">{tool.icon}</span>
+                  <span className="tool-name">{tool.name}</span>
+                  {tool.badge && (
+                    <span className={`tool-badge ${tool.badge.toLowerCase()}`}>
+                      {tool.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3 className="sidebar-title">Workflows</h3>
+            <div className="workflows-list">
+              {workflows.map((workflow) => (
+                <button key={workflow.id} className="tool-item">
+                  <span className="tool-icon">{workflow.icon}</span>
+                  <span className="tool-name">{workflow.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* Center Content */}
+        <div className="center-content">
+          {/* Canvas Area */}
+          <div className="canvas-area">
+            <div className="canvas-placeholder">
+              <div className="canvas-icon">🎨</div>
+              <div className="canvas-text">Your creation will appear here</div>
+            </div>
+          </div>
+
+          {/* Generation Panel */}
+          <div className="generation-panel">
+            <div className="generation-header">
+              <div className="generation-tabs">
+                <button
+                  className={`gen-tab ${activeGenTab === 'Image' ? 'active' : ''}`}
+                  onClick={() => setActiveGenTab('Image')}
+                >
+                  <span className="gen-tab-icon">🖼️</span>
+                  Image
+                </button>
+                <button
+                  className={`gen-tab ${activeGenTab === 'Video' ? 'active' : ''}`}
+                  onClick={() => setActiveGenTab('Video')}
+                >
+                  <span className="gen-tab-icon">🎬</span>
+                  Video
+                </button>
+              </div>
+              <button className="add-tab-btn">+</button>
+            </div>
+
+            <div className="prompt-area">
+              <textarea
+                className="prompt-input"
+                placeholder="Describe what you want to create..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                rows={3}
+              />
+              <div className="prompt-footer">
+                <button className="enhance-btn">
+                  <span className="enhance-icon">✨</span>
+                  Enhance Prompt
+                </button>
+                <span className="char-count">{prompt.length}/500</span>
+              </div>
+            </div>
+
+            <div className="generation-settings">
+              <div className="setting-group">
+                <label className="setting-label">Aspect Ratio</label>
+                <select className="setting-select">
+                  <option>16:9 Landscape</option>
+                  <option>9:16 Portrait</option>
+                  <option>1:1 Square</option>
+                  <option>4:3 Standard</option>
+                </select>
+              </div>
+
+              <div className="setting-group">
+                <label className="setting-label">Quality</label>
+                <select className="setting-select">
+                  <option>Ultra HD</option>
+                  <option>High Definition</option>
+                  <option>Standard</option>
+                </select>
+              </div>
+
+              <div className="setting-group">
+                <label className="setting-label">Outputs</label>
+                <div className="outputs-control">
+                  <button
+                    className="output-btn"
+                    onClick={() => setNumOutputs(Math.max(1, numOutputs - 1))}
+                  >
+                    -
+                  </button>
+                  <span className="output-value">{numOutputs}</span>
+                  <button
+                    className="output-btn"
+                    onClick={() => setNumOutputs(Math.min(4, numOutputs + 1))}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <button
+              className="generate-btn"
+              onClick={handleGenerate}
+              disabled={isGenerating || !prompt.trim()}
+            >
+              {isGenerating ? (
+                <>
+                  <span className="spinner"></span>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <span className="generate-icon">⚡</span>
+                  Generate
+                  <span className="credits-cost">-10 ⚡</span>
+                </>
+              )}
+            </button>
           </div>
-        </section>
+        </div>
+
+        {/* Right Sidebar */}
+        <aside className="right-sidebar">
+          <div className="sidebar-section">
+            <h3 className="sidebar-title">Art Styles</h3>
+            <div className="art-styles-grid">
+              {artStyles.map((style, idx) => (
+                <div key={idx} className="art-style-card">
+                  <div className="art-style-preview">{style.emoji}</div>
+                  <div className="art-style-name">{style.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <div className="photo-model-card">
+              <div className="model-badge">🤖 Model: Phoenix v2</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* History Tabs */}
+      <div className="history-tabs">
+        <button className="history-tab active">
+          <span className="history-icon">🖼️</span>
+          Images
+        </button>
+        <button className="history-tab">
+          <span className="history-icon">🎬</span>
+          Videos
+        </button>
+        <button className="history-tab">
+          <span className="history-icon">🎵</span>
+          Audio
+        </button>
       </div>
     </div>
   );
