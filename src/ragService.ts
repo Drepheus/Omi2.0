@@ -155,7 +155,6 @@ export async function uploadDocument(
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        file: content,
         fileName: file.name,
         fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'FILE',
         fileSize: file.size,

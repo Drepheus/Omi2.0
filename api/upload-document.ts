@@ -24,9 +24,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { file, fileName, fileType, fileSize, botId } = req.body;
+    const { fileName, fileType, fileSize, botId } = req.body;
 
-    if (!file || !fileName || !botId) {
+    if (!fileName || !botId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
