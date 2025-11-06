@@ -232,8 +232,30 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
             </div>
             <div className="bots-grid">
               {customOmis.length === 0 ? (
-                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.5)' }}>
-                  <p>No bots yet. Create your first custom Omi bot to get started!</p>
+                <div style={{ 
+                  gridColumn: '1 / -1', 
+                  textAlign: 'center', 
+                  padding: '60px 40px',
+                  background: 'rgba(16,16,16,0.6)',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(192,192,192,0.15)'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
+                  <h3 style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '12px', fontSize: '20px', fontWeight: '400' }}>
+                    Create Your First Custom Omi Bot
+                  </h3>
+                  <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '24px', maxWidth: '500px', margin: '0 auto 24px' }}>
+                    Custom Omi bots are AI assistants trained on your own documents using RAG (Retrieval-Augmented Generation). 
+                    They can answer questions based on your uploaded knowledge base.
+                  </p>
+                  <button 
+                    className="create-bot-btn" 
+                    onClick={() => setShowCreateModal(true)}
+                    style={{ fontSize: '16px', padding: '14px 28px' }}
+                  >
+                    <span className="btn-icon">+</span>
+                    Create Your First Bot
+                  </button>
                 </div>
               ) : (
                 customOmis.map((bot) => (
@@ -250,8 +272,25 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
                       <div className="bot-stat"><span className="stat-label">Accuracy</span><span className="stat-value">{bot.accuracy || 0}%</span></div>
                     </div>
                     <div className="bot-card-actions">
-                      <button className="bot-action-btn"><span>⚙️</span> Configure</button>
-                      <button className="bot-action-btn"><span>💬</span> Test</button>
+                      <button 
+                        className="bot-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedBot(bot.id);
+                          setActiveTab('documents');
+                        }}
+                      >
+                        <span>📄</span> Manage Docs
+                      </button>
+                      <button 
+                        className="bot-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alert(`Testing bot: ${bot.name}\n\nRAG chat interface coming soon! This will allow you to chat with your bot using the uploaded documents as context.`);
+                        }}
+                      >
+                        <span>💬</span> Test
+                      </button>
                     </div>
                   </div>
                 ))
@@ -266,6 +305,24 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
               <div>
                 <h2 className="tab-title">Knowledge Base Documents</h2>
                 <p className="tab-subtitle">Upload and manage training documents for RAG fine-tuning</p>
+                {selectedBot && customOmis.length > 0 && (
+                  <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(192,192,192,0.1)', borderRadius: '8px', display: 'inline-block' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>Selected Bot: </span>
+                    <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', fontWeight: '500' }}>
+                      {customOmis.find(b => b.id === selectedBot)?.name || 'Unknown'}
+                    </span>
+                  </div>
+                )}
+                {!selectedBot && customOmis.length > 0 && (
+                  <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(255,193,7,0.1)', border: '1px solid rgba(255,193,7,0.3)', borderRadius: '8px', display: 'inline-block' }}>
+                    <span style={{ color: 'rgba(255,193,7,0.9)', fontSize: '12px' }}>⚠️ Select a bot first to upload documents</span>
+                  </div>
+                )}
+                {customOmis.length === 0 && (
+                  <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: '8px', display: 'inline-block' }}>
+                    <span style={{ color: 'rgba(248,113,113,0.9)', fontSize: '12px' }}>❌ Create a bot first in the "My Bots" tab</span>
+                  </div>
+                )}
               </div>
               <div className="header-actions">
                 <div className="search-box">
@@ -279,8 +336,19 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
                 </div>
                 <button 
                   className="upload-btn" 
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
+                  onClick={() => {
+                    if (!selectedBot && customOmis.length > 0) {
+                      alert('Please select a bot first by clicking on it in the "My Bots" tab, then come back here to upload documents.');
+                      return;
+                    }
+                    if (customOmis.length === 0) {
+                      alert('Please create a bot first in the "My Bots" tab before uploading documents.');
+                      return;
+                    }
+                    fileInputRef.current?.click();
+                  }}
+                  disabled={isUploading || customOmis.length === 0}
+                  style={customOmis.length === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                 >
                   {isUploading ? (
                     <>
