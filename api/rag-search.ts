@@ -2,11 +2,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_ANON_KEY!
-);
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
 });
@@ -23,6 +18,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const token = authHeader.replace('Bearer ', '');
+    
+    // Create Supabase client with user's token for RLS
+    const supabase = createClient(
+      process.env.VITE_SUPABASE_URL!,
+      process.env.VITE_SUPABASE_ANON_KEY!,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      }
+    );
+
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
