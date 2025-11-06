@@ -14,7 +14,11 @@ import AIWorkflowsPage from './AIWorkflowsPage';
 import { useAuth } from './Auth';
 import { GuestModeProvider, useGuestMode } from './GuestMode';
 import { supabase } from './supabaseClient';
+import { initSentry } from './sentry';
 import './landing.css';
+
+// Initialize Sentry error tracking
+initSentry();
 
 // Landing page component
 const LandingPage: React.FC = () => {
