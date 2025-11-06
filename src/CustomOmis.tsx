@@ -56,6 +56,13 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
   useEffect(() => {
     if (session?.user?.id && activeTab === 'documents') {
       loadDocuments();
+      
+      // Auto-refresh every 5 seconds to check processing status
+      const interval = setInterval(() => {
+        loadDocuments();
+      }, 5000);
+      
+      return () => clearInterval(interval);
     }
   }, [session?.user?.id, activeTab, selectedBot]);
 

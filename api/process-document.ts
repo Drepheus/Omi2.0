@@ -55,8 +55,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { documentId, content, chunkSize = 1000, overlap = 200 } = req.body;
 
-    if (!documentId || !content) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!documentId) {
+      return res.status(400).json({ error: 'Missing documentId' });
+    }
+    
+    // Content is optional - if empty, we'll mark as failed with a helpful message
+    if (!content || content.trim().length === 0) {
+      console.log(`Document ${documentId} has no content - likely needs server-side PDF extraction`);
+      
+      await supabase
+        .from('knowledge_documents')
+        .update({ 
+          status: 'failed',
+          // Store error info in a metadata column if you have one
+        })
+        .eq('id', documentId);
+        
+      return res.status(400).json({ 
+        error: 'PDF extraction not yet implemented. Please upload TXT, MD, JSON, or CSV files for now.' 
+      });
     }
 
     // Verify document belongs to user
