@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+// @ts-ignore - pdf-parse doesn't have proper TypeScript types
+import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
@@ -53,27 +55,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { documentId, content, chunkSize = 1000, overlap = 200 } = req.body;
+    const { documentId, content, fileData, chunkSize = 1000, overlap = 200 } = req.body;
 
     if (!documentId) {
       return res.status(400).json({ error: 'Missing documentId' });
-    }
-    
-    // Content is optional - if empty, we'll mark as failed with a helpful message
-    if (!content || content.trim().length === 0) {
-      console.log(`Document ${documentId} has no content - likely needs server-side PDF extraction`);
-      
-      await supabase
-        .from('knowledge_documents')
-        .update({ 
-          status: 'failed',
-          // Store error info in a metadata column if you have one
-        })
-        .eq('id', documentId);
-        
-      return res.status(400).json({ 
-        error: 'PDF extraction not yet implemented. Please upload TXT, MD, JSON, or CSV files for now.' 
-      });
     }
 
     // Verify document belongs to user
@@ -88,8 +73,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'Document not found' });
     }
 
+    let extractedText = content || '';
+
+    // If we have PDF file data, extract text from it
+    if (fileData && (document.type === 'PDF' || document.name.toLowerCase().endsWith('.pdf'))) {
+      try {
+        console.log(`Extracting text from PDF: ${document.name}`);
+        
+        // Convert base64 to buffer
+        const buffer = Buffer.from(fileData, 'base64');
+        const pdfData = await pdfParse(buffer);
+        extractedText = pdfData.text;
+        
+        console.log(`Extracted ${extractedText.length} characters from PDF`);
+      } catch (pdfError: any) {
+        console.error('PDF extraction error:', pdfError);
+        await supabase
+          .from('knowledge_documents')
+          .update({ status: 'failed' })
+          .eq('id', documentId);
+        
+        return res.status(400).json({ 
+          error: 'Failed to extract text from PDF',
+          details: pdfError.message 
+        });
+      }
+    }
+    
+    // Validate we have content to process
+    if (!extractedText || extractedText.trim().length === 0) {
+      console.log(`Document ${documentId} has no content after extraction`);
+      
+      await supabase
+        .from('knowledge_documents')
+        .update({ status: 'failed' })
+        .eq('id', documentId);
+        
+      return res.status(400).json({ 
+        error: 'No text content could be extracted from the document' 
+      });
+    }
+
     // Chunk the text
-    const chunks = chunkText(content, chunkSize, overlap);
+    const chunks = chunkText(extractedText, chunkSize, overlap);
     console.log(`Processing ${chunks.length} chunks for document ${documentId}`);
 
     // Generate embeddings for each chunk

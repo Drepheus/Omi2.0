@@ -105,26 +105,39 @@ export async function createCustomOmi(userId: string, name: string, description:
   return data;
 }
 
-// Read file content as text
-export async function readFileContent(file: File): Promise<string> {
+// Read file content as text or base64
+export async function readFileContent(file: File): Promise<{ content: string; fileData?: string }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      resolve(content);
-    };
-    
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    
-    // Read as text for supported formats
-    if (file.type === 'text/plain' || file.name.endsWith('.txt') || 
+    // For PDFs, read as base64 for server-side extraction
+    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      reader.onload = (e) => {
+        const base64 = (e.target?.result as string).split(',')[1]; // Remove data:application/pdf;base64, prefix
+        resolve({ content: '', fileData: base64 });
+      };
+      reader.onerror = () => reject(new Error('Failed to read PDF file'));
+      reader.readAsDataURL(file);
+    }
+    // For text files, read as text
+    else if (file.type === 'text/plain' || file.name.endsWith('.txt') || 
         file.name.endsWith('.md') || file.name.endsWith('.json') ||
         file.name.endsWith('.csv')) {
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        resolve({ content });
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsText(file);
-    } else {
-      // For other formats, we'll need server-side processing
-      resolve(''); // Empty content will trigger server-side extraction
+    } 
+    else {
+      // For other formats, try reading as text
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        resolve({ content });
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
     }
   });
 }
@@ -137,7 +150,7 @@ export async function uploadDocument(
 ): Promise<void> {
   try {
     onProgress?.('Reading file...');
-    const content = await readFileContent(file);
+    const { content, fileData } = await readFileContent(file);
 
     onProgress?.('Uploading document...');
     const session = await supabase.auth.getSession();
@@ -152,10 +165,11 @@ export async function uploadDocument(
       fileName: file.name,
       fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'FILE',
       fileSize: file.size,
-      botId
+      botId,
+      fileData // Include base64 PDF data if available
     };
     
-    console.log('Uploading with payload:', uploadPayload);
+    console.log('Uploading with payload:', { ...uploadPayload, fileData: fileData ? `${fileData.length} bytes` : 'none' });
     
     const uploadResponse = await fetch('/api/upload-document', {
       method: 'POST',
@@ -185,6 +199,7 @@ export async function uploadDocument(
       body: JSON.stringify({
         documentId,
         content,
+        fileData, // Include PDF data for server-side extraction
         chunkSize: 1000,
         overlap: 200
       })

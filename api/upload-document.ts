@@ -34,9 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { fileName, fileType, fileSize, botId } = req.body;
+    const { fileName, fileType, fileSize, botId, fileData } = req.body;
 
-    console.log('Upload request body:', { fileName, fileType, fileSize, botId });
+    console.log('Upload request body:', { fileName, fileType, fileSize, botId, hasFileData: !!fileData });
 
     if (!fileName || !botId) {
       console.error('Validation failed:', { fileName: !!fileName, botId: !!botId });
