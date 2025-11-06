@@ -148,18 +148,22 @@ export async function uploadDocument(
     }
 
     // Step 1: Upload document metadata
+    const uploadPayload = {
+      fileName: file.name,
+      fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'FILE',
+      fileSize: file.size,
+      botId
+    };
+    
+    console.log('Uploading with payload:', uploadPayload);
+    
     const uploadResponse = await fetch('/api/upload-document', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        fileName: file.name,
-        fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'FILE',
-        fileSize: file.size,
-        botId
-      })
+      body: JSON.stringify(uploadPayload)
     });
 
     if (!uploadResponse.ok) {

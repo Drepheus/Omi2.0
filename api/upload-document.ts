@@ -35,8 +35,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { fileName, fileType, fileSize, botId } = req.body;
 
+    console.log('Upload request body:', { fileName, fileType, fileSize, botId });
+
     if (!fileName || !botId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      console.error('Validation failed:', { fileName: !!fileName, botId: !!botId });
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        received: { fileName: !!fileName, botId: !!botId }
+      });
     }
 
     // Ensure required fields have defaults
