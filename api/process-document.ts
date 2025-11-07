@@ -1,8 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
-// @ts-ignore - pdf-parse doesn't have proper TypeScript types
-import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
@@ -79,6 +77,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (fileData && (document.type === 'PDF' || document.name.toLowerCase().endsWith('.pdf'))) {
       try {
         console.log(`Extracting text from PDF: ${document.name}`);
+        
+        // Use require for CommonJS module
+        // @ts-ignore
+        const pdfParse = require('pdf-parse');
         
         // Convert base64 to buffer
         const buffer = Buffer.from(fileData, 'base64');

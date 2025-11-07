@@ -161,6 +161,36 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
     }
   };
 
+  const handleDeleteDocument = async (docId: string, docName: string) => {
+    if (!confirm(`Are you sure you want to delete "${docName}"?`)) return;
+    
+    try {
+      await ragService.deleteDocument(docId);
+      alert('Document deleted successfully');
+      await loadDocuments();
+    } catch (error: any) {
+      console.error('Failed to delete document:', error);
+      alert(`Failed to delete document: ${error.message}`);
+    }
+  };
+
+  const handleDeleteBot = async (botId: string, botName: string) => {
+    if (!confirm(`Are you sure you want to delete "${botName}"? This will also delete all associated documents.`)) return;
+    
+    try {
+      await ragService.deleteBot(botId);
+      alert('Bot deleted successfully');
+      if (selectedBot === botId) {
+        setSelectedBot(null);
+      }
+      await loadBots();
+      await loadDocuments();
+    } catch (error: any) {
+      console.error('Failed to delete bot:', error);
+      alert(`Failed to delete bot: ${error.message}`);
+    }
+  };
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -298,6 +328,16 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
                       >
                         <span>💬</span> Test
                       </button>
+                      <button 
+                        className="bot-action-btn delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteBot(bot.id, bot.name);
+                        }}
+                        title="Delete bot and all documents"
+                      >
+                        <span>🗑️</span> Delete
+                      </button>
                     </div>
                   </div>
                 ))
@@ -425,7 +465,13 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
                           <div className="table-actions">
                             <button className="action-btn" title="View">👁️</button>
                             <button className="action-btn" title="Download">⬇️</button>
-                            <button className="action-btn delete" title="Delete">🗑️</button>
+                            <button 
+                              className="action-btn delete" 
+                              title="Delete"
+                              onClick={() => handleDeleteDocument(doc.id, doc.name)}
+                            >
+                              🗑️
+                            </button>
                           </div>
                         </td>
                       </tr>
