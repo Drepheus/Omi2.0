@@ -181,9 +181,23 @@ export async function uploadDocument(
     });
 
     if (!uploadResponse.ok) {
-      const error = await uploadResponse.json();
-      console.error('Upload API error:', error);
-      throw new Error(error.details || error.error || 'Upload failed');
+      let errorMessage = 'Upload failed';
+      try {
+        const contentType = uploadResponse.headers.get('content-type');
+        if (contentType?.includes('application/json')) {
+          const error = await uploadResponse.json();
+          console.error('Upload API error:', error);
+          errorMessage = error.details || error.error || errorMessage;
+        } else {
+          const errorText = await uploadResponse.text();
+          console.error('Upload API non-JSON error:', errorText);
+          errorMessage = `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`;
+        }
+      } catch (parseError) {
+        console.error('Error parsing upload response:', parseError);
+        errorMessage = `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const { documentId } = await uploadResponse.json();
@@ -206,8 +220,23 @@ export async function uploadDocument(
     });
 
     if (!processResponse.ok) {
-      const error = await processResponse.json();
-      throw new Error(error.error || 'Processing failed');
+      let errorMessage = 'Processing failed';
+      try {
+        const contentType = processResponse.headers.get('content-type');
+        if (contentType?.includes('application/json')) {
+          const error = await processResponse.json();
+          console.error('Process API error:', error);
+          errorMessage = error.details || error.error || errorMessage;
+        } else {
+          const errorText = await processResponse.text();
+          console.error('Process API non-JSON error:', errorText);
+          errorMessage = `Processing failed: ${processResponse.status} ${processResponse.statusText}`;
+        }
+      } catch (parseError) {
+        console.error('Error parsing process response:', parseError);
+        errorMessage = `Processing failed: ${processResponse.status} ${processResponse.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     onProgress?.('Document indexed successfully!');
