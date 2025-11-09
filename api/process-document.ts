@@ -34,14 +34,16 @@ function chunkText(text: string, chunkSize: number = 1000, overlap: number = 200
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set JSON content type to ensure response is always JSON
-  res.setHeader('Content-Type', 'application/json');
-  
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+  // GLOBAL ERROR HANDLER - Catches ALL errors before they bubble to Vercel
   try {
+    // Set JSON content type to ensure response is always JSON
+    res.setHeader('Content-Type', 'application/json');
+    
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ error: 'No authorization header' });
@@ -235,14 +237,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: 'Document processed and indexed successfully'
     });
 
-  } catch (error: any) {
-    console.error('Processing error:', error);
-    console.error('Error stack:', error.stack);
+    } catch (error: any) {
+      console.error('Processing error:', error);
+      console.error('Error stack:', error.stack);
+      
+      // Ensure we always return JSON, even for unexpected errors
+      return res.status(500).json({ 
+        error: error.message || 'Internal server error',
+        details: error.stack ? error.stack.split('\n')[0] : 'Unknown error'
+      });
+    }
     
-    // Ensure we always return JSON, even for unexpected errors
+  } catch (globalError: any) {
+    // GLOBAL CATCH - Last line of defense before Vercel
+    console.error('CRITICAL: Uncaught error in handler:', globalError);
+    console.error('CRITICAL: Error stack:', globalError.stack);
+    
+    // Attempt to set header if not already sent
+    try {
+      if (!res.headersSent) {
+        res.setHeader('Content-Type', 'application/json');
+      }
+    } catch (headerError) {
+      console.error('Could not set header:', headerError);
+    }
+    
+    // Always return JSON for any uncaught error
     return res.status(500).json({ 
-      error: error.message || 'Internal server error',
-      details: error.stack ? error.stack.split('\n')[0] : 'Unknown error'
+      error: 'Critical server error',
+      message: globalError.message || 'An unexpected error occurred',
+      details: globalError.stack ? globalError.stack.split('\n').slice(0, 3).join(' | ') : 'No stack trace'
     });
   }
 }
