@@ -119,25 +119,25 @@ export async function readFileContent(file: File): Promise<{ content: string; fi
       reader.onerror = () => reject(new Error('Failed to read PDF file'));
       reader.readAsDataURL(file);
     }
-    // For text files, read as text
+    // For text files, read as base64 (backend will decode)
     else if (file.type === 'text/plain' || file.name.endsWith('.txt') || 
         file.name.endsWith('.md') || file.name.endsWith('.json') ||
         file.name.endsWith('.csv')) {
       reader.onload = (e) => {
-        const content = e.target?.result as string;
-        resolve({ content });
+        const base64 = (e.target?.result as string).split(',')[1]; // Remove data URL prefix
+        resolve({ content: '', fileData: base64 });
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
+      reader.readAsDataURL(file); // Read as base64 instead of text
     } 
     else {
-      // For other formats, try reading as text
+      // For other formats, try reading as base64
       reader.onload = (e) => {
-        const content = e.target?.result as string;
-        resolve({ content });
+        const base64 = (e.target?.result as string).split(',')[1];
+        resolve({ content: '', fileData: base64 });
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsText(file);
+      reader.readAsDataURL(file);
     }
   });
 }
