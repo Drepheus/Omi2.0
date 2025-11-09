@@ -1,22 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
-import pdf from 'pdf-extraction';
+// NOTE: pdf-extraction is now dynamically imported only when needed (see below)
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
 });
-
-// Extract text from PDF buffer (serverless-safe)
-async function extractTextFromPDF(fileBuffer: Buffer): Promise<string> {
-  try {
-    const data = await pdf(fileBuffer);
-    return data.text || '';
-  } catch (error) {
-    console.error('PDF extraction error (serverless safe):', error);
-    return '';
-  }
-}
 
 // Chunk text into smaller pieces
 function chunkText(text: string, chunkSize: number = 1000, overlap: number = 200): string[] {
@@ -90,32 +79,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let extractedText = content || '';
 
-    // If we have PDF file data, extract text from it
-    if (fileData && (document.type === 'PDF' || document.name.toLowerCase().endsWith('.pdf'))) {
+    // Extract text based on file type
+    if (fileData) {
       try {
-        console.log(`Extracting text from PDF: ${document.name}`);
-        
-        // Convert base64 to Buffer
-        const fileBuffer = Buffer.from(fileData, 'base64');
-        
-        // Extract text using pdf-extraction (serverless-safe)
-        extractedText = await extractTextFromPDF(fileBuffer);
-        
-        console.log(`Extracted ${extractedText.length} characters from PDF`);
-        
-        if (!extractedText || extractedText.trim().length === 0) {
-          throw new Error('No text could be extracted from PDF');
+        if (document.type === 'PDF' || document.name.toLowerCase().endsWith('.pdf')) {
+          // LAZY LOAD: Only import pdf-extraction when actually processing a PDF
+          console.log(`Importing pdf-extraction dynamically for: ${document.name}`);
+          const pdf = await import('pdf-extraction');
+          
+          console.log(`Extracting text from PDF: ${document.name}`);
+          const dataBuffer = Buffer.from(fileData, 'base64');
+          const parsed = await pdf.default(dataBuffer);
+          extractedText = parsed.text || '';
+          
+          console.log(`Extracted ${extractedText.length} characters from PDF`);
+          
+          if (!extractedText || extractedText.trim().length === 0) {
+            throw new Error('No text could be extracted from PDF');
+          }
+        } else if (document.type === 'TXT' || document.type === 'TEXT' || document.name.toLowerCase().endsWith('.txt')) {
+          // Handle TXT files - simple UTF-8 decode
+          console.log(`Extracting text from TXT: ${document.name}`);
+          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
+          console.log(`Extracted ${extractedText.length} characters from TXT`);
+        } else if (document.type === 'MD' || document.name.toLowerCase().endsWith('.md')) {
+          // Handle Markdown files - simple UTF-8 decode
+          console.log(`Extracting text from Markdown: ${document.name}`);
+          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
+          console.log(`Extracted ${extractedText.length} characters from MD`);
+        } else {
+          // For other text-based formats, try UTF-8 decode
+          console.log(`Attempting UTF-8 decode for: ${document.name}`);
+          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
         }
-      } catch (pdfError: any) {
-        console.error('PDF extraction error:', pdfError);
+      } catch (extractionError: any) {
+        console.error('Text extraction error:', extractionError);
         await supabase
           .from('knowledge_documents')
           .update({ status: 'failed' })
           .eq('id', documentId);
         
         return res.status(400).json({ 
-          error: 'Failed to extract text from PDF',
-          details: pdfError.message 
+          error: 'Failed to extract text from document',
+          details: extractionError.message 
         });
       }
     }
