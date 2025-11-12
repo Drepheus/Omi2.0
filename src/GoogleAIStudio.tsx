@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GoogleAIStudio.css';
 
@@ -6,89 +6,47 @@ interface GoogleAIStudioProps {
   onClose?: () => void;
 }
 
-const promptCards = [
+const studioTools = [
   {
-    icon: '🪴',
-    title: 'Outline a backyard garden plan',
-    color: '#4a5c3a'
+    name: 'Flow',
+    description: 'Create dynamic visual stories',
+    url: 'https://labs.google/fx/tools/flow',
+    icon: '�',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: '#667eea'
   },
   {
-    icon: '🍦',
-    title: 'Create surreal photorealistic ice cream',
-    color: '#5a3a5c'
+    name: 'MusicFx DJ',
+    description: 'Generate unique music mixes',
+    url: 'https://labs.google/fx/tools/music-fx-dj',
+    icon: '🎵',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    color: '#f093fb'
   },
   {
-    icon: '📚',
-    title: 'Build a multiple-choice study guide',
-    color: '#2a2a2a'
-  },
-  {
-    icon: '🥾',
-    title: 'Map out hike-friendly national park options',
-    color: '#3a5c4a'
-  },
-  {
-    icon: '🖼️',
-    title: 'Restore an old picture',
-    color: '#4a5c6c'
-  },
-  {
-    icon: '✈️',
-    title: 'Plan a family trip',
-    color: '#2a2a2a'
-  },
-  {
-    icon: '📝',
-    title: 'Summarize long documents',
-    color: '#5c4a3a'
-  },
-  {
+    name: 'ImageFx',
+    description: 'Transform images with AI',
+    url: 'https://labs.google/fx/tools/image-fx',
     icon: '🎨',
-    title: 'Generate creative content',
-    color: '#3a4a5c'
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    color: '#4facfe'
   },
   {
-    icon: '💡',
-    title: 'Brainstorm new ideas',
-    color: '#5c3a4a'
-  },
-  {
-    icon: '🔍',
-    title: 'Research complex topics',
-    color: '#3a5c5c'
+    name: 'Whisk',
+    description: 'Blend creative concepts',
+    url: 'https://labs.google/fx/tools/whisk',
+    icon: '✨',
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    color: '#43e97b'
   }
 ];
 
 export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
-  const [prompt, setPrompt] = useState('');
+  const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const navigate = useNavigate();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Start the scroll animation
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    let scrollPosition = 0;
-    const scrollSpeed = 0.5;
-
-    const animate = () => {
-      if (container) {
-        scrollPosition += scrollSpeed;
-        if (scrollPosition >= container.scrollWidth / 2) {
-          scrollPosition = 0;
-        }
-        container.scrollLeft = scrollPosition;
-      }
-    };
-
-    const intervalId = setInterval(animate, 16); // ~60fps
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const handlePromptCardClick = (title: string) => {
-    setPrompt(title);
+  const handleToolClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleClose = () => {
@@ -100,46 +58,67 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
   };
 
   return (
-    <div className="google-ai-studio-page">
-      <button className="google-ai-close-btn" onClick={handleClose}>
+    <div className="google-studio-page">
+      {/* Animated background */}
+      <div className="studio-background">
+        <div className="studio-gradient-orb studio-orb-1"></div>
+        <div className="studio-gradient-orb studio-orb-2"></div>
+        <div className="studio-gradient-orb studio-orb-3"></div>
+      </div>
+
+      <button className="studio-close-btn" onClick={handleClose}>
         ✕
       </button>
 
-      <div className="google-ai-header">
-        <h1 className="google-ai-title">
-          Try <span className="gemini-star">✦</span> Gemini
-        </h1>
-      </div>
-
-      <div className="google-ai-search-container">
-        <div className="google-ai-search-wrapper">
-          <input
-            type="text"
-            className="google-ai-search-input"
-            placeholder="Ask Gemini"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-          <button className="google-ai-send-btn" disabled={!prompt.trim()}>
-            ▶
-          </button>
+      <div className="studio-content">
+        <div className="studio-header">
+          <h1 className="studio-title">
+            <span className="studio-google-text">Google</span>
+            <span className="studio-labs-text">Labs</span>
+          </h1>
+          <p className="studio-subtitle">
+            Explore the future of AI creativity
+          </p>
         </div>
-      </div>
 
-      <div className="google-ai-prompts-section">
-        <div className="google-ai-prompts-scroll" ref={scrollContainerRef}>
-          {/* Duplicate cards for seamless loop */}
-          {[...promptCards, ...promptCards].map((card, index) => (
+        <div className="studio-tools-grid">
+          {studioTools.map((tool) => (
             <div
-              key={index}
-              className="google-ai-prompt-card"
-              style={{ backgroundColor: card.color }}
-              onClick={() => handlePromptCardClick(card.title)}
+              key={tool.name}
+              className={`studio-tool-card ${hoveredTool === tool.name ? 'hovered' : ''}`}
+              onClick={() => handleToolClick(tool.url)}
+              onMouseEnter={() => setHoveredTool(tool.name)}
+              onMouseLeave={() => setHoveredTool(null)}
             >
-              <div className="prompt-card-icon">{card.icon}</div>
-              <p className="prompt-card-title">{card.title}</p>
+              <div className="tool-card-glow" style={{ background: tool.gradient }}></div>
+              
+              <div className="tool-card-content">
+                <div className="tool-icon" style={{ color: tool.color }}>
+                  {tool.icon}
+                </div>
+                
+                <div className="tool-info">
+                  <h3 className="tool-name">{tool.name}</h3>
+                  <p className="tool-description">{tool.description}</p>
+                </div>
+
+                <div className="tool-launch-btn">
+                  <span>Launch</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div className="tool-card-border"></div>
             </div>
           ))}
+        </div>
+
+        <div className="studio-footer">
+          <p className="studio-footer-text">
+            Powered by <span className="gemini-badge">✦ Gemini</span>
+          </p>
         </div>
       </div>
     </div>
