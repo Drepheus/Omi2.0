@@ -5,6 +5,21 @@ interface MediaStudioProps {
   onClose?: () => void;
 }
 
+const sidebarTools = [
+  { name: 'Home', icon: '🏠', section: 'main' },
+  { name: 'Library', icon: '📚', section: 'main' },
+  { name: 'Image', icon: '🖼️', section: 'AI Tools' },
+  { name: 'Video', icon: '🎬', section: 'AI Tools' },
+  { name: 'Blueprints', icon: '⚡', section: 'AI Tools', badge: 'Beta' },
+  { name: 'Flow State', icon: '∞', section: 'AI Tools' },
+  { name: 'Realtime Canvas', icon: '🎨', section: 'AI Tools' },
+  { name: 'Realtime Generation', icon: '✨', section: 'AI Tools' },
+  { name: 'Canvas Editor', icon: '🖌️', section: 'AI Tools' },
+  { name: 'Universal Upscaler', icon: '📐', section: 'AI Tools' },
+  { name: 'Models & Training', icon: '🧠', section: 'Advanced' },
+  { name: 'Texture Generation', icon: '🌟', section: 'Advanced', badge: 'Alpha' },
+];
+
 const categoryTabs = [
   { name: 'Blueprints', icon: '⚡' },
   { name: 'Flow State', icon: '∞' },
@@ -69,9 +84,53 @@ const communityFilters = [
 export default function MediaStudio({ onClose }: MediaStudioProps) {
   const [activeCategory, setActiveCategory] = useState('Blueprints');
   const [activeFilter, setActiveFilter] = useState('Trending');
+  const [activeTool, setActiveTool] = useState('Blueprints');
 
   return (
     <div className="media-studio-page">
+      {/* Left Sidebar */}
+      <div className="media-sidebar">
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <span className="logo-avatar">✨</span>
+            <div className="logo-user">
+              <span className="user-name">Omi.AI</span>
+              <button className="user-dropdown">▼</button>
+            </div>
+          </div>
+          <div className="sidebar-credits">
+            <span className="credits-icon">⚡</span>
+            <span className="credits-value">150</span>
+            <button className="upgrade-btn">Upgrade</button>
+          </div>
+        </div>
+
+        <nav className="sidebar-nav">
+          {sidebarTools.map((tool, index) => (
+            <div key={index}>
+              {tool.section && index > 0 && sidebarTools[index - 1].section !== tool.section && (
+                <div className="nav-section-title">{tool.section}</div>
+              )}
+              <button 
+                className={`sidebar-item ${activeTool === tool.name ? 'active' : ''}`}
+                onClick={() => setActiveTool(tool.name)}
+              >
+                <span className="sidebar-icon">{tool.icon}</span>
+                <span className="sidebar-label">{tool.name}</span>
+                {tool.badge && <span className="tool-badge">{tool.badge}</span>}
+              </button>
+            </div>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="sidebar-item">
+            <span className="sidebar-icon">🆕</span>
+            <span className="sidebar-label">What's New</span>
+          </button>
+        </div>
+      </div>
+
       <div className="media-main-content">
         <button className="close-btn" onClick={onClose}>✕</button>
 
