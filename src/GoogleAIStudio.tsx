@@ -41,8 +41,19 @@ const studioTools = [
   }
 ];
 
+const sidebarItems = [
+  { name: 'Dashboard', icon: '📊', active: true },
+  { name: 'Model Garden', icon: '🌱', active: false },
+  { name: 'Vertex AI Studio', icon: '⚡', active: false },
+  { name: 'Agent Builder', icon: '🤖', active: false },
+  { name: 'GenAI Evaluation', icon: '📈', active: false },
+  { name: 'Tuning', icon: '⚙️', active: false },
+  { name: 'Search', icon: '🔍', active: false },
+];
+
 export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const handleToolClick = (url: string) => {
@@ -65,11 +76,39 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
         <div className="studio-gradient-orb studio-orb-3"></div>
       </div>
 
+      {/* Sidebar */}
+      <div className={`studio-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <span className="logo-icon">🔷</span>
+            {!sidebarCollapsed && <span className="logo-text">Vertex AI</span>}
+          </div>
+          <button 
+            className="sidebar-toggle"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          >
+            {sidebarCollapsed ? '→' : '←'}
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {sidebarItems.map((item) => (
+            <button
+              key={item.name}
+              className={`sidebar-item ${item.active ? 'active' : ''}`}
+            >
+              <span className="sidebar-icon">{item.icon}</span>
+              {!sidebarCollapsed && <span className="sidebar-label">{item.name}</span>}
+            </button>
+          ))}
+        </nav>
+      </div>
+
       <button className="studio-close-btn" onClick={handleClose}>
-        
+        ✕
       </button>
 
-      <div className="studio-container">
+      <div className={`studio-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         <div className="studio-hero">
           <h1 className="studio-main-title">
             Get started with <span className="studio-google-text">Google</span> <span className="studio-labs-text">Labs</span>

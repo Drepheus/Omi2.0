@@ -6,15 +6,128 @@
   background: radial-gradient(ellipse at top, #0f0f23 0%, #050510 50%, #000000 100%);
   z-index: 1000;
   display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Sidebar */
+.studio-sidebar {
+  width: 240px;
+  background: rgba(20, 20, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 10;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.studio-sidebar.collapsed {
+  width: 72px;
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+}
+
+.logo-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+
+.sidebar-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sidebar-nav {
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-align: left;
+  width: 100%;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sidebar-item.active {
+  background: rgba(74, 144, 226, 0.15);
+  color: #4a90e2;
+}
+
+.sidebar-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sidebar-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.studio-sidebar.collapsed .sidebar-label {
+  display: none;
+}
+
+.studio-sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 12px;
 }
 
 .studio-background {
@@ -65,6 +178,48 @@
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
   66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+.studio-close-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.studio-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05) rotate(90deg);
+}
+
+.studio-container {
+  position: relative;
+  flex: 1;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 40px 60px;
+  width: 100%;
+  overflow-y: auto;
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+.studio-container.sidebar-collapsed {
+  margin-left: 72px;
 }
 
 
@@ -423,8 +578,26 @@
 }
 
 @media (max-width: 900px) {
+  .studio-sidebar {
+    width: 72px;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .sidebar-item {
+    justify-content: center;
+    padding: 12px;
+  }
+
   .studio-container {
+    margin-left: 72px;
     padding: 60px 28px 40px;
+  }
+
+  .studio-container.sidebar-collapsed {
+    margin-left: 72px;
   }
 
   .studio-main-title {
@@ -444,8 +617,24 @@
 }
 
 @media (max-width: 768px) {
+  .studio-sidebar {
+    position: fixed;
+    left: -240px;
+    height: 100vh;
+    z-index: 50;
+  }
+
+  .studio-sidebar.collapsed {
+    left: -72px;
+  }
+
   .studio-container {
+    margin-left: 0;
     padding: 60px 20px 32px;
+  }
+
+  .studio-container.sidebar-collapsed {
+    margin-left: 0;
   }
 
   .studio-main-title {
