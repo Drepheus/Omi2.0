@@ -58,6 +58,14 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
+    icon: '🔮',
+    title: 'Replicate Studio',
+    description: 'Explore and run thousands of AI models - from image generation to language models',
+    label: 'Models',
+    action: 'replicatestudio'
+  },
+  {
+    color: '#0a0a0a',
     icon: '⚙️',
     title: 'API Settings',
     description: 'Configure API\'s',
@@ -568,6 +576,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       window.location.href = '/ai-workflows';
     } else if (card.action === 'googleaistudio') {
       window.location.href = '/google-ai-studio';
+    } else if (card.action === 'replicatestudio') {
+      window.location.href = '/replicate-studio';
     }
   };
 

@@ -10,6 +10,7 @@ import MediaStudio from './MediaStudio';
 import CustomOmis from './CustomOmis';
 import AdminDashboard from './AdminDashboard';
 import GoogleAIStudio from './GoogleAIStudio';
+import ReplicateStudio from './ReplicateStudio';
 import AIWorkflowsPage from './AIWorkflowsPage';
 import { useAuth } from './Auth';
 import { GuestModeProvider, useGuestMode } from './GuestMode';
@@ -232,6 +233,18 @@ const AuthChecker: React.FC = () => {
           (session || isGuestMode) ? (
             <div className="page-transition fade-in">
               <GoogleAIStudio onClose={() => navigate(-1)} />
+            </div>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } 
+      />
+      <Route 
+        path="/replicate-studio" 
+        element={
+          (session || isGuestMode) ? (
+            <div className="page-transition fade-in">
+              <ReplicateStudio onClose={() => navigate(-1)} />
             </div>
           ) : (
             <Navigate to="/login" replace />
