@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from './Auth';
-import Dock from './Dock';
 import './CustomOmis.css';
 import * as ragService from './ragService';
 
@@ -32,7 +30,6 @@ interface Document {
 
 const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
   const { session } = useAuth();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'bots' | 'documents' | 'training'>('bots');
   const [selectedBot, setSelectedBot] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -176,39 +173,6 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
       alert(`Failed to delete document: ${error.message}`);
     }
   };
-
-  // Dock items configuration for Custom Omis
-  const dockItems = [
-    {
-      icon: '\u2318',
-      label: 'Command',
-      onClick: () => {
-        navigate('/command-hub');
-      }
-    },
-    {
-      icon: '\ud83d\udcc2',
-      label: 'Uploaded Contents',
-      onClick: () => {
-        console.log('Uploaded Contents clicked');
-        setActiveTab('documents');
-      }
-    },
-    {
-      icon: '\u25c8',
-      label: 'Search',
-      onClick: () => {
-        console.log('Search clicked');
-      }
-    },
-    {
-      icon: '\u2699',
-      label: 'Settings',
-      onClick: () => {
-        console.log('Settings clicked');
-      }
-    }
-  ];
 
   const handleDeleteBot = async (botId: string, botName: string) => {
     if (!confirm(`Are you sure you want to delete "${botName}"? This will also delete all associated documents.`)) return;
@@ -685,9 +649,6 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
           </div>
         </div>
       )}
-
-      {/* Dock Menu */}
-      <Dock items={dockItems} />
     </div>
   );
 };
