@@ -176,8 +176,8 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
           <DotGrid 
             dotSize={2}
             gap={40}
-            baseColor="rgba(168, 85, 247, 0.15)"
-            activeColor="#a855f7"
+            baseColor="rgba(192, 192, 192, 0.1)"
+            activeColor="#c0c0c0"
             proximity={120}
             speedTrigger={80}
             shockRadius={200}
