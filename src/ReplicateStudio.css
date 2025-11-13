@@ -2,20 +2,20 @@
 
 .replicate-studio {
   min-height: 100vh;
-  background: #ffffff;
-  color: #0a0a0f;
+  background: #0a0a0f;
+  color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
 /* Header */
 .replicate-header {
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #0a0a0f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(10, 10, 15, 0.95);
 }
 
 .replicate-header-content {
@@ -34,7 +34,7 @@
   gap: 12px;
   font-weight: 700;
   font-size: 1.2rem;
-  color: #0a0a0f;
+  color: #ffffff;
 }
 
 .replicate-logo-icon {
@@ -48,7 +48,7 @@
 }
 
 .replicate-nav-link {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
@@ -68,9 +68,9 @@
 .replicate-btn-secondary {
   padding: 8px 20px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
-  color: #0a0a0f;
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
@@ -116,7 +116,7 @@
 }
 
 .replicate-close-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   transform: rotate(90deg);
 }
 
@@ -146,7 +146,7 @@
 
 .replicate-hero-subtitle {
   font-size: 1.3rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
@@ -155,7 +155,7 @@
 /* Tabs Section */
 .replicate-tabs-section {
   padding: 40px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .replicate-tabs {
@@ -174,9 +174,9 @@
 .replicate-tab {
   padding: 10px 20px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
@@ -205,17 +205,18 @@
 .replicate-search {
   width: 100%;
   padding: 12px 48px 12px 16px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s;
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .replicate-search:focus {
   outline: none;
   border-color: #a855f7;
-  background: white;
+  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
@@ -241,8 +242,8 @@
 }
 
 .replicate-model-card {
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -251,7 +252,7 @@
 
 .replicate-model-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 32px rgba(168, 85, 247, 0.2);
   border-color: #a855f7;
 }
 
@@ -259,7 +260,7 @@
   position: relative;
   padding-bottom: 75%;
   overflow: hidden;
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .replicate-model-image img {
@@ -322,14 +323,14 @@
 .replicate-model-name {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0a0a0f;
+  color: #ffffff;
   margin: 0;
   flex: 1;
 }
 
 .replicate-model-runs {
   font-size: 0.85rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -343,7 +344,7 @@
 
 .replicate-model-description {
   font-size: 0.95rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
   margin: 0;
   display: -webkit-box;
@@ -362,7 +363,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 32px 0;
-  color: #0a0a0f;
+  color: #ffffff;
 }
 
 .replicate-actions-grid {
@@ -376,8 +377,8 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
@@ -386,7 +387,7 @@
 
 .replicate-action-card:hover {
   border-color: #a855f7;
-  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
   transform: translateX(4px);
 }
 
@@ -402,13 +403,13 @@
 .replicate-action-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #0a0a0f;
+  color: #ffffff;
   margin: 0 0 4px 0;
 }
 
 .replicate-action-description {
   font-size: 0.85rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
 }
 
@@ -427,8 +428,8 @@
 
 /* Footer */
 .replicate-footer {
-  background: #fafafa;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 40px 0;
 }
 
@@ -448,7 +449,7 @@
 }
 
 .replicate-footer-link {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.2s;
@@ -459,7 +460,7 @@
 }
 
 .replicate-footer-brand {
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
 }
 
