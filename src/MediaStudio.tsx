@@ -146,7 +146,6 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
             <p className="banner-subtitle">
               Discover 50+ ready-made workflows for effortless AI creation. All Blueprints 75% off for a limited time!
             </p>
-            <button className="banner-cta">Explore Blueprints</button>
           </div>
         </div>
 
