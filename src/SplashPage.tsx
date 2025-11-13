@@ -4,6 +4,7 @@ import FormattedText from './FormattedText';
 import Dock from './Dock';
 import InfiniteScroll from './InfiniteScroll';
 import InfiniteMenu from './InfiniteMenu';
+import OmiLoadingAnimation from './OmiLoadingAnimation';
 import ChromaGrid from './ChromaGrid';
 import CircularGallery from './CircularGallery';
 import ConversationSidebar from './ConversationSidebar';
@@ -1130,8 +1131,9 @@ function SplashPage() {
               {isGeneratingImage ? (
                 <div className="generating-indicator">
                   <div className="generating-spinner">
-                    <div className="spinner-ring"></div>
-                    <span className="generating-icon">⚡</span>
+                    <div className="metallic-paint-loader">
+                      <OmiLoadingAnimation />
+                    </div>
                   </div>
                   <p className="generating-text">Generating your image...</p>
                 </div>
@@ -1189,8 +1191,9 @@ function SplashPage() {
               {isGeneratingVideo ? (
                 <div className="generating-indicator">
                   <div className="generating-spinner">
-                    <div className="spinner-ring"></div>
-                    <span className="generating-icon">🎬</span>
+                    <div className="metallic-paint-loader">
+                      <OmiLoadingAnimation />
+                    </div>
                   </div>
                   <p className="generating-text">Generating your video... This may take 1-2 minutes</p>
                 </div>

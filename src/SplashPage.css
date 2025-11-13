@@ -1871,10 +1871,19 @@ html, body {
 
 .generating-spinner {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   margin: 0 auto 2rem;
   pointer-events: none;
+}
+
+.metallic-paint-loader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.4));
 }
 
 .spinner-ring {
