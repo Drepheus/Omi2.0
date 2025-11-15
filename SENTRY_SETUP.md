@@ -16,8 +16,8 @@ Sentry automatically captures all errors and logs from your app (both frontend a
 2. Select your project
 3. Go to Settings → Environment Variables
 4. Add two variables:
-   - `SENTRY_DSN` = `your-sentry-dsn-here` (for backend)
-   - `VITE_SENTRY_DSN` = `your-sentry-dsn-here` (for frontend)
+  - `SENTRY_DSN` = `your-sentry-dsn-here` (for backend)
+  - `NEXT_PUBLIC_SENTRY_DSN` = `your-sentry-dsn-here` (for frontend)
 5. Redeploy your app
 
 ### 3. View Errors in Sentry

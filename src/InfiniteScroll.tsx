@@ -1,7 +1,8 @@
+"use client";
+
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { Observer } from 'gsap/Observer';
-import './InfiniteScroll.css';
 
 gsap.registerPlugin(Observer);
 

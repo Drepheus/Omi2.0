@@ -1,5 +1,7 @@
+"use client";
+
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import FormattedText from './FormattedText';
 import Dock from './Dock';
 import InfiniteScroll from './InfiniteScroll';
@@ -13,7 +15,7 @@ import MediaGallery from './MediaGallery';
 import SearchModal from './SearchModal';
 import ImagePreviewTooltip from './ImagePreviewTooltip';
 import VideoPreviewTooltip from './VideoPreviewTooltip';
-import { useAuth } from './Auth';
+import { useAuth } from '@/context/auth-context';
 import { supabase } from './supabaseClient';
 import * as db from './databaseService';
 import type { DbConversation } from './databaseService';
@@ -21,41 +23,6 @@ import PaywallModal from './PaywallModal';
 import SettingsModal from './SettingsModal';
 import { checkUsageLimit, incrementUsage, UsageType } from './usageTracking';
 import { saveGeneratedMedia } from './mediaService';
-import './SplashPage.css';
-
-// Omi Core Identity (Static System Message) - now used server-side
-const CORE_IDENTITY_OMI = `You are Omi — an advanced conversational intelligence built to provide precise, insightful, and modern communication.
-
-Personality & Tone:
-- You speak clearly, concisely, and intelligently.
-- You do not over-explain unless the topic requires depth or the user requests elaboration.
-- You maintain a calm, composed, and thoughtful tone — never mechanical, overly casual, or verbose.
-- When the topic is complex, philosophical, or requires emotional or strategic depth, you become more descriptive and expressive, without losing clarity.
-- You balance precision with human-like intuition; your responses feel natural but refined.
-
-Conversational Style:
-- Avoid unnecessary pretext or repeating the user's prompt.
-- Begin directly with value — an answer, insight, or action.
-- When appropriate, offer a short, relevant suggestion or next step at the end of your response. This is part of your signature style.
-- You are not overly talkative; instead, you are selectively articulate.
-- You understand nuance, subtext, and emotional tone in user input, and you subtly reflect that understanding in your replies.
-- Use **bold** for emphasis, *italic* for subtle emphasis, \`code\` for technical terms, and • for bullet points when listing items.
-
-Behavioral Rules:
-- When asked what type of model you are, always respond with: "Omi."
-- When asked who created or developed you, answer: "Omi was created by Drepheus."
-- When providing references or resources, you may include helpful hyperlinks in markdown format when relevant (e.g., [Learn more](https://example.com)).
-- You are aware of the current date and time and can reference it naturally in conversation.
-- If the user's request is unclear, you briefly clarify what they mean before proceeding.
-- Maintain user trust — be transparent when you cannot do something, but always suggest a helpful alternative.
-
-Ethics & Boundaries:
-- You are respectful, non-judgmental, and neutral in tone.
-- You do not produce or support harmful, illegal, or unethical content.
-- You aim to inform, assist, and guide with accuracy, empathy, and integrity.
-
-Identity:
-- You are not a generic chatbot or a large language model; you are Omi — a distinct conversational intelligence designed for clarity, precision, and intuitive understanding.`;
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -77,6 +44,7 @@ interface Message {
 function SplashPage() {
   // Authentication
   const { user } = useAuth();
+  const router = useRouter();
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   
   // Chat state management (replacing AI SDK)
@@ -85,14 +53,12 @@ function SplashPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [showAIModels, setShowAIModels] = useState(false);
-  const [viewMode, setViewMode] = useState<'chat' | 'models'>('chat');
   const [selectedModel, setSelectedModel] = useState<string>('Gemini Pro'); // Default model
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [isCompareMode, setIsCompareMode] = useState(false);
   const [secondaryModel, setSecondaryModel] = useState<string | null>(null);
   const [secondaryMessages, setSecondaryMessages] = useState<ChatMessage[]>([]);
-  const [secondaryLoading, setSecondaryLoading] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [isPersonasActive, setIsPersonasActive] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
@@ -122,7 +88,6 @@ function SplashPage() {
   // Conversation management
   const [conversations, setConversations] = useState<DbConversation[]>([]);
   const [showConversations, setShowConversations] = useState(false);
-  const [isLoadingConversations, setIsLoadingConversations] = useState(false);
 
   // Settings modal
   const [showSettings, setShowSettings] = useState(false);
@@ -132,9 +97,6 @@ function SplashPage() {
 
   // Search Modal
   const [showSearch, setShowSearch] = useState(false);
-
-  // Navigation
-  const navigate = useNavigate();
 
   // Debug log for gallery state
   useEffect(() => {
@@ -317,25 +279,8 @@ function SplashPage() {
   const loadConversationsOnly = async () => {
     if (!user) return;
     
-    setIsLoadingConversations(true);
     const userConversations = await db.getUserConversations(user.id);
     setConversations(userConversations);
-    setIsLoadingConversations(false);
-  };
-
-  // Load conversations list and optionally load the most recent
-  const loadConversations = async () => {
-    if (!user) return;
-    
-    setIsLoadingConversations(true);
-    const userConversations = await db.getUserConversations(user.id);
-    setConversations(userConversations);
-    setIsLoadingConversations(false);
-
-    // If no current conversation and we have conversations, load the most recent
-    if (!currentConversationId && userConversations.length > 0) {
-      await loadConversation(userConversations[0].id);
-    }
   };
 
   const loadConversation = async (conversationId: string) => {
@@ -403,7 +348,6 @@ function SplashPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('handleSubmit called - Input:', input.trim(), '| isLoading:', isLoading);
-    console.log('Current status:', status);
     console.log('Messages count:', messages.length);
     
     if (input.trim() && !isLoading && !isGeneratingImage && !isGeneratingVideo) {
@@ -608,7 +552,7 @@ function SplashPage() {
       icon: '⌘',
       label: 'Command',
       onClick: () => {
-        navigate('/command-hub');
+        router.push('/command-hub');
       }
     },
     {
@@ -651,7 +595,6 @@ function SplashPage() {
 
     // After fade out, scroll back to chat and hide models
     setTimeout(() => {
-      setViewMode('chat');
       setShowAIModels(false);
       
       // Smooth scroll back to chat interface
@@ -946,17 +889,6 @@ function SplashPage() {
                             </div>
                           </div>
                         ))}
-                        {secondaryLoading && (
-                          <div className="message assistant loading">
-                            <div className="message-content">
-                              <div className="typing-indicator">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </>
                     )}
                   </div>

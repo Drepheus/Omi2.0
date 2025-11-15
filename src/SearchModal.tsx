@@ -1,5 +1,6 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
-import './SearchModal.css';
 
 interface SearchResult {
   type: 'conversation' | 'message' | 'feature';

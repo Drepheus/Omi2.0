@@ -1,5 +1,6 @@
+"use client";
+
 import { useState } from 'react';
-import './ReplicateStudio.css';
 
 interface ReplicateStudioProps {
   onClose?: () => void;

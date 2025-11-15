@@ -1,6 +1,7 @@
+"use client";
+
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import './ChromaGrid.css';
 
 export interface ChromaGridItem {
   image: string;

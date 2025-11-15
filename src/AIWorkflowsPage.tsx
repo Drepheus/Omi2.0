@@ -1,6 +1,7 @@
+"use client";
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './AIWorkflowsPage.css';
+import { useRouter } from 'next/navigation';
 import DotGrid from './DotGrid';
 
 interface AIWorkflowsPageProps {
@@ -63,7 +64,7 @@ const componentCategories = [
 ];
 
 export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('Base');
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['Base', 'Advanced']);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,7 +73,7 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
     if (onClose) {
       onClose();
     } else {
-      navigate('/command-hub');
+      router.push('/command-hub');
     }
   };
 

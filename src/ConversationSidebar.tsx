@@ -1,6 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react'
 import { DbConversation } from './databaseService'
-import './ConversationSidebar.css'
 
 interface ConversationSidebarProps {
   conversations: DbConversation[]

@@ -1,0 +1,47 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Orb } from "@/components/visuals/orb";
+import { ShinyText } from "@/components/typography/shiny-text";
+import { useAuth } from "@/context/auth-context";
+import { useGuestMode } from "@/context/guest-mode-context";
+
+export function LandingPage() {
+  const router = useRouter();
+  const { session } = useAuth();
+  const { isGuestMode } = useGuestMode();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleStartClick = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      if (session || isGuestMode) {
+        router.push("/chat");
+      } else {
+        router.push("/login");
+      }
+    }, 800);
+  };
+
+  return (
+    <div className={`landing-container ${isTransitioning ? "fade-out" : ""}`}>
+      <div className="orb-background">
+        <Orb hue={220} hoverIntensity={0.3} rotateOnHover forceHoverState={false} />
+      </div>
+      <div className="content">
+        <h1>Omi AI</h1>
+        <p>Innovating the conversational AI experience</p>
+        <div className="button-container">
+          <button
+            className="start-button"
+            onClick={handleStartClick}
+            disabled={isTransitioning}
+          >
+            <ShinyText text="Start" speed={3} className="start-button-text" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

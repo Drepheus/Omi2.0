@@ -1,6 +1,7 @@
-﻿import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './GoogleAIStudio.css';
+﻿"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface GoogleAIStudioProps {
   onClose?: () => void;
@@ -51,7 +52,7 @@ const recentSearches = [
 
 export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleToolClick = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -61,7 +62,7 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
     if (onClose) {
       onClose();
     } else {
-      navigate('/command-hub');
+      router.push('/command-hub');
     }
   };
 

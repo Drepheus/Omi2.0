@@ -1,7 +1,8 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from './supabaseClient';
-import './WebTaskModal.css';
 
 interface WebTaskModalProps {
   isOpen: boolean;

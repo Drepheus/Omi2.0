@@ -1,6 +1,7 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { useGesture } from '@use-gesture/react';
-import './DomeGallery.css';
 
 type ImageItem = string | { src: string; alt?: string };
 

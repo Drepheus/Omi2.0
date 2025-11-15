@@ -1,7 +1,7 @@
+"use client";
+
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from 'ogl';
 import { useEffect, useRef } from 'react';
-
-import './CircularGallery.css';
 
 type GL = Renderer['gl'];
 
@@ -154,6 +154,12 @@ interface MediaProps {
   textColor: string;
   borderRadius?: number;
   font?: string;
+}
+
+interface CircularGalleryItem {
+  image: string;
+  text: string;
+  link?: string;
 }
 
 class Media {
@@ -375,7 +381,7 @@ class Media {
 }
 
 interface AppConfig {
-  items?: { image: string; text: string }[];
+  items?: CircularGalleryItem[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;
@@ -401,7 +407,7 @@ class App {
   scene!: Transform;
   planeGeometry!: Plane;
   medias: Media[] = [];
-  mediasImages: { image: string; text: string }[] = [];
+  mediasImages: CircularGalleryItem[] = [];
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
   raf: number = 0;
@@ -471,13 +477,13 @@ class App {
   }
 
   createMedias(
-    items: { image: string; text: string }[] | undefined,
+    items: CircularGalleryItem[] | undefined,
     bend: number = 1,
     textColor: string,
     borderRadius: number,
     font: string
   ) {
-    const defaultItems = [
+    const defaultItems: CircularGalleryItem[] = [
       {
         image: `https://picsum.photos/seed/1/800/600?grayscale`,
         text: 'Bridge'
@@ -646,7 +652,7 @@ class App {
 }
 
 interface CircularGalleryProps {
-  items?: { image: string; text: string }[];
+  items?: CircularGalleryItem[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;

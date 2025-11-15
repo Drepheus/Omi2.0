@@ -1,7 +1,8 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { useAuth } from './Auth';
-import './CustomOmis.css';
+import { useAuth } from '@/context/auth-context';
 import * as ragService from './ragService';
 
 interface CustomOmisProps {
@@ -27,6 +28,9 @@ interface Document {
   status: 'processing' | 'indexed' | 'failed';
   chunkCount: number;
 }
+
+const DOCUMENT_ACCEPT_STRING = '.txt,.md,.markdown,.json,.yaml,.yml,.csv,.js,.jsx,.ts,.tsx,.py,.cs,.html,.htm,.css';
+const DOCUMENT_TYPE_BADGES = ['TXT', 'MD', 'JSON', 'YAML', 'CSV', 'JS/TS', 'PY/CS', 'HTML/CSS'];
 
 const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
   const { session } = useAuth();
@@ -413,7 +417,7 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
                   ref={fileInputRef}
                   type="file" 
                   multiple 
-                  accept=".pdf,.txt,.md,.json,.csv"
+                  accept={DOCUMENT_ACCEPT_STRING}
                   style={{ display: 'none' }}
                   onChange={handleFileUpload}
                 />
@@ -482,17 +486,15 @@ const CustomOmis: React.FC<CustomOmisProps> = ({ onClose }) => {
             </div>
 
             <div className="upload-instructions">
-              <h4>Supported File Types:</h4>
+              <h4>Supported File Types (plain text only, &lt; 1&nbsp;MB each):</h4>
               <div className="file-types">
-                <span className="file-type">PDF</span>
-                <span className="file-type">TXT</span>
-                <span className="file-type">MD</span>
-                <span className="file-type">JSON</span>
-                <span className="file-type">CSV</span>
+                {DOCUMENT_TYPE_BADGES.map((badge) => (
+                  <span key={badge} className="file-type">{badge}</span>
+                ))}
               </div>
               <p className="instructions-text">
-                Documents are automatically chunked and embedded using OpenAI embeddings. 
-                Each chunk is stored with vector representations for semantic search and RAG.
+                Upload lightweight text sources (docs, JSON, YAML, code, CSV, HTML/CSS). Files are chunked
+                and embedded automatically for semantic search—binary formats like PDF/Word are not supported.
               </p>
             </div>
           </div>

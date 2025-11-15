@@ -1,26 +1,31 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
-// NOTE: pdf-extraction is now dynamically imported only when needed (see below)
+import {
+  convertToText,
+  chunkText,
+  sanitizeText,
+  validateEmbedding,
+  createErrorResponse,
+  logStep
+} from './lib/rag-utils';
+import {
+  EMBEDDING_MODEL,
+  DEFAULT_CHUNK_SIZE,
+  DEFAULT_OVERLAP,
+  type DocumentChunk
+} from './lib/rag-types';
+
+/**
+ * Process Document Endpoint
+ * Converts plain text files to chunks and generates embeddings
+ * NO PDF SUPPORT - Plain text formats only
+ * Optimized for Vercel serverless environment
+ */
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY
 });
-
-// Chunk text into smaller pieces
-function chunkText(text: string, chunkSize: number = 1000, overlap: number = 200): string[] {
-  const chunks: string[] = [];
-  let start = 0;
-
-  while (start < text.length) {
-    const end = Math.min(start + chunkSize, text.length);
-    const chunk = text.slice(start, end);
-    chunks.push(chunk);
-    start = end - overlap;
-  }
-
-  return chunks;
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // GLOBAL ERROR HANDLER - Catches ALL errors before they bubble to Vercel
@@ -33,225 +38,232 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'No authorization header' });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Create Supabase client with user's token for RLS
-    const supabase = createClient(
-      process.env.VITE_SUPABASE_URL!,
-      process.env.VITE_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+      logStep('Process document request received');
+      
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ error: 'No authorization header' });
       }
-    );
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const { documentId, content, fileData, chunkSize = 1000, overlap = 200 } = req.body;
-
-    if (!documentId) {
-      return res.status(400).json({ error: 'Missing documentId' });
-    }
-
-    // Verify document belongs to user
-    const { data: document, error: docError } = await supabase
-      .from('knowledge_documents')
-      .select('*')
-      .eq('id', documentId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (docError || !document) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-
-    let extractedText = content || '';
-
-    // Extract text based on file type
-    if (fileData) {
-      try {
-        if (document.type === 'PDF' || document.name.toLowerCase().endsWith('.pdf')) {
-          // LAZY LOAD: Only import pdf-extraction when actually processing a PDF
-          console.log(`Importing pdf-extraction dynamically for: ${document.name}`);
-          const pdf = await import('pdf-extraction');
-          
-          console.log(`Extracting text from PDF: ${document.name}`);
-          const dataBuffer = Buffer.from(fileData, 'base64');
-          const parsed = await pdf.default(dataBuffer);
-          extractedText = parsed.text || '';
-          
-          console.log(`Extracted ${extractedText.length} characters from PDF`);
-          
-          if (!extractedText || extractedText.trim().length === 0) {
-            throw new Error('No text could be extracted from PDF');
+      const token = authHeader.replace('Bearer ', '');
+      
+      // Create Supabase client with user's token for RLS
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          global: {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        } else if (document.type === 'TXT' || document.type === 'TEXT' || document.name.toLowerCase().endsWith('.txt')) {
-          // Handle TXT files - simple UTF-8 decode
-          console.log(`Extracting text from TXT: ${document.name}`);
-          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
-          console.log(`Extracted ${extractedText.length} characters from TXT`);
-        } else if (document.type === 'MD' || document.name.toLowerCase().endsWith('.md')) {
-          // Handle Markdown files - simple UTF-8 decode
-          console.log(`Extracting text from Markdown: ${document.name}`);
-          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
-          console.log(`Extracted ${extractedText.length} characters from MD`);
-        } else {
-          // For other text-based formats, try UTF-8 decode
-          console.log(`Attempting UTF-8 decode for: ${document.name}`);
-          extractedText = Buffer.from(fileData, 'base64').toString('utf-8');
         }
-      } catch (extractionError: any) {
-        console.error('Text extraction error:', extractionError);
+      );
+
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+      if (authError || !user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const { 
+        documentId, 
+        fileData, 
+        chunkSize = DEFAULT_CHUNK_SIZE, 
+        overlap = DEFAULT_OVERLAP 
+      } = req.body;
+
+      if (!documentId) {
+        return res.status(400).json({ error: 'Missing documentId' });
+      }
+
+      if (!fileData) {
+        return res.status(400).json({ error: 'Missing fileData' });
+      }
+
+      logStep('Fetching document record', { documentId });
+
+      // Verify document belongs to user
+      const { data: document, error: docError } = await supabase
+        .from('knowledge_documents')
+        .select('*')
+        .eq('id', documentId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (docError || !document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      logStep('Converting file to text', { 
+        fileName: document.name, 
+        type: document.type 
+      });
+
+      // Convert file data to UTF-8 text
+      let extractedText: string;
+      try {
+        extractedText = convertToText(fileData, document.name);
+      } catch (conversionError: any) {
+        console.error('Text conversion error:', conversionError);
+        
         await supabase
           .from('knowledge_documents')
           .update({ status: 'failed' })
           .eq('id', documentId);
         
-        return res.status(400).json({ 
-          error: 'Failed to extract text from document',
-          details: extractionError.message 
-        });
+        return res.status(400).json(
+          createErrorResponse(
+            'Failed to convert file to text',
+            conversionError.message
+          )
+        );
       }
-    }
-    
-    // Validate we have content to process
-    if (!extractedText || extractedText.trim().length === 0) {
-      console.log(`Document ${documentId} has no content after extraction`);
-      
-      await supabase
-        .from('knowledge_documents')
-        .update({ status: 'failed' })
-        .eq('id', documentId);
-        
-      return res.status(400).json({ 
-        error: 'No text content could be extracted from the document' 
+
+      logStep('Text extracted', { 
+        length: extractedText.length,
+        preview: extractedText.substring(0, 100)
       });
-    }
 
-    // Chunk the text
-    const chunks = chunkText(extractedText, chunkSize, overlap);
-    console.log(`Processing ${chunks.length} chunks for document ${documentId}`);
-
-    // Generate embeddings for each chunk
-    const embeddings = [];
-    for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
-      
-      try {
-        const embeddingResponse = await openai.embeddings.create({
-          model: 'text-embedding-ada-002',
-          input: chunk,
-        });
-
-        const embedding = embeddingResponse.data[0].embedding;
-
-        // Validate embedding format
-        if (!Array.isArray(embedding) || !embedding.length) {
-          throw new Error('Invalid embedding format: must be a non-empty array');
-        }
-
-        // Ensure it's a flat array of floats
-        if (!embedding.every(val => typeof val === 'number' && !isNaN(val))) {
-          throw new Error('Invalid embedding format: must contain only numbers');
-        }
-
-        embeddings.push({
-          document_id: documentId,
-          user_id: user.id,
-          content: chunk,
-          embedding: embedding, // Pass array directly for pgvector
-          metadata: {
-            chunk_index: i,
-            chunk_total: chunks.length,
-            document_name: document.name
-          }
-        });
-
-        console.log(`Generated embedding ${i + 1}/${chunks.length}`);
-      } catch (embeddingError: any) {
-        console.error(`Error generating embedding for chunk ${i}:`, embeddingError);
-        // Continue with other chunks even if one fails
+      // Validate we have content to process
+      if (!extractedText || extractedText.trim().length === 0) {
+        await supabase
+          .from('knowledge_documents')
+          .update({ status: 'failed' })
+          .eq('id', documentId);
+          
+        return res.status(400).json(
+          createErrorResponse('No text content in document')
+        );
       }
-    }
 
-    // Insert embeddings into database
-    try {
+      // Sanitize text
+      const cleanText = sanitizeText(extractedText);
+
+      // Chunk the text
+      const chunks = chunkText(cleanText, chunkSize, overlap);
+      logStep('Text chunked', { totalChunks: chunks.length });
+
+      if (chunks.length === 0) {
+        await supabase
+          .from('knowledge_documents')
+          .update({ status: 'failed' })
+          .eq('id', documentId);
+          
+        return res.status(400).json(
+          createErrorResponse('Failed to create chunks from document')
+        );
+      }
+
+      // Generate embeddings for each chunk
+      const embeddings: DocumentChunk[] = [];
+      
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        
+        try {
+          logStep(`Generating embedding ${i + 1}/${chunks.length}`);
+          
+          const embeddingResponse = await openai.embeddings.create({
+            model: EMBEDDING_MODEL,
+            input: chunk,
+          });
+
+          const embedding = embeddingResponse.data[0].embedding;
+
+          // Validate embedding format
+          if (!validateEmbedding(embedding)) {
+            throw new Error('Invalid embedding format received from OpenAI');
+          }
+
+          embeddings.push({
+            document_id: documentId,
+            user_id: user.id,
+            content: chunk,
+            embedding: embedding, // Raw number array for pgvector
+            metadata: {
+              chunk_index: i,
+              chunk_total: chunks.length,
+              document_name: document.name,
+              file_type: document.type
+            }
+          });
+
+        } catch (embeddingError: any) {
+          console.error(`Error generating embedding for chunk ${i}:`, embeddingError);
+          // Continue with other chunks even if one fails
+          logStep(`Warning: Failed to generate embedding for chunk ${i}`, {
+            error: embeddingError.message
+          });
+        }
+      }
+
+      if (embeddings.length === 0) {
+        await supabase
+          .from('knowledge_documents')
+          .update({ status: 'failed' })
+          .eq('id', documentId);
+          
+        return res.status(500).json(
+          createErrorResponse('Failed to generate any embeddings')
+        );
+      }
+
+      logStep('Storing embeddings in database', { count: embeddings.length });
+
+      // Insert embeddings into database
       const { error: insertError } = await supabase
         .from('document_embeddings')
         .insert(embeddings);
 
       if (insertError) {
-        // Log the full Supabase error details
-        console.error('Supabase insertion error:', {
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code
-        });
+        console.error('Supabase insertion error:', insertError);
         
-        // Update document status to failed
         await supabase
           .from('knowledge_documents')
           .update({ status: 'failed' })
           .eq('id', documentId);
 
-        return res.status(500).json({ 
-          error: 'Failed to store embeddings',
-          details: insertError.message,
-          code: insertError.code
-        });
+        return res.status(500).json(
+          createErrorResponse(
+            'Failed to store embeddings',
+            insertError.message
+          )
+        );
       }
-    } catch (dbError: any) {
-      console.error('Database error:', dbError);
-      
-      // Update document status to failed
+
+      // Update document status to indexed
       await supabase
         .from('knowledge_documents')
-        .update({ status: 'failed' })
+        .update({ 
+          status: 'indexed',
+          chunk_count: embeddings.length
+        })
         .eq('id', documentId);
 
-      return res.status(500).json({ 
-        error: 'Database operation failed',
-        details: dbError.message || 'Unknown database error'
+      logStep('Document processed successfully', { 
+        documentId,
+        chunks: embeddings.length 
       });
-    }
 
-    // Update document status to indexed
-    await supabase
-      .from('knowledge_documents')
-      .update({ 
-        status: 'indexed',
-        chunk_count: chunks.length
-      })
-      .eq('id', documentId);
-
-    return res.status(200).json({ 
-      success: true,
-      chunksProcessed: chunks.length,
-      message: 'Document processed and indexed successfully'
-    });
+      return res.status(200).json({ 
+        success: true,
+        chunksProcessed: embeddings.length,
+        documentId: documentId,
+        message: 'Document processed and indexed successfully'
+      });
 
     } catch (error: any) {
       console.error('Processing error:', error);
       console.error('Error stack:', error.stack);
       
       // Ensure we always return JSON, even for unexpected errors
-      return res.status(500).json({ 
-        error: error.message || 'Internal server error',
-        details: error.stack ? error.stack.split('\n')[0] : 'Unknown error'
-      });
+      return res.status(500).json(
+        createErrorResponse(
+          error.message || 'Internal server error',
+          error.stack ? error.stack.split('\n')[0] : undefined
+        )
+      );
     }
     
   } catch (globalError: any) {
@@ -269,10 +281,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     
     // Always return JSON for any uncaught error
-    return res.status(500).json({ 
-      error: 'Critical server error',
-      message: globalError.message || 'An unexpected error occurred',
-      details: globalError.stack ? globalError.stack.split('\n').slice(0, 3).join(' | ') : 'No stack trace'
-    });
+    return res.status(500).json(
+      createErrorResponse(
+        'Critical server error',
+        globalError.message || 'An unexpected error occurred'
+      )
+    );
   }
 }

@@ -1,6 +1,6 @@
+"use client";
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import './SettingsModal.css';
 
 interface SettingsModalProps {
   isOpen: boolean;

@@ -1,5 +1,6 @@
+"use client";
+
 import { useState, useEffect } from 'react';
-import './ImagePreviewTooltip.css';
 
 interface ImagePreviewTooltipProps {
   isVisible: boolean;

@@ -4,7 +4,6 @@
     "@supabase/supabase-js": "^2.39.0",
     "@vercel/node": "^3.0.0",
     "groq-sdk": "^0.7.0",
-    "openai": "^6.8.1",
-    "pdf-extraction": "^1.0.2"
+    "openai": "^6.8.1"
   }
 }

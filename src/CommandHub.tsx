@@ -1,16 +1,17 @@
-import { useNavigate } from 'react-router-dom';
+"use client";
+
+import { useRouter } from 'next/navigation';
 import MagicBento from './MagicBento';
-import './CommandHub.css';
 
 export default function CommandHub() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="command-hub-container">
       {/* Back button */}
       <button 
         className="command-hub-back"
-        onClick={() => navigate('/chat')}
+        onClick={() => router.push('/chat')}
         title="Back to chat"
       >
         ← Back

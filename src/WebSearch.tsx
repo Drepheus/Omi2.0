@@ -1,8 +1,9 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import WebTaskModal from './WebTaskModal';
 import SearchHistorySidebar from './SearchHistorySidebar';
-import './WebSearch.css';
 
 // Updated with search modes - v2
 interface WebSearchProps {

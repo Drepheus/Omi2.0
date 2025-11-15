@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import './VideoPreviewTooltip.css';
+"use client";
+
+import { useEffect, useRef, useState } from 'react';
 
 interface VideoPreviewTooltipProps {
   isVisible: boolean;

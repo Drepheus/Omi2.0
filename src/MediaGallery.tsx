@@ -1,6 +1,7 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { getUserGeneratedMedia, deleteGeneratedMedia, type GeneratedMedia } from './mediaService';
-import './MediaGallery.css';
 
 interface MediaGalleryProps {
   isOpen: boolean;

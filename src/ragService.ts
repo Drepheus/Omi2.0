@@ -106,39 +106,78 @@ export async function createCustomOmi(userId: string, name: string, description:
 }
 
 // Read file content as text or base64
-export async function readFileContent(file: File): Promise<{ content: string; fileData?: string }> {
+const MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1 MB
+const TEXT_EXTENSIONS = [
+  '.txt',
+  '.md',
+  '.markdown',
+  '.json',
+  '.yaml',
+  '.yml',
+  '.csv',
+  '.js',
+  '.jsx',
+  '.ts',
+  '.tsx',
+  '.py',
+  '.cs',
+  '.html',
+  '.htm',
+  '.css'
+];
+const TEXT_MIME_TYPES = [
+  'text/plain',
+  'text/markdown',
+  'application/json',
+  'application/x-yaml',
+  'text/yaml',
+  'text/csv',
+  'application/javascript',
+  'text/javascript',
+  'application/typescript',
+  'text/typescript',
+  'text/css',
+  'text/html'
+];
+
+const ALLOWED_TYPES_MESSAGE =
+  '.txt, .md, .json, .yaml/.yml, .csv, .js/.ts/.tsx, .py, .cs, .html/.htm, .css';
+
+const getFileExtension = (fileName: string) => {
+  const dotIndex = fileName.lastIndexOf('.');
+  return dotIndex === -1 ? '' : fileName.slice(dotIndex).toLowerCase();
+};
+
+const isPlainTextFile = (file: File) => {
+  const ext = getFileExtension(file.name);
+  return TEXT_EXTENSIONS.includes(ext) || (!!file.type && TEXT_MIME_TYPES.includes(file.type));
+};
+
+const ensureValidFile = (file: File) => {
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new Error('File size exceeds the 1 MB limit for document processing.');
+  }
+
+  if (!isPlainTextFile(file)) {
+    throw new Error(`Unsupported file type. Please upload plain text formats such as ${ALLOWED_TYPES_MESSAGE}.`);
+  }
+};
+
+const getDocumentTypeLabel = (fileName: string) => {
+  const ext = getFileExtension(fileName);
+  return ext ? ext.replace('.', '').toUpperCase() : 'TEXT';
+};
+
+export async function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
-    // For PDFs, read as base64 for server-side extraction
-    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-      reader.onload = (e) => {
-        const base64 = (e.target?.result as string).split(',')[1]; // Remove data:application/pdf;base64, prefix
-        resolve({ content: '', fileData: base64 });
-      };
-      reader.onerror = () => reject(new Error('Failed to read PDF file'));
-      reader.readAsDataURL(file);
-    }
-    // For text files, read as base64 (backend will decode)
-    else if (file.type === 'text/plain' || file.name.endsWith('.txt') || 
-        file.name.endsWith('.md') || file.name.endsWith('.json') ||
-        file.name.endsWith('.csv')) {
-      reader.onload = (e) => {
-        const base64 = (e.target?.result as string).split(',')[1]; // Remove data URL prefix
-        resolve({ content: '', fileData: base64 });
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file); // Read as base64 instead of text
-    } 
-    else {
-      // For other formats, try reading as base64
-      reader.onload = (e) => {
-        const base64 = (e.target?.result as string).split(',')[1];
-        resolve({ content: '', fileData: base64 });
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    }
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      const base64 = result.includes(',') ? result.split(',')[1] : result;
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
   });
 }
 
@@ -149,8 +188,9 @@ export async function uploadDocument(
   onProgress?: (status: string) => void
 ): Promise<void> {
   try {
+    ensureValidFile(file);
     onProgress?.('Reading file...');
-    const { content, fileData } = await readFileContent(file);
+    const fileData = await readFileAsBase64(file);
 
     onProgress?.('Uploading document...');
     const session = await supabase.auth.getSession();
@@ -163,10 +203,10 @@ export async function uploadDocument(
     // Step 1: Upload document metadata
     const uploadPayload = {
       fileName: file.name,
-      fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'FILE',
+      fileType: file.type || getDocumentTypeLabel(file.name),
       fileSize: file.size,
       botId,
-      fileData // Include base64 PDF data if available
+      fileData
     };
     
     console.log('Uploading with payload:', { ...uploadPayload, fileData: fileData ? `${fileData.length} bytes` : 'none' });
@@ -212,8 +252,7 @@ export async function uploadDocument(
       },
       body: JSON.stringify({
         documentId,
-        content,
-        fileData, // Include PDF data for server-side extraction
+        fileData,
         chunkSize: 1000,
         overlap: 200
       })

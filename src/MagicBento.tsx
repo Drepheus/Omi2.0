@@ -1,6 +1,8 @@
+"use client";
+
 import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
-import './MagicBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
@@ -366,7 +368,7 @@ const ParticleCard: React.FC<ParticleCardProps> = ({
 };
 
 interface GlobalSpotlightProps {
-  gridRef: React.RefObject<HTMLDivElement>;
+  gridRef: React.RefObject<HTMLDivElement | null>;
   disableAnimations?: boolean;
   enabled?: boolean;
   spotlightRadius?: number;
@@ -507,7 +509,7 @@ const GlobalSpotlight: React.FC<GlobalSpotlightProps> = ({
 
 interface BentoCardGridProps {
   children: React.ReactNode;
-  gridRef: React.RefObject<HTMLDivElement>;
+  gridRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const BentoCardGrid: React.FC<BentoCardGridProps> = ({ children, gridRef }) => (
@@ -558,26 +560,37 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   clickEffect = true,
   enableMagnetism = true
 }) => {
-  const gridRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
   // Handle card clicks
   const handleCardClick = (card: typeof cardData[0]) => {
-    if (card.action === 'chat') {
-      window.location.href = '/chat';
-    } else if (card.action === 'websearch') {
-      window.location.href = '/web-search';
-    } else if (card.action === 'mediastudio') {
-      window.location.href = '/media-studio';
-    } else if (card.action === 'customomis') {
-      window.location.href = '/custom-omis';
-    } else if (card.action === 'aiworkflows') {
-      window.location.href = '/ai-workflows';
-    } else if (card.action === 'googleaistudio') {
-      window.location.href = '/google-ai-studio';
-    } else if (card.action === 'replicatestudio') {
-      window.location.href = '/replicate-studio';
+    switch (card.action) {
+      case 'chat':
+        router.push('/chat');
+        break;
+      case 'websearch':
+        router.push('/web-search');
+        break;
+      case 'mediastudio':
+        router.push('/media-studio');
+        break;
+      case 'customomis':
+        router.push('/custom-omis');
+        break;
+      case 'aiworkflows':
+        router.push('/ai-workflows');
+        break;
+      case 'googleaistudio':
+        router.push('/google-ai-studio');
+        break;
+      case 'replicatestudio':
+        router.push('/replicate-studio');
+        break;
+      default:
+        break;
     }
   };
 

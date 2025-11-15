@@ -1,8 +1,9 @@
-﻿import { useState } from 'react';
-import './MediaStudio.css';
+﻿"use client";
+
+import { useState } from 'react';
 import DomeGallery from './DomeGallery';
-import ShinyText from './ShinyText';
 import LogoLoop from './LogoLoop';
+import { ShinyText } from '@/components/typography/shiny-text';
 
 interface MediaStudioProps {
   onClose?: () => void;

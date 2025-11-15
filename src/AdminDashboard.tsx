@@ -1,10 +1,11 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from './supabaseClient';
-import { useAuth } from './Auth';
+import { useAuth } from '@/context/auth-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
-import './AdminDashboard.css';
 
 interface UserStats {
   id: string;
@@ -43,7 +44,7 @@ interface SystemMetrics {
 
 const AdminDashboard = () => {
   const { user, session, loading } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'logs' | 'analytics' | 'control'>('overview');
   const [users, setUsers] = useState<UserStats[]>([]);
   const [apiLogs, setApiLogs] = useState<ApiLog[]>([]);
@@ -72,19 +73,19 @@ const AdminDashboard = () => {
     // Check if logged in
     if (!session || !user) {
       console.log('AdminDashboard: No session, redirecting to /login');
-      navigate('/login');
+      router.replace('/login');
       return;
     }
     
     // Check if admin
     if (user.email !== 'andregreengp@gmail.com') {
       console.log('AdminDashboard: Not admin (' + user.email + '), redirecting to /chat');
-      navigate('/chat');
+      router.replace('/chat');
       return;
     }
     
     console.log('AdminDashboard: ✅ Admin access confirmed for', user.email);
-  }, [user, session, loading, navigate]);
+  }, [user, session, loading, router]);
 
   // Fetch system metrics
   const fetchSystemMetrics = async () => {
@@ -363,7 +364,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div className="admin-header">
         <div className="header-left">
-          <button className="back-btn" onClick={() => navigate('/chat')}>
+          <button className="back-btn" onClick={() => router.push('/chat')}>
             ← Back to App
           </button>
           <div className="admin-title">

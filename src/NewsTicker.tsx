@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
-import './NewsTicker.css';
+"use client";
+import { useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 interface ActivityItem {
   username: string;

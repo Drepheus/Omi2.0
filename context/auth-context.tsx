@@ -1,0 +1,75 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
+import { useGuestMode } from "@/context/guest-mode-context";
+
+interface AuthContextValue {
+  session: Session | null;
+  user: User | null;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const supabase = useMemo(() => getBrowserSupabaseClient(), []);
+  const { isGuestMode } = useGuestMode();
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let subscription: ReturnType<typeof supabase.auth.onAuthStateChange> | null =
+      null;
+
+    if (isGuestMode) {
+      setSession(null);
+      setUser(null);
+      setLoading(false);
+      return () => {
+        subscription?.data.subscription.unsubscribe();
+      };
+    }
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      })
+      .finally(() => setLoading(false));
+
+    subscription = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+    });
+
+    return () => {
+      subscription?.data.subscription.unsubscribe();
+    };
+  }, [isGuestMode, supabase]);
+
+  const value = useMemo(
+    () => ({ session, user, loading }),
+    [loading, session, user]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+}

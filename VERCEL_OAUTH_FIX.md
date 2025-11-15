@@ -71,8 +71,8 @@ This means Google is redirecting to `localhost:3000`, but your app should be on 
 ## Debug Checklist
 
 ✅ **Vercel environment variables set correctly**:
-- `VITE_SUPABASE_URL` = `https://cnysdbjajxnpmrugnpme.supabase.co`
-- `VITE_SUPABASE_ANON_KEY` = (your anon key)
+- `NEXT_PUBLIC_SUPABASE_URL` = `https://cnysdbjajxnpmrugnpme.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` = (your anon key)
 
 ⚠️ **Google Cloud Console needs update**:
 - Replace `localhost:3000` with your Vercel URL in Authorized JavaScript origins
