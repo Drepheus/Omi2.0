@@ -56,20 +56,17 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "✅ Build successful!" -ForegroundColor Green
 
-# Get environment variables from current session
-$envVars = @()
-if ($env:NEXT_PUBLIC_SUPABASE_URL) {
-    $envVars += "NEXT_PUBLIC_SUPABASE_URL=$env:NEXT_PUBLIC_SUPABASE_URL"
-}
-if ($env:NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    $envVars += "NEXT_PUBLIC_SUPABASE_ANON_KEY=$env:NEXT_PUBLIC_SUPABASE_ANON_KEY"
-}
-if ($env:GOOGLE_GENERATIVE_AI_API_KEY) {
-    $envVars += "GOOGLE_GENERATIVE_AI_API_KEY=$env:GOOGLE_GENERATIVE_AI_API_KEY"
-}
-if ($env:TAVILY_API_KEY) {
-    $envVars += "TAVILY_API_KEY=$env:TAVILY_API_KEY"
-}
+# Environment variables - Add your actual values here
+$envVars = @(
+    "NEXT_PUBLIC_SUPABASE_URL=https://cnysdbjajxnpmrugnpme.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNueXNkYmphanhucG1ydWducG1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NzA4MzUsImV4cCI6MjA3NTU0NjgzNX0.H5AvV68Br-taWHCQdD1QOmKf-TXK9zlBGzUW8nOT_d4",
+    "GOOGLE_GENERATIVE_AI_API_KEY=AIzaSyAPUrVUTLGnhPOY6KFypgSqqFB3hRKLEug",
+    "TAVILY_API_KEY=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"
+    # Add Stripe keys if needed:
+    # "STRIPE_SECRET_KEY=your-stripe-secret-key",
+    # "STRIPE_WEBHOOK_SECRET=your-webhook-secret",
+    # "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-publishable-key"
+)
 
 # Deploy to Cloud Run
 Write-Host ""
