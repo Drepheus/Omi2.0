@@ -1,0 +1,27 @@
+# Cloud Build configuration for Google Cloud Run deployment
+steps:
+  # Build the Docker image with build arguments
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_SUPABASE_URL=${_NEXT_PUBLIC_SUPABASE_URL}'
+      - '--build-arg'
+      - 'NEXT_PUBLIC_SUPABASE_ANON_KEY=${_NEXT_PUBLIC_SUPABASE_ANON_KEY}'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/omi-ai'
+      - '.'
+    timeout: 1800s
+
+  # Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/omi-ai'
+
+# Timeout for the entire build
+timeout: 2400s
+
+# Save the built image
+images:
+  - 'gcr.io/$PROJECT_ID/omi-ai'

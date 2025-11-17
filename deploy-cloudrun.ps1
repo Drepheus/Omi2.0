@@ -43,11 +43,16 @@ gcloud services enable cloudbuild.googleapis.com
 gcloud services enable run.googleapis.com
 gcloud services enable containerregistry.googleapis.com
 
-# Build Docker image
+# Environment variables - Add your actual values here
+$NEXT_PUBLIC_SUPABASE_URL = "https://cnysdbjajxnpmrugnpme.supabase.co"
+$NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNueXNkYmphanhucG1ydWducG1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NzA4MzUsImV4cCI6MjA3NTU0NjgzNX0.H5AvV68Br-taWHCQdD1QOmKf-TXK9zlBGzUW8nOT_d4"
+
+# Build Docker image with build arguments
 Write-Host ""
 Write-Host "🏗️  Building Docker image..." -ForegroundColor Yellow
 Write-Host "This may take several minutes..." -ForegroundColor Gray
-gcloud builds submit --tag $ImageName
+gcloud builds submit --config cloudbuild.yaml `
+    --substitutions="_NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL,_NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Build failed!" -ForegroundColor Red
@@ -56,10 +61,10 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "✅ Build successful!" -ForegroundColor Green
 
-# Environment variables - Add your actual values here
+# Runtime environment variables for Cloud Run
 $envVars = @(
-    "NEXT_PUBLIC_SUPABASE_URL=https://cnysdbjajxnpmrugnpme.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNueXNkYmphanhucG1ydWducG1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NzA4MzUsImV4cCI6MjA3NTU0NjgzNX0.H5AvV68Br-taWHCQdD1QOmKf-TXK9zlBGzUW8nOT_d4",
+    "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "GOOGLE_GENERATIVE_AI_API_KEY=AIzaSyAPUrVUTLGnhPOY6KFypgSqqFB3hRKLEug",
     "TAVILY_API_KEY=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"
     # Add Stripe keys if needed:
