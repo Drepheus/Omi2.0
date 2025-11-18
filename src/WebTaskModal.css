@@ -599,7 +599,7 @@
 
 /* Submit Button */
 .webtask-submit-btn {
-  background: linear-gradient(135deg, #8a2be2 0%, #9333ea 50%, #8a2be2 100%);
+  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 50%, #c0c0c0 100%);
   background-size: 200% 100%;
   border: none;
   border-radius: 16px;
@@ -934,7 +934,7 @@
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #8a2be2 0%, #9333ea 100%);
+  background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
 }

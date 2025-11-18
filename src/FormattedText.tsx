@@ -1,8 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'motion/react';
-import { useInView } from 'motion/react';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
 interface FormattedTextProps {

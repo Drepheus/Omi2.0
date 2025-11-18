@@ -1,7 +1,7 @@
 .electric-border {
   position: relative;
   display: inline-block;
-  --electric-border-color: #5227FF;
+  --electric-border-color: #c0c0c0;
   --eb-border-width: 2px;
 }
 

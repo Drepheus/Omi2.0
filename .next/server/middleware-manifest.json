@@ -1,6 +1,66 @@
 {
   "version": 3,
   "middleware": {},
-  "functions": {},
-  "sortedMiddleware": []
+  "sortedMiddleware": [],
+  "functions": {
+    "/api/chat/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/chat/route_client-reference-manifest.js",
+        "server/edge/chunks/Omi-AI-1__next-internal_server_app_api_chat_route_actions_6160f540.js",
+        "server/edge/chunks/Omi-AI-1_2878bbec._.js",
+        "server/edge/chunks/[root-of-the-server]__0f147462._.js",
+        "server/edge/chunks/b2346_next_dist_esm_build_templates_edge-app-route_ba60192d.js",
+        "server/edge/chunks/turbopack-Omi-AI-1_edge-wrapper_d5c7477a.js"
+      ],
+      "name": "app/api/chat/route",
+      "page": "/api/chat/route",
+      "matchers": [
+        {
+          "regexp": "^/api/chat(?:/)?$",
+          "originalSource": "/api/chat"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "BDd_VHpIRgSLOee3keBqm",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "29IpaA3ube/e2wrz9pFACQe336SSiy131ef2kls1YaQ=",
+        "__NEXT_PREVIEW_MODE_ID": "7d99b10df5395ce4adb4c3e89ba4a07e",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "00c2b2041706bf59560401af6adb2f5f45269facda7c51ec208b82a23dcc1e50",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "514510fa8399aad10e96b325cc57dfc415cf3e1b9e7c159bb6952d35ad2fde69"
+      }
+    },
+    "/api/websearch/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/websearch/route_client-reference-manifest.js",
+        "server/edge/chunks/Omi-AI-1__next-internal_server_app_api_websearch_route_actions_fab56787.js",
+        "server/edge/chunks/Omi-AI-1_1fed7477._.js",
+        "server/edge/chunks/[root-of-the-server]__0f147462._.js",
+        "server/edge/chunks/turbopack-Omi-AI-1_edge-wrapper_0c96d027.js"
+      ],
+      "name": "app/api/websearch/route",
+      "page": "/api/websearch/route",
+      "matchers": [
+        {
+          "regexp": "^/api/websearch(?:/)?$",
+          "originalSource": "/api/websearch"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "BDd_VHpIRgSLOee3keBqm",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "29IpaA3ube/e2wrz9pFACQe336SSiy131ef2kls1YaQ=",
+        "__NEXT_PREVIEW_MODE_ID": "7d99b10df5395ce4adb4c3e89ba4a07e",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "00c2b2041706bf59560401af6adb2f5f45269facda7c51ec208b82a23dcc1e50",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "514510fa8399aad10e96b325cc57dfc415cf3e1b9e7c159bb6952d35ad2fde69"
+      }
+    }
+  }
 }

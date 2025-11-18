@@ -13,9 +13,9 @@ const VideoPreviewTooltip: React.FC<VideoPreviewTooltipProps> = ({ isVisible }) 
   // Sample videos from the static/videos folder
   const sampleVideos = [
     '/videos/vidpreview.mp4',
-    '/videos/ai-intro.mp4',
-    '/videos/matrixcode.mp4',
     '/videos/dogclimb.mp4',
+    '/videos/matrixcode.mp4',
+    '/videos/rockbug.mp4'
   ];
 
   useEffect(() => {

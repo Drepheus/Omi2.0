@@ -121,12 +121,19 @@ function SplashPage() {
       }
     },
     {
+      name: 'Create',
+      icon: '◇',
+      description: 'Generate visuals, stories, or creative ideas',
+      onClick: () => {
+        setShowCreateMenu(true);
+        setIsPersonasActive(false); // Turn off ChromaGrid animation
+        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
+        console.log('Create clicked - showing infinite menu');
+      }
+    },
+    {
       name: 'Image Gen',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
-          <path fill="currentColor" d="M21.75 21.5H2.25A1.75 1.75 0 0 1 .5 19.75V4.25c0-.966.784-1.75 1.75-1.75h19.5c.966 0 1.75.784 1.75 1.75v15.5a1.75 1.75 0 0 1-1.75 1.75M2.25 4a.25.25 0 0 0-.25.25v15.5c0 .138.112.25.25.25h3.178L14 10.977a1.75 1.75 0 0 1 2.506-.032L22 16.44V4.25a.25.25 0 0 0-.25-.25ZM22 19.75v-1.19l-6.555-6.554a.25.25 0 0 0-.18-.073a.25.25 0 0 0-.178.077L7.497 20H21.75a.25.25 0 0 0 .25-.25M10.5 9.25a3.25 3.25 0 1 1-6.5 0a3.25 3.25 0 0 1 6.5 0m-1.5 0a1.75 1.75 0 1 0-3.501.001A1.75 1.75 0 0 0 9 9.25"/>
-        </svg>
-      ),
+      icon: '🖼️',
       description: isInstantGenActive ? 'Image generation active - type a prompt!' : 'Real-time AI image generation',
       onClick: () => {
         const isActivating = selectedFeature !== 'Image Gen';
@@ -139,18 +146,6 @@ function SplashPage() {
           setGeneratedImage(null); // Clear image when deactivating
         }
         console.log('Image Gen mode', isActivating ? 'activated' : 'deactivated');
-      }
-    },
-    {
-      name: 'Create',
-      icon: '◇',
-      description: 'Generate visuals, stories, or creative ideas',
-      onClick: () => {
-        const isActivating = selectedFeature !== 'Create';
-        setSelectedFeature(isActivating ? 'Create' : null);
-        setIsSynthesizeActive(isActivating); // Activate the electric border
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        console.log('Create clicked - ElectricBorder', isActivating ? 'activated' : 'deactivated');
       }
     },
     {
@@ -175,10 +170,16 @@ function SplashPage() {
       icon: '🎬',
       description: 'Generate AI videos from text prompts',
       onClick: () => {
-        setShowCreateMenu(true);
+        const isActivating = selectedFeature !== 'Video Gen';
+        setSelectedFeature(isActivating ? 'Video Gen' : null);
+        setIsVideoGenActive(isActivating); // Activate video generation mode
         setIsPersonasActive(false); // Turn off ChromaGrid animation
         setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        console.log('Create clicked - showing infinite menu');
+        setIsPulseActive(false);
+        if (!isActivating) {
+          setGeneratedVideo(null); // Clear video when deactivating
+        }
+        console.log('Video Gen mode', isActivating ? 'activated' : 'deactivated');
       }
     }
   ];

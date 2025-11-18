@@ -11,10 +11,10 @@ const ImagePreviewTooltip: React.FC<ImagePreviewTooltipProps> = ({ isVisible }) 
 
   // Sample images - replace these URLs with actual sample images
   const sampleImages = [
-    '/images/samples/sample1.jpg', // Futuristic AI tech
-    '/images/samples/sample2.jpg', // Diverse team illustration
-    '/images/samples/sample3.jpg', // Portrait
-    '/images/samples/sample4.jpg', // Car scene
+    '/images/samples/ai.jpg',
+    '/images/samples/sample2.jpg',
+    '/images/samples/little guy.png',
+    '/images/samples/overl.png',
   ];
 
   useEffect(() => {

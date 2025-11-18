@@ -56,7 +56,7 @@
 }
 
 .replicate-nav-link:hover {
-  color: #a855f7;
+  color: #e0e0e0;
 }
 
 .replicate-header-actions {
@@ -78,13 +78,13 @@
 }
 
 .replicate-btn-secondary:hover {
-  border-color: #a855f7;
-  color: #a855f7;
+  border-color: #e0e0e0;
+  color: #e0e0e0;
 }
 
 .replicate-btn-primary {
   padding: 8px 20px;
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #e0e0e0 0%, #808080 100%);
   border: none;
   border-radius: 8px;
   color: white;
@@ -137,7 +137,7 @@
   font-size: 4rem;
   font-weight: 800;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #e0e0e0 0%, #808080 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -185,12 +185,12 @@
 }
 
 .replicate-tab:hover {
-  border-color: #a855f7;
-  color: #a855f7;
+  border-color: #e0e0e0;
+  color: #e0e0e0;
 }
 
 .replicate-tab.active {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #e0e0e0 0%, #808080 100%);
   border-color: transparent;
   color: white;
   box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
@@ -215,7 +215,7 @@
 
 .replicate-search:focus {
   outline: none;
-  border-color: #a855f7;
+  border-color: #e0e0e0;
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
@@ -253,7 +253,7 @@
 .replicate-model-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(168, 85, 247, 0.2);
-  border-color: #a855f7;
+  border-color: #e0e0e0;
 }
 
 .replicate-model-image {
@@ -294,7 +294,7 @@
 
 .replicate-model-run-btn {
   padding: 10px 24px;
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  background: linear-gradient(135deg, #e0e0e0 0%, #808080 100%);
   border: none;
   border-radius: 8px;
   color: white;
@@ -337,7 +337,7 @@
 
 .replicate-model-author {
   font-size: 0.9rem;
-  color: #a855f7;
+  color: #e0e0e0;
   margin: 0 0 12px 0;
   font-weight: 500;
 }
@@ -386,7 +386,7 @@
 }
 
 .replicate-action-card:hover {
-  border-color: #a855f7;
+  border-color: #e0e0e0;
   box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
   transform: translateX(4px);
 }
@@ -415,7 +415,7 @@
 
 .replicate-action-arrow {
   font-size: 1.2rem;
-  color: #a855f7;
+  color: #e0e0e0;
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.2s;
@@ -456,7 +456,7 @@
 }
 
 .replicate-footer-link:hover {
-  color: #a855f7;
+  color: #e0e0e0;
 }
 
 .replicate-footer-brand {

@@ -1,9 +1,11 @@
-﻿"use client";
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import DomeGallery from './DomeGallery';
 import LogoLoop from './LogoLoop';
 import { ShinyText } from '@/components/typography/shiny-text';
+import './MediaStudio.css';
 
 interface MediaStudioProps {
   onClose?: () => void;
@@ -12,26 +14,26 @@ interface MediaStudioProps {
 const sidebarTools = [
   { name: 'Home', icon: '🏠', section: 'main' },
   { name: 'Library', icon: '📚', section: 'main' },
-  { name: 'Image', icon: '🖼️', section: 'AI Tools' },
+  { name: 'Image', icon: '🎨', section: 'AI Tools' },
   { name: 'Video', icon: '🎬', section: 'AI Tools' },
-  { name: 'Blueprints', icon: '⚡', section: 'AI Tools', badge: 'Beta' },
+  { name: 'Blueprints', icon: '📋', section: 'AI Tools', badge: 'Beta' },
   { name: 'Flow State', icon: '∞', section: 'AI Tools' },
-  { name: 'Realtime Canvas', icon: '🎨', section: 'AI Tools' },
+  { name: 'Realtime Canvas', icon: '⚡', section: 'AI Tools' },
   { name: 'Realtime Generation', icon: '✨', section: 'AI Tools' },
-  { name: 'Canvas Editor', icon: '🖌️', section: 'AI Tools' },
-  { name: 'Universal Upscaler', icon: '📐', section: 'AI Tools' },
+  { name: 'Canvas Editor', icon: '🖼️', section: 'AI Tools' },
+  { name: 'Universal Upscaler', icon: '🔍', section: 'AI Tools' },
   { name: 'Models & Training', icon: '🧠', section: 'Advanced' },
-  { name: 'Texture Generation', icon: '🌟', section: 'Advanced', badge: 'Alpha' },
+  { name: 'Texture Generation', icon: '🎭', section: 'Advanced', badge: 'Alpha' },
 ];
 
 const categoryTabs = [
-  { name: 'Blueprints', icon: '⚡' },
+  { name: 'Blueprints', icon: '📋' },
   { name: 'Flow State', icon: '∞' },
   { name: 'Video', icon: '🎬' },
-  { name: 'Image', icon: '🖼️' },
-  { name: 'Upscaler', icon: '📐' },
-  { name: 'Canvas Editor', icon: '🖌️' },
-  { name: 'More', icon: '✨' },
+  { name: 'Image', icon: '🎨' },
+  { name: 'Upscaler', icon: '🔍' },
+  { name: 'Canvas Editor', icon: '🖼️' },
+  { name: 'More', icon: '⋯' },
 ];
 
 const featuredBlueprints = [
@@ -74,14 +76,14 @@ const featuredBlueprints = [
 
 const communityFilters = [
   { name: 'Trending', icon: '🔥' },
-  { name: 'All', icon: '🎯' },
+  { name: 'All', icon: '🌐' },
   { name: 'Video', icon: '🎬' },
   { name: 'Photography', icon: '📷' },
-  { name: 'Animals', icon: '🐾' },
-  { name: 'Anime', icon: '⭐' },
+  { name: 'Animals', icon: '🦁' },
+  { name: 'Anime', icon: '🎌' },
   { name: 'Architecture', icon: '🏛️' },
   { name: 'Character', icon: '👤' },
-  { name: 'Food', icon: '🍔' },
+  { name: 'Food', icon: '🍕' },
   { name: 'Sci-Fi', icon: '🚀' },
 ];
 
@@ -91,12 +93,18 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
   const [activeTool, setActiveTool] = useState('Blueprints');
 
   return (
-    <div className="media-studio-page">
+    <motion.div 
+      className="media-studio-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Left Sidebar */}
       <div className="media-sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <span className="logo-avatar">✨</span>
+            <span className="logo-avatar">👤</span>
             <div className="logo-user">
               <span className="user-name">Omi.AI</span>
               <button className="user-dropdown">▼</button>
@@ -111,7 +119,12 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
 
         <nav className="sidebar-nav">
           {sidebarTools.map((tool, index) => (
-            <div key={index}>
+    <motion.div 
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05, duration: 0.3 }}
+            >
               {tool.section && index > 0 && sidebarTools[index - 1].section !== tool.section && (
                 <div className="nav-section-title">{tool.section}</div>
               )}
@@ -123,7 +136,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 <span className="sidebar-label">{tool.name}</span>
                 {tool.badge && <span className="tool-badge">{tool.badge}</span>}
               </button>
-            </div>
+            </motion.div>
           ))}
         </nav>
 
@@ -135,11 +148,26 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
         </div>
       </div>
 
-      <div className="media-main-content">
-        <button className="close-btn" onClick={onClose}>✕</button>
+      <motion.div className="media-main-content">
+        <motion.button 
+          className="close-btn" 
+          onClick={onClose}
+          whileHover={{ scale: 1.1, rotate: 90 }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          ✕
+        </motion.button>
 
         {/* Hero Banner */}
-        <div className="hero-banner">
+        <motion.div 
+          className="hero-banner"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <div className="banner-logoloop">
             <LogoLoop
               logos={[
@@ -147,8 +175,8 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 { node: '🎨', title: 'Art' },
                 { node: '🎬', title: 'Video' },
                 { node: '🖼️', title: 'Image' },
-                { node: '⚡', title: 'Blueprint' },
-                { node: '🌟', title: 'Star' },
+                { node: '📋', title: 'Blueprint' },
+                { node: '⭐', title: 'Star' },
                 { node: '🎭', title: 'Creative' },
                 { node: '🚀', title: 'Launch' }
               ]}
@@ -170,25 +198,34 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               Discover 50+ ready-made workflows for effortless AI creation. All Blueprints 75% off for a limited time!
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Category Tabs */}
-        <div className="category-tabs">
-          {categoryTabs.map((tab) => (
-            <button
+        <div 
+          className="category-tabs"
+        >
+          {categoryTabs.map((tab, index) => (
+            <motion.button
               key={tab.name}
               className={`category-tab ${activeCategory === tab.name ? 'active' : ''}`}
               onClick={() => setActiveCategory(tab.name)}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + (index * 0.05), duration: 0.3 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
               <span className="tab-icon">{tab.icon}</span>
               <span className="tab-label">{tab.name}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
 
         {/* Featured Blueprints */}
         <section className="featured-section">
-          <div className="section-header">
+          <div 
+            className="section-header"
+          >
             <h2 className="section-title">
               <span className="title-highlight"><ShinyText text="Featured" speed={10} /></span> Blueprints
             </h2>
@@ -236,7 +273,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
             <p className="coming-soon">Community creations coming soon...</p>
           </div>
         </section>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
