@@ -94,18 +94,18 @@
 /* Header */
 .websearch-header {
   text-align: center;
-  margin: 80px auto 48px;
+  margin: 40px auto 24px;
   max-width: 800px;
 }
 
 .websearch-icon-wrapper {
   position: relative;
   display: inline-block;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .websearch-icon {
-  font-size: 80px;
+  font-size: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,9 +149,9 @@
 }
 
 .websearch-title {
-  font-size: 4rem;
+  font-size: 2.5rem;
   font-weight: 300;
-  margin: 0 0 16px 0;
+  margin: 0 0 8px 0;
   background: linear-gradient(135deg,
     rgba(192, 192, 192, 0.95) 0%,
     rgba(160, 160, 160, 0.9) 25%,
@@ -180,41 +180,41 @@
 }
 
 .websearch-subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 /* Main Search Box */
 .websearch-main {
   max-width: 800px;
-  margin: 0 auto 64px;
+  margin: 0 auto 32px;
 }
 
 /* Search Modes */
 .search-modes {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 6px;
+  margin-bottom: 12px;
   justify-content: center;
 }
 
 .search-mode-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 12px;
   background: linear-gradient(135deg,
     rgba(48, 48, 48, 0.4) 0%,
     rgba(32, 32, 32, 0.5) 100%);
   border: 1px solid rgba(128, 128, 128, 0.15);
-  border-radius: 10px;
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 300;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -611,8 +611,8 @@
 
 .search-category-card {
   position: relative;
-  padding: 28px 24px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 8px;
   border: 1px solid rgba(128, 128, 128, 0.15);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1107,7 +1107,7 @@
   }
 
   .search-category-card {
-    padding: 24px 20px;
+    padding: 6px 12px;
   }
 
   .search-modes {

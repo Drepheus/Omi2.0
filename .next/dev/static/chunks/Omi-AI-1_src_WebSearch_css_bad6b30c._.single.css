@@ -88,11 +88,11 @@
 .websearch-header {
   text-align: center;
   max-width: 800px;
-  margin: 80px auto 48px;
+  margin: 40px auto 24px;
 }
 
 .websearch-icon-wrapper {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   display: inline-block;
   position: relative;
 }
@@ -102,7 +102,7 @@
   filter: drop-shadow(0 0 30px #8a2be2cc) drop-shadow(0 0 60px #00bfff99);
   justify-content: center;
   align-items: center;
-  font-size: 80px;
+  font-size: 60px;
   animation: 3s ease-in-out infinite iconFloat;
   display: flex;
   position: relative;
@@ -148,9 +148,9 @@
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  margin: 0 0 16px;
+  margin: 0 0 8px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
-  font-size: 4rem;
+  font-size: 2.5rem;
   font-weight: 300;
   animation: 6s ease-in-out infinite titleShine;
 }
@@ -167,23 +167,23 @@
 
 .websearch-subtitle {
   color: #ffffff73;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 300;
 }
 
 .websearch-main {
   max-width: 800px;
-  margin: 0 auto 64px;
+  margin: 0 auto 32px;
 }
 
 .search-modes {
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 6px;
+  margin-bottom: 12px;
   display: flex;
 }
 
@@ -194,12 +194,12 @@
   letter-spacing: .5px;
   background: linear-gradient(135deg, #30303066 0%, #20202080 100%);
   border: 1px solid #80808026;
-  border-radius: 10px;
+  border-radius: 8px;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 12px;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
-  font-size: .9rem;
+  font-size: .85rem;
   font-weight: 300;
   transition: all .3s cubic-bezier(.4, 0, .2, 1);
   display: flex;
@@ -548,8 +548,8 @@
   -webkit-backdrop-filter: blur(20px);
   background: linear-gradient(135deg, #20202066 0%, #18181880 100%);
   border: 1px solid #80808026;
-  border-radius: 20px;
-  padding: 28px 24px;
+  border-radius: 8px;
+  padding: 6px 12px;
   transition: all .4s cubic-bezier(.4, 0, .2, 1);
   position: relative;
   overflow: hidden;
@@ -990,7 +990,7 @@
   }
 
   .search-category-card {
-    padding: 24px 20px;
+    padding: 6px 12px;
   }
 
   .search-modes {

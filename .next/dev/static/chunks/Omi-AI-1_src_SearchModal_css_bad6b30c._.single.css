@@ -60,7 +60,7 @@
 }
 
 .search-icon {
-  filter: drop-shadow(0 0 10px #8a2be24d);
+  filter: drop-shadow(0 0 10px #c0c0c04d);
   flex-shrink: 0;
   font-size: 1.5rem;
 }

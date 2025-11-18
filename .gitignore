@@ -15,6 +15,7 @@ node_modules/
 # Build outputs
 dist/
 build/
+.next/
 
 # Editor directories
 .vscode/

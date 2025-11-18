@@ -7232,16 +7232,29 @@ function SplashPage() {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
                                 lineNumber: 691,
                                 columnNumber: 13
-                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "header-guest-indicator",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    children: "◎ Guest Mode"
-                                }, void 0, false, {
-                                    fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 701,
-                                    columnNumber: 15
-                                }, this)
-                            }, void 0, false, {
+                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                className: "header-action-btn guest-mode-btn",
+                                onClick: ()=>window.location.href = '/login',
+                                title: "Sign in to save your conversations",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "header-btn-icon",
+                                        children: "◎"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
+                                        lineNumber: 705,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "header-btn-text",
+                                        children: "Guest Mode"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
+                                        lineNumber: 706,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
                                 lineNumber: 700,
                                 columnNumber: 13
@@ -7260,7 +7273,7 @@ function SplashPage() {
                                 children: "◎"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 709,
+                                lineNumber: 714,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7268,13 +7281,13 @@ function SplashPage() {
                                 children: "Free Account"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 710,
+                                lineNumber: 715,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                        lineNumber: 708,
+                        lineNumber: 713,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7290,7 +7303,7 @@ function SplashPage() {
                                             children: "Omi AI"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 717,
+                                            lineNumber: 722,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7301,7 +7314,7 @@ function SplashPage() {
                                                     children: "Active Model:"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 719,
+                                                    lineNumber: 724,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7309,7 +7322,7 @@ function SplashPage() {
                                                     children: selectedModel
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 720,
+                                                    lineNumber: 725,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7319,24 +7332,24 @@ function SplashPage() {
                                                     children: "⚙️"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 721,
+                                                    lineNumber: 726,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 718,
+                                            lineNumber: 723,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 716,
+                                    lineNumber: 721,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 715,
+                                lineNumber: 720,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7373,45 +7386,45 @@ function SplashPage() {
                                                         children: "PRO"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 760,
+                                                        lineNumber: 765,
                                                         columnNumber: 31
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 758,
+                                                lineNumber: 763,
                                                 columnNumber: 19
                                             }, this),
                                             isImageGenButton ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$ImagePreviewTooltip$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                 isVisible: isHoveringImageGen
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 763,
+                                                lineNumber: 768,
                                                 columnNumber: 21
                                             }, this) : isVideoGenButton ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$VideoPreviewTooltip$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                                 isVisible: isHoveringVideoGen
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 765,
+                                                lineNumber: 770,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "feature-button-tooltip",
                                                 children: button.description
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 767,
+                                                lineNumber: 772,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, button.name, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 742,
+                                        lineNumber: 747,
                                         columnNumber: 17
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 733,
+                                lineNumber: 738,
                                 columnNumber: 11
                             }, this),
                             (messages.length > 0 || isCompareMode) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7434,7 +7447,7 @@ function SplashPage() {
                                                                     children: "Gemini Pro"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 791,
+                                                                    lineNumber: 796,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7442,7 +7455,7 @@ function SplashPage() {
                                                                     children: "Claude"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 792,
+                                                                    lineNumber: 797,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7450,7 +7463,7 @@ function SplashPage() {
                                                                     children: "GPT-4"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 793,
+                                                                    lineNumber: 798,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7458,18 +7471,18 @@ function SplashPage() {
                                                                     children: "Llama"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 794,
+                                                                    lineNumber: 799,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 786,
+                                                            lineNumber: 791,
                                                             columnNumber: 23
                                                         }, this) : selectedModel || 'Primary AI'
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 784,
+                                                        lineNumber: 789,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7479,13 +7492,13 @@ function SplashPage() {
                                                         children: isFullscreen ? '⤓' : '⤢'
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 800,
+                                                        lineNumber: 805,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 783,
+                                                lineNumber: 788,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7496,12 +7509,12 @@ function SplashPage() {
                                                         children: "Compare mode activated. Start chatting to see responses from both models side-by-side."
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 811,
+                                                        lineNumber: 816,
                                                         columnNumber: 23
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 810,
+                                                    lineNumber: 815,
                                                     columnNumber: 21
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                                     children: [
@@ -7514,17 +7527,17 @@ function SplashPage() {
                                                                         delay: 0.2
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 819,
+                                                                        lineNumber: 824,
                                                                         columnNumber: 31
                                                                     }, this) : getMessageText(message)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 817,
+                                                                    lineNumber: 822,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, message.id, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 816,
+                                                                lineNumber: 821,
                                                                 columnNumber: 25
                                                             }, this)),
                                                         isLoading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7536,46 +7549,46 @@ function SplashPage() {
                                                                     children: [
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {}, void 0, false, {
                                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                            lineNumber: 833,
+                                                                            lineNumber: 838,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {}, void 0, false, {
                                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                            lineNumber: 834,
+                                                                            lineNumber: 839,
                                                                             columnNumber: 31
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {}, void 0, false, {
                                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                            lineNumber: 835,
+                                                                            lineNumber: 840,
                                                                             columnNumber: 31
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 832,
+                                                                    lineNumber: 837,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 831,
+                                                                lineNumber: 836,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 830,
+                                                            lineNumber: 835,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 808,
+                                                lineNumber: 813,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 782,
+                                        lineNumber: 787,
                                         columnNumber: 15
                                     }, this),
                                     isCompareMode && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7594,7 +7607,7 @@ function SplashPage() {
                                                                 children: "Select Model"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 856,
+                                                                lineNumber: 861,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7602,7 +7615,7 @@ function SplashPage() {
                                                                 children: "Claude"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 857,
+                                                                lineNumber: 862,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7610,7 +7623,7 @@ function SplashPage() {
                                                                 children: "GPT-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 858,
+                                                                lineNumber: 863,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7618,7 +7631,7 @@ function SplashPage() {
                                                                 children: "Gemini Pro"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 859,
+                                                                lineNumber: 864,
                                                                 columnNumber: 27
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -7626,23 +7639,23 @@ function SplashPage() {
                                                                 children: "Llama"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 860,
+                                                                lineNumber: 865,
                                                                 columnNumber: 27
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 851,
+                                                        lineNumber: 856,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 849,
+                                                    lineNumber: 854,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 848,
+                                                lineNumber: 853,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7653,12 +7666,12 @@ function SplashPage() {
                                                         children: "Select a model above to compare responses."
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 868,
+                                                        lineNumber: 873,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 867,
+                                                    lineNumber: 872,
                                                     columnNumber: 23
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                                                     children: secondaryMessages.map((message, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7671,12 +7684,12 @@ function SplashPage() {
                                                                         delay: 0.2
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 876,
+                                                                        lineNumber: 881,
                                                                         columnNumber: 33
                                                                     }, this) : message.content
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 874,
+                                                                    lineNumber: 879,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7687,31 +7700,31 @@ function SplashPage() {
                                                                     })
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                    lineNumber: 884,
+                                                                    lineNumber: 889,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, index, true, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 873,
+                                                            lineNumber: 878,
                                                             columnNumber: 27
                                                         }, this))
                                                 }, void 0, false)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 865,
+                                                lineNumber: 870,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 847,
+                                        lineNumber: 852,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 780,
+                                lineNumber: 785,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -7728,7 +7741,7 @@ function SplashPage() {
                                                         children: file.type.startsWith('image/') ? '🖼️' : file.type.startsWith('video/') ? '🎥' : file.type.includes('pdf') ? '📄' : '📎'
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 903,
+                                                        lineNumber: 908,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7736,7 +7749,7 @@ function SplashPage() {
                                                         children: file.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 908,
+                                                        lineNumber: 913,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7747,18 +7760,18 @@ function SplashPage() {
                                                         children: "×"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 909,
+                                                        lineNumber: 914,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, index, true, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 902,
+                                                lineNumber: 907,
                                                 columnNumber: 19
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 900,
+                                        lineNumber: 905,
                                         columnNumber: 15
                                     }, this),
                                     isInstantGenActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7769,7 +7782,7 @@ function SplashPage() {
                                                 children: "⚡"
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 925,
+                                                lineNumber: 930,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7777,13 +7790,13 @@ function SplashPage() {
                                                 children: "Image Gen Mode Active - Describe the image you want to create"
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 926,
+                                                lineNumber: 931,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 924,
+                                        lineNumber: 929,
                                         columnNumber: 15
                                     }, this),
                                     isVideoGenActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7794,7 +7807,7 @@ function SplashPage() {
                                                 children: "🎬"
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 935,
+                                                lineNumber: 940,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -7802,13 +7815,13 @@ function SplashPage() {
                                                 children: "Video Gen Mode Active - Describe the video scene you want to create"
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 936,
+                                                lineNumber: 941,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 934,
+                                        lineNumber: 939,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7826,7 +7839,7 @@ function SplashPage() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 943,
+                                                lineNumber: 948,
                                                 columnNumber: 15
                                             }, this),
                                             !isInstantGenActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7838,7 +7851,7 @@ function SplashPage() {
                                                 children: "📎"
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 953,
+                                                lineNumber: 958,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -7851,7 +7864,7 @@ function SplashPage() {
                                                 disabled: isLoading || isGeneratingImage || isGeneratingVideo
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 963,
+                                                lineNumber: 968,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -7876,7 +7889,7 @@ function SplashPage() {
                                                                 opacity: "0.3"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 988,
+                                                                lineNumber: 993,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
@@ -7886,18 +7899,18 @@ function SplashPage() {
                                                                 strokeLinecap: "round"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 989,
+                                                                lineNumber: 994,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 987,
+                                                        lineNumber: 992,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 986,
+                                                    lineNumber: 991,
                                                     columnNumber: 19
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                     width: "24",
@@ -7913,17 +7926,17 @@ function SplashPage() {
                                                         strokeLinejoin: "round"
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                        lineNumber: 994,
+                                                        lineNumber: 999,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 993,
+                                                    lineNumber: 998,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 980,
+                                                lineNumber: 985,
                                                 columnNumber: 15
                                             }, this),
                                             isSynthesizeActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7949,12 +7962,12 @@ function SplashPage() {
                                                                             repeatCount: "indefinite"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                            lineNumber: 1006,
+                                                                            lineNumber: 1011,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 1005,
+                                                                        lineNumber: 1010,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("feDisplacementMap", {
@@ -7963,32 +7976,32 @@ function SplashPage() {
                                                                         scale: "2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 1008,
+                                                                        lineNumber: 1013,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("feGaussianBlur", {
                                                                         stdDeviation: "0.5"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 1009,
+                                                                        lineNumber: 1014,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("feColorMatrix", {
                                                                         values: "0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 1 0"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                        lineNumber: 1010,
+                                                                        lineNumber: 1015,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 1004,
+                                                                lineNumber: 1009,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1003,
+                                                            lineNumber: 1008,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
@@ -8009,12 +8022,12 @@ function SplashPage() {
                                                                 repeatCount: "indefinite"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 1025,
+                                                                lineNumber: 1030,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1013,
+                                                            lineNumber: 1018,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
@@ -8035,35 +8048,35 @@ function SplashPage() {
                                                                 repeatCount: "indefinite"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                                lineNumber: 1044,
+                                                                lineNumber: 1049,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1032,
+                                                            lineNumber: 1037,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1002,
+                                                    lineNumber: 1007,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 1001,
+                                                lineNumber: 1006,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 942,
+                                        lineNumber: 947,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 897,
+                                lineNumber: 902,
                                 columnNumber: 11
                             }, this),
                             isInstantGenActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8078,17 +8091,17 @@ function SplashPage() {
                                                 className: "metallic-paint-loader",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$OmiLoadingAnimation$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1064,
+                                                    lineNumber: 1069,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 1063,
+                                                lineNumber: 1068,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1062,
+                                            lineNumber: 1067,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8096,13 +8109,13 @@ function SplashPage() {
                                             children: "Generating your image..."
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1067,
+                                            lineNumber: 1072,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1061,
+                                    lineNumber: 1066,
                                     columnNumber: 17
                                 }, this) : generatedImage ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "generated-image-wrapper",
@@ -8114,7 +8127,7 @@ function SplashPage() {
                                                     children: "⚡ Generated Image"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1072,
+                                                    lineNumber: 1077,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8129,7 +8142,7 @@ function SplashPage() {
                                                             children: "✨ Percify It"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1074,
+                                                            lineNumber: 1079,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -8141,7 +8154,7 @@ function SplashPage() {
                                                             children: "🔗 Open"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1083,
+                                                            lineNumber: 1088,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8151,19 +8164,19 @@ function SplashPage() {
                                                             children: "✕ Clear"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1092,
+                                                            lineNumber: 1097,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1073,
+                                                    lineNumber: 1078,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1071,
+                                            lineNumber: 1076,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -8172,13 +8185,13 @@ function SplashPage() {
                                             className: "generated-image"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1101,
+                                            lineNumber: 1106,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1070,
+                                    lineNumber: 1075,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "instant-gen-placeholder",
@@ -8188,7 +8201,7 @@ function SplashPage() {
                                             children: "⚡"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1109,
+                                            lineNumber: 1114,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8196,7 +8209,7 @@ function SplashPage() {
                                             children: "Enter a prompt above to generate an image"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1110,
+                                            lineNumber: 1115,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8204,18 +8217,18 @@ function SplashPage() {
                                             children: "Describe what you want to see and press enter"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1111,
+                                            lineNumber: 1116,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1108,
+                                    lineNumber: 1113,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 1059,
+                                lineNumber: 1064,
                                 columnNumber: 13
                             }, this),
                             isVideoGenActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8230,17 +8243,17 @@ function SplashPage() {
                                                 className: "metallic-paint-loader",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$OmiLoadingAnimation$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1124,
+                                                    lineNumber: 1129,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                lineNumber: 1123,
+                                                lineNumber: 1128,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1122,
+                                            lineNumber: 1127,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8248,13 +8261,13 @@ function SplashPage() {
                                             children: "Generating your video... This may take 1-2 minutes"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1127,
+                                            lineNumber: 1132,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1121,
+                                    lineNumber: 1126,
                                     columnNumber: 17
                                 }, this) : generatedVideo ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "generated-video-wrapper",
@@ -8266,7 +8279,7 @@ function SplashPage() {
                                                     children: "🎬 Generated Video"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1132,
+                                                    lineNumber: 1137,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8281,7 +8294,7 @@ function SplashPage() {
                                                             children: "🔗 Open"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1134,
+                                                            lineNumber: 1139,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -8292,7 +8305,7 @@ function SplashPage() {
                                                             children: "⬇ Download"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1143,
+                                                            lineNumber: 1148,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -8302,19 +8315,19 @@ function SplashPage() {
                                                             children: "✕ Clear"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                            lineNumber: 1151,
+                                                            lineNumber: 1156,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                                    lineNumber: 1133,
+                                                    lineNumber: 1138,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1131,
+                                            lineNumber: 1136,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("video", {
@@ -8325,13 +8338,13 @@ function SplashPage() {
                                             loop: true
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1160,
+                                            lineNumber: 1165,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1130,
+                                    lineNumber: 1135,
                                     columnNumber: 17
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "video-gen-placeholder",
@@ -8341,7 +8354,7 @@ function SplashPage() {
                                             children: "🎬"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1170,
+                                            lineNumber: 1175,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8349,7 +8362,7 @@ function SplashPage() {
                                             children: "Enter a prompt above to generate a video"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1171,
+                                            lineNumber: 1176,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -8357,24 +8370,24 @@ function SplashPage() {
                                             children: "Describe the scene you want to create and press enter"
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                            lineNumber: 1172,
+                                            lineNumber: 1177,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1169,
+                                    lineNumber: 1174,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                lineNumber: 1119,
+                                lineNumber: 1124,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                        lineNumber: 714,
+                        lineNumber: 719,
                         columnNumber: 9
                     }, this),
                     showAIModels && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8390,7 +8403,7 @@ function SplashPage() {
                                     children: "Popular AI Models"
                                 }, void 0, false, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1183,
+                                    lineNumber: 1188,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8408,23 +8421,23 @@ function SplashPage() {
                                         pauseOnHover: true
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                        lineNumber: 1185,
+                                        lineNumber: 1190,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                                    lineNumber: 1184,
+                                    lineNumber: 1189,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                            lineNumber: 1182,
+                            lineNumber: 1187,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                        lineNumber: 1181,
+                        lineNumber: 1186,
                         columnNumber: 9
                     }, this)
                 ]
@@ -8453,7 +8466,7 @@ function SplashPage() {
                 }
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1205,
+                lineNumber: 1210,
                 columnNumber: 9
             }, this),
             isPulseActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -8486,7 +8499,7 @@ function SplashPage() {
                         children: "✕"
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                        lineNumber: 1229,
+                        lineNumber: 1234,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$CircularGallery$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8538,20 +8551,20 @@ function SplashPage() {
                         ]
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                        lineNumber: 1251,
+                        lineNumber: 1256,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1228,
+                lineNumber: 1233,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$Dock$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                 items: dockItems
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1303,
+                lineNumber: 1308,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$InfiniteMenu$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8559,7 +8572,7 @@ function SplashPage() {
                 onClose: ()=>setShowCreateMenu(false)
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1306,
+                lineNumber: 1311,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$PaywallModal$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8571,7 +8584,7 @@ function SplashPage() {
                 resetAt: paywallUsage.resetAt
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1312,
+                lineNumber: 1317,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$SettingsModal$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8580,7 +8593,7 @@ function SplashPage() {
                 user: user
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1322,
+                lineNumber: 1327,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$MediaGallery$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8589,7 +8602,7 @@ function SplashPage() {
                 onClose: ()=>setShowMediaGallery(false)
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1329,
+                lineNumber: 1334,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$SearchModal$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -8597,12 +8610,12 @@ function SplashPage() {
                 onClose: ()=>setShowSearch(false)
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1336,
+                lineNumber: 1341,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$src$2f$NewsTicker$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/SplashPage.tsx",
-                lineNumber: 1342,
+                lineNumber: 1347,
                 columnNumber: 7
             }, this)
         ]

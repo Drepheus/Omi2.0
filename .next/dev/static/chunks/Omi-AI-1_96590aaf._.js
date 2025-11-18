@@ -2174,28 +2174,6 @@ const WebSearch = ({ onClose })=>{
                         fileName: "[project]/Omi-AI-1/src/WebSearch.tsx",
                         lineNumber: 413,
                         columnNumber: 9
-                    }, ("TURBOPACK compile-time value", void 0)),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "websearch-particles",
-                        children: [
-                            ...Array(20)
-                        ].map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "particle",
-                                style: {
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    animationDelay: `${Math.random() * 5}s`,
-                                    animationDuration: `${15 + Math.random() * 10}s`
-                                }
-                            }, i, false, {
-                                fileName: "[project]/Omi-AI-1/src/WebSearch.tsx",
-                                lineNumber: 452,
-                                columnNumber: 11
-                            }, ("TURBOPACK compile-time value", void 0)))
-                    }, void 0, false, {
-                        fileName: "[project]/Omi-AI-1/src/WebSearch.tsx",
-                        lineNumber: 450,
-                        columnNumber: 7
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
@@ -2208,7 +2186,7 @@ const WebSearch = ({ onClose })=>{
                 onClose: ()=>setShowWebTaskModal(false)
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/WebSearch.tsx",
-                lineNumber: 467,
+                lineNumber: 453,
                 columnNumber: 5
             }, ("TURBOPACK compile-time value", void 0))
         ]
