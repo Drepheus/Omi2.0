@@ -135,6 +135,30 @@ const studioTools = [
     icon: '📓',
     gradient: 'linear-gradient(135deg, #F9A825 0%, #F57F17 100%)',
     color: '#F9A825'
+  },
+  {
+    name: 'NotebookLM',
+    description: 'AI-powered research and note-taking assistant',
+    url: 'https://notebooklm.google/',
+    icon: '📔',
+    gradient: 'linear-gradient(135deg, #4285F4 0%, #EA4335 100%)',
+    color: '#4285F4'
+  },
+  {
+    name: 'Project Astra',
+    description: 'Advanced multimodal AI agent for everyday tasks',
+    url: 'https://deepmind.google/models/project-astra/',
+    icon: '🤖',
+    gradient: 'linear-gradient(135deg, #34A853 0%, #FBBC04 100%)',
+    color: '#34A853'
+  },
+  {
+    name: 'TextFX',
+    description: 'AI-powered text generation and manipulation tools',
+    url: 'https://textfx.withgoogle.com/',
+    icon: '✍️',
+    gradient: 'linear-gradient(135deg, #FBBC04 0%, #EA4335 100%)',
+    color: '#FBBC04'
   }
 ];
 
