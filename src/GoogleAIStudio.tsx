@@ -232,11 +232,11 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
         </div>
 
         <div className="sidebar-nav">
-          <button className="sidebar-item">
+          <button className="sidebar-item active">
             <span className="sidebar-icon">🏠</span>
             {!sidebarCollapsed && <span className="sidebar-label">Home</span>}
           </button>
-          <button className="sidebar-item active" onClick={() => router.push('/google-ai')}>
+          <button className="sidebar-item" onClick={() => router.push('/google-ai')}>
             <span className="sidebar-icon">🤖</span>
             {!sidebarCollapsed && <span className="sidebar-label">Google AI</span>}
           </button>
@@ -305,10 +305,16 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
             </a>
           </p>
 
-          <button className="studio-enable-btn">
-            <span className="enable-btn-icon">✨</span>
-            Enable all recommended tools
-          </button>
+          <div className="labs-buttons-group">
+            <button className="labs-btn" onClick={() => window.open('https://labs.google/', '_blank')}>
+              <span className="labs-icon">🧪</span>
+              Explore the Google Labs
+            </button>
+            <button className="labs-btn" onClick={() => window.open('https://labs.google/fx', '_blank')}>
+              <span className="labs-icon">✨</span>
+              Explore Labs FX
+            </button>
+          </div>
         </div>
 
         <div className="studio-section">

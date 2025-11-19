@@ -91,9 +91,18 @@ export default function VeoPage() {
                             Our state-of-the-art video generation model
                         </p>
                         <div className="veo-cta-group">
-                            <button className="veo-cta-btn primary">Try in Gemini</button>
-                            <button className="veo-cta-btn primary">Try in Flow</button>
-                            <button className="veo-cta-btn secondary">Build with Veo</button>
+                            <button
+                                className="veo-cta-btn primary"
+                                onClick={() => document.querySelector('.use-veo-section')?.scrollIntoView({ behavior: 'smooth' })}
+                            >
+                                Try Veo
+                            </button>
+                            <button
+                                className="veo-cta-btn secondary"
+                                onClick={() => window.open('https://deepmind.google/models/veo/', '_blank')}
+                            >
+                                Build with Veo
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -182,7 +191,7 @@ export default function VeoPage() {
             {/* Use Veo Section */}
             <section className="use-veo-section">
                 <div className="use-veo-container">
-                    <h2 className="use-veo-title">Create Your <span className="highlight">Perfect Video</span></h2>
+                    <h2 className="use-veo-title">Create With <span className="highlight">Veo</span></h2>
                     <p className="use-veo-subtitle">Describe your vision and watch Veo bring it to life in stunning detail</p>
 
                     <div className="veo-input-container">
