@@ -5,16 +5,18 @@ import { useRouter } from "next/navigation";
 import { Orb } from "@/components/visuals/orb";
 import { ShinyText } from "@/components/typography/shiny-text";
 import { useAuth } from "@/context/auth-context";
+import { useGuestMode } from "@/context/guest-mode-context";
 
 export function LandingPage() {
   const router = useRouter();
   const { session } = useAuth();
+  const { isGuestMode } = useGuestMode();
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleStartClick = () => {
     setIsTransitioning(true);
     setTimeout(() => {
-      if (session) {
+      if (session || isGuestMode) {
         router.push("/command-hub");
       } else {
         router.push("/login");

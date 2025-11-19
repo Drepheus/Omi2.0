@@ -9,7 +9,7 @@
   "static/chunks/8d473_@sentry-internal_browser-utils_build_esm_af378d5b._.js",
   "static/chunks/747af_@sentry-internal_replay_build_npm_esm_index_bfb4d7e7.js",
   "static/chunks/3a5a7__pnpm_85a980c8._.js",
-  "static/chunks/Omi-AI-1_d9e21269._.js",
+  "static/chunks/Omi-AI-1_00039f33._.js",
   "static/chunks/Omi-AI-1_c1e01803._.css"
 ],
     source: "dynamic"

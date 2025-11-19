@@ -18,9 +18,9 @@
 /* Sidebar */
 .studio-sidebar {
   width: 240px;
-  background: rgba(20, 20, 35, 0.95);
+  background: linear-gradient(180deg, rgba(66, 133, 244, 0.08) 0%, rgba(52, 168, 83, 0.05) 100%);
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(66, 133, 244, 0.2);
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
@@ -34,18 +34,18 @@
   width: 320px;
   background: linear-gradient(180deg, rgba(20, 20, 35, 0.98) 0%, rgba(15, 15, 25, 0.98) 100%);
   backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(168, 85, 247, 0.1);
+  border-right: 1px solid rgba(66, 133, 244, 0.15);
   display: flex;
   flex-direction: column;
   z-index: 10;
   overflow: hidden;
-  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 0 20px rgba(66, 133, 244, 0.1);
 }
 
 .search-sidebar-header {
   padding: 24px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(168, 85, 247, 0.05);
+  background: rgba(66, 133, 244, 0.08);
 }
 
 .search-sidebar-title {
@@ -56,7 +56,7 @@
 
 .search-sidebar-icon {
   font-size: 1.3rem;
-  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));
+  filter: drop-shadow(0 0 8px rgba(66, 133, 244, 0.5));
 }
 
 .search-sidebar-text {
@@ -87,10 +87,10 @@
 }
 
 .search-history-item:hover {
-  background: rgba(168, 85, 247, 0.1);
-  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(66, 133, 244, 0.12);
+  border-color: rgba(66, 133, 244, 0.3);
   transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
 }
 
 .search-history-query {
@@ -113,8 +113,8 @@
 }
 
 .search-history-mode {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2));
-  color: rgba(168, 85, 247, 1);
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.2), rgba(52, 168, 83, 0.2));
+  color: rgba(66, 133, 244, 1);
   padding: 3px 8px;
   border-radius: 4px;
   font-weight: 600;
@@ -164,7 +164,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(66, 133, 244, 0.15);
+  background: rgba(66, 133, 244, 0.05);
 }
 
 .sidebar-logo {
@@ -175,6 +176,11 @@
 
 .logo-icon {
   font-size: 1.5rem;
+  background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(66, 133, 244, 0.4));
 }
 
 .logo-text {
@@ -185,9 +191,9 @@
 }
 
 .sidebar-toggle {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: rgba(66, 133, 244, 0.1);
+  border: 1px solid rgba(66, 133, 244, 0.3);
+  color: rgba(66, 133, 244, 1);
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -200,8 +206,9 @@
 }
 
 .sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(66, 133, 244, 0.2);
   color: white;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
 }
 
 .sidebar-nav {
@@ -228,13 +235,16 @@
 }
 
 .sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(66, 133, 244, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
 }
 
 .sidebar-item.active {
-  background: rgba(74, 144, 226, 0.15);
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.25), rgba(52, 168, 83, 0.15));
   color: #ffffff;
+  border-left: 3px solid #4285F4;
+  padding-left: 13px;
 }
 
 .sidebar-icon {
@@ -300,6 +310,16 @@
   animation-delay: 14s;
 }
 
+.studio-orb-4 {
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, #4285F4 0%, #EA4335 25%, #FBBC04 50%, #34A853 75%, transparent 100%);
+  top: 20%;
+  right: 10%;
+  animation-delay: 5s;
+  opacity: 0.15;
+}
+
 @keyframes float {
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
@@ -343,8 +363,12 @@
   padding: 80px 40px 60px;
   width: 100%;
   overflow-y: auto;
-  margin-left: 320px;
+  margin-left: 240px;
   transition: margin-left 0.3s ease;
+}
+
+.studio-sidebar.collapsed ~ .studio-container {
+  margin-left: 72px;
 }
 
 .studio-hero {
@@ -373,13 +397,14 @@
 }
 
 .studio-google-text {
-  background: linear-gradient(90deg, #ffffff 0%, #c0c0c0 33%, #a0a0a0 66%, #909090 100%);
+  background: linear-gradient(90deg, #4285F4 0%, #EA4335 25%, #FBBC04 50%, #34A853 75%, #4285F4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 500;
+  font-weight: 600;
   animation: gradientShift 8s ease infinite;
   background-size: 200% 100%;
+  filter: drop-shadow(0 0 20px rgba(66, 133, 244, 0.3));
 }
 
 @keyframes gradientShift {
@@ -412,24 +437,44 @@
 }
 
 .studio-enable-btn {
-  background: linear-gradient(135deg, #ffffff, #c0c0c0);
+  background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
   border: none;
   color: white;
   padding: 14px 28px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.4), 0 0 40px rgba(52, 168, 83, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.studio-enable-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #EA4335 0%, #FBBC04 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .studio-enable-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(66, 133, 244, 0.5), 0 0 60px rgba(52, 168, 83, 0.3);
+}
+
+.studio-enable-btn:hover::before {
+  opacity: 1;
+}
+
+.studio-enable-btn > * {
+  position: relative;
+  z-index: 1;
 }
 
 .enable-btn-icon {
@@ -473,10 +518,14 @@
 }
 
 .studio-tool-card:hover {
-  transform: translateY(-6px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(123, 104, 238, 0.15);
-  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-6px) scale(1.02);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.5), 
+    0 0 60px rgba(66, 133, 244, 0.2),
+    0 0 40px rgba(234, 67, 53, 0.15),
+    0 0 40px rgba(251, 188, 4, 0.15);
+  border-color: rgba(66, 133, 244, 0.3);
 }
 
 .tool-card-glow {
@@ -654,11 +703,14 @@
 }
 
 .gemini-badge {
-  background: linear-gradient(90deg, #ffffff, #c0c0c0, #a0a0a0, #909090);
+  background: linear-gradient(90deg, #4285F4 0%, #EA4335 25%, #FBBC04 50%, #34A853 75%, #4285F4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 500;
+  background-size: 200% 100%;
+  font-weight: 600;
+  animation: gradientShift 6s ease infinite;
+  filter: drop-shadow(0 0 10px rgba(66, 133, 244, 0.3));
 }
 
 @media (max-width: 1200px) {

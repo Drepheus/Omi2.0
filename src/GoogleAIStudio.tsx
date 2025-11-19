@@ -12,7 +12,7 @@ const studioTools = [
     name: 'Flow',
     description: 'Create dynamic visual stories with AI-powered flow generation',
     url: 'https://labs.google/fx/tools/flow',
-    icon: '',
+    icon: '🌊',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     color: '#667eea'
   },
@@ -20,7 +20,7 @@ const studioTools = [
     name: 'MusicFx DJ',
     description: 'Generate unique music mixes and soundscapes with AI',
     url: 'https://labs.google/fx/tools/music-fx-dj',
-    icon: '',
+    icon: '🎵',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     color: '#f093fb'
   },
@@ -28,7 +28,7 @@ const studioTools = [
     name: 'ImageFx',
     description: 'Transform and generate images with advanced AI models',
     url: 'https://labs.google/fx/tools/image-fx',
-    icon: '',
+    icon: '🎨',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     color: '#4facfe'
   },
@@ -36,9 +36,105 @@ const studioTools = [
     name: 'Whisk',
     description: 'Blend creative concepts and ideas into unique outputs',
     url: 'https://labs.google/fx/tools/whisk',
-    icon: '',
+    icon: '✨',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
     color: '#43e97b'
+  },
+  {
+    name: 'Project Mariner',
+    description: 'Navigate and explore AI-powered research and experimentation',
+    url: 'https://labs.google.com/mariner/landing?utm_source=ai.google&utm_medium=referral',
+    icon: '⛵',
+    gradient: 'linear-gradient(135deg, #4285F4 0%, #34A853 100%)',
+    color: '#4285F4'
+  },
+  {
+    name: 'Antigravity',
+    description: 'Defy conventional design with AI-powered creative tools',
+    url: 'https://antigravity.google/?utm_source=ai.google&utm_medium=referral',
+    icon: '🚀',
+    gradient: 'linear-gradient(135deg, #EA4335 0%, #FBBC04 100%)',
+    color: '#EA4335'
+  },
+  {
+    name: 'Gemma',
+    description: 'Open-source lightweight language model for AI development',
+    url: 'https://deepmind.google/models/gemma/?utm_source=ai.google&utm_medium=referral',
+    icon: '💎',
+    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    color: '#a8edea'
+  },
+  {
+    name: 'Lyria',
+    description: 'Advanced AI model for creative music generation',
+    url: 'https://deepmind.google/models/lyria/?utm_source=ai.google&utm_medium=referral',
+    icon: '🎼',
+    gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    color: '#ff9a9e'
+  },
+  {
+    name: 'Jules',
+    description: 'AI-powered code assistant for developers',
+    url: 'https://jules.google.com/',
+    icon: '👨‍💻',
+    gradient: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+    color: '#a1c4fd'
+  },
+  {
+    name: 'Pomelli',
+    description: 'Experiment with AI-driven creative workflows',
+    url: 'https://labs.google.com/pomelli/about/',
+    icon: '🍎',
+    gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+    color: '#ffecd2'
+  },
+  {
+    name: 'Mixboard',
+    description: 'Create and mix audio content with AI assistance',
+    url: 'https://labs.google.com/mixboard/welcome',
+    icon: '🎚️',
+    gradient: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
+    color: '#d299c2'
+  },
+  {
+    name: 'Opal',
+    description: 'AI-powered design and prototyping platform',
+    url: 'https://opal.google/landing/?source=labs',
+    icon: '💠',
+    gradient: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)',
+    color: '#89f7fe'
+  },
+  {
+    name: 'Stax',
+    description: 'Build and manage AI-driven creative projects',
+    url: 'https://stax.withgoogle.com/projects',
+    icon: '📚',
+    gradient: 'linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)',
+    color: '#fdcbf1'
+  },
+  {
+    name: 'Stitch',
+    description: 'Connect and combine AI models for unique outputs',
+    url: 'https://stitch.withgoogle.com/',
+    icon: '🧵',
+    gradient: 'linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)',
+    color: '#ffeaa7'
+  },
+  {
+    name: 'Sparkify',
+    description: 'Discover and explore AI-generated creative content',
+    url: 'https://sparkify.withgoogle.com/explore',
+    icon: '⚡',
+    gradient: 'linear-gradient(135deg, #fab2ff 0%, #1904e5 100%)',
+    color: '#fab2ff'
+  },
+  {
+    name: 'Colab',
+    description: 'Cloud-based Jupyter notebook for machine learning',
+    url: 'https://colab.research.google.com/',
+    icon: '📓',
+    gradient: 'linear-gradient(135deg, #F9A825 0%, #F57F17 100%)',
+    color: '#F9A825'
   }
 ];
 
@@ -52,6 +148,7 @@ const recentSearches = [
 
 export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const router = useRouter();
 
   const handleToolClick = (url: string) => {
@@ -72,6 +169,47 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
         <div className="studio-gradient-orb studio-orb-1"></div>
         <div className="studio-gradient-orb studio-orb-2"></div>
         <div className="studio-gradient-orb studio-orb-3"></div>
+        <div className="studio-gradient-orb studio-orb-4"></div>
+      </div>
+
+      {/* Vertex AI Sidebar */}
+      <div className={`studio-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <span className="logo-icon">◆</span>
+            {!sidebarCollapsed && <span className="logo-text">Vertex AI</span>}
+          </div>
+          <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+            {sidebarCollapsed ? '→' : '←'}
+          </button>
+        </div>
+
+        <div className="sidebar-nav">
+          <button className="sidebar-item active">
+            <span className="sidebar-icon">🏠</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Home</span>}
+          </button>
+          <button className="sidebar-item">
+            <span className="sidebar-icon">🎨</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Model Garden</span>}
+          </button>
+          <button className="sidebar-item">
+            <span className="sidebar-icon">⚡</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Generative AI</span>}
+          </button>
+          <button className="sidebar-item">
+            <span className="sidebar-icon">📊</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Datasets</span>}
+          </button>
+          <button className="sidebar-item">
+            <span className="sidebar-icon">🔧</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Pipelines</span>}
+          </button>
+          <button className="sidebar-item">
+            <span className="sidebar-icon">📈</span>
+            {!sidebarCollapsed && <span className="sidebar-label">Experiments</span>}
+          </button>
+        </div>
       </div>
 
       {/* Recent Searches Sidebar */}

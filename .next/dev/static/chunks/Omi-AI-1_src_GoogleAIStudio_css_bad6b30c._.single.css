@@ -23,8 +23,8 @@
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   z-index: 10;
-  background: #141423f2;
-  border-right: 1px solid #ffffff14;
+  background: linear-gradient(#4285f414 0%, #34a8530d 100%);
+  border-right: 1px solid #4285f433;
   flex-direction: column;
   width: 240px;
   transition: width .3s;
@@ -37,16 +37,16 @@
   backdrop-filter: blur(20px);
   z-index: 10;
   background: linear-gradient(#141423fa 0%, #0f0f19fa 100%);
-  border-right: 1px solid #a855f71a;
+  border-right: 1px solid #4285f426;
   flex-direction: column;
   width: 320px;
   display: flex;
   overflow: hidden;
-  box-shadow: 2px 0 20px #0003;
+  box-shadow: 2px 0 20px #4285f41a;
 }
 
 .search-sidebar-header {
-  background: #a855f70d;
+  background: #4285f414;
   border-bottom: 1px solid #ffffff14;
   padding: 24px 20px;
 }
@@ -58,7 +58,7 @@
 }
 
 .search-sidebar-icon {
-  filter: drop-shadow(0 0 8px #a855f766);
+  filter: drop-shadow(0 0 8px #4285f480);
   font-size: 1.3rem;
 }
 
@@ -90,10 +90,10 @@
 }
 
 .search-history-item:hover {
-  background: #a855f71a;
-  border-color: #a855f74d;
+  background: #4285f41f;
+  border-color: #4285f44d;
   transform: translateX(4px);
-  box-shadow: 0 4px 12px #a855f726;
+  box-shadow: 0 4px 12px #4285f433;
 }
 
 .search-history-query {
@@ -116,10 +116,10 @@
 }
 
 .search-history-mode {
-  color: #a855f7;
+  color: #4285f4;
   text-transform: uppercase;
   letter-spacing: .02em;
-  background: linear-gradient(135deg, #a855f733, #ec489933);
+  background: linear-gradient(135deg, #4285f433, #34a85333);
   border-radius: 4px;
   padding: 3px 8px;
   font-size: .7rem;
@@ -163,7 +163,8 @@
 }
 
 .sidebar-header {
-  border-bottom: 1px solid #ffffff14;
+  background: #4285f40d;
+  border-bottom: 1px solid #4285f426;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
@@ -177,6 +178,11 @@
 }
 
 .logo-icon {
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px #4285f466);
+  -webkit-background-clip: text;
+  background-clip: text;
   font-size: 1.5rem;
 }
 
@@ -188,10 +194,10 @@
 }
 
 .sidebar-toggle {
-  color: #ffffffb3;
+  color: #4285f4;
   cursor: pointer;
-  background: #ffffff0d;
-  border: 1px solid #ffffff1a;
+  background: #4285f41a;
+  border: 1px solid #4285f44d;
   border-radius: 6px;
   justify-content: center;
   align-items: center;
@@ -204,7 +210,8 @@
 
 .sidebar-toggle:hover {
   color: #fff;
-  background: #ffffff1a;
+  background: #4285f433;
+  box-shadow: 0 2px 8px #4285f44d;
 }
 
 .sidebar-nav {
@@ -231,13 +238,16 @@
 }
 
 .sidebar-item:hover {
-  color: #ffffffe6;
-  background: #ffffff0d;
+  color: #fffffff2;
+  background: #4285f426;
+  box-shadow: 0 2px 8px #4285f433;
 }
 
 .sidebar-item.active {
   color: #fff;
-  background: #4a90e226;
+  background: linear-gradient(135deg, #4285f440, #34a85326);
+  border-left: 3px solid #4285f4;
+  padding-left: 13px;
 }
 
 .sidebar-icon {
@@ -303,6 +313,16 @@
   transform: translate(-50%, -50%);
 }
 
+.studio-orb-4 {
+  opacity: .15;
+  background: radial-gradient(circle, #4285f4 0%, #ea4335 25%, #fbbc04 50%, #34a853 75%, #0000 100%);
+  width: 650px;
+  height: 650px;
+  animation-delay: 5s;
+  top: 20%;
+  right: 10%;
+}
+
 @keyframes float {
   0%, 100% {
     transform: translate(0)scale(1);
@@ -351,11 +371,15 @@
   flex: 1;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto 0 320px;
+  margin: 0 auto 0 240px;
   padding: 80px 40px 60px;
   transition: margin-left .3s;
   position: relative;
   overflow-y: auto;
+}
+
+.studio-sidebar.collapsed ~ .studio-container {
+  margin-left: 72px;
 }
 
 .studio-hero {
@@ -385,12 +409,13 @@
 }
 
 .studio-google-text {
-  background: linear-gradient(90deg, #fff 0%, silver 33%, #a0a0a0 66%, #909090 100%);
+  background: linear-gradient(90deg, #4285f4 0%, #ea4335 25%, #fbbc04 50%, #34a853 75%, #4285f4 100%);
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px #4285f44d);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  font-weight: 500;
+  font-weight: 600;
   animation: 8s infinite gradientShift;
 }
 
@@ -431,22 +456,42 @@
 .studio-enable-btn {
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(135deg, #fff, silver);
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   align-items: center;
   gap: 10px;
   padding: 14px 28px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all .3s;
   display: inline-flex;
-  box-shadow: 0 4px 16px #4a90e24d;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px #4285f466, 0 0 40px #34a85333;
+}
+
+.studio-enable-btn:before {
+  content: "";
+  opacity: 0;
+  background: linear-gradient(135deg, #ea4335 0%, #fbbc04 100%);
+  transition: opacity .3s;
+  position: absolute;
+  inset: 0;
 }
 
 .studio-enable-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px #4a90e266;
+  transform: translateY(-2px)scale(1.02);
+  box-shadow: 0 8px 24px #4285f480, 0 0 60px #34a8534d;
+}
+
+.studio-enable-btn:hover:before {
+  opacity: 1;
+}
+
+.studio-enable-btn > * {
+  z-index: 1;
+  position: relative;
 }
 
 .enable-btn-icon {
@@ -492,10 +537,10 @@
 }
 
 .studio-tool-card:hover {
-  background: linear-gradient(135deg, #ffffff14 0%, #ffffff08 100%);
-  border-color: #ffffff1f;
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px #00000080, 0 0 60px #7b68ee26;
+  background: linear-gradient(135deg, #ffffff1a 0%, #ffffff0a 100%);
+  border-color: #4285f44d;
+  transform: translateY(-6px)scale(1.02);
+  box-shadow: 0 12px 40px #00000080, 0 0 60px #4285f433, 0 0 40px #ea433526, 0 0 40px #fbbc0426;
 }
 
 .tool-card-glow {
@@ -687,11 +732,14 @@
 }
 
 .gemini-badge {
-  background: linear-gradient(90deg, #fff, silver, #a0a0a0, #909090);
+  background: linear-gradient(90deg, #4285f4 0%, #ea4335 25%, #fbbc04 50%, #34a853 75%, #4285f4 100%);
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px #4285f44d);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  font-weight: 500;
+  font-weight: 600;
+  animation: 6s infinite gradientShift;
 }
 
 @media (max-width: 1200px) {

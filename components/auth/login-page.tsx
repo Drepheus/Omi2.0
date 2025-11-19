@@ -4,11 +4,13 @@ import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { useAuth } from "@/context/auth-context";
+import { useGuestMode } from "@/context/guest-mode-context";
 
 export function LoginPage() {
   const router = useRouter();
   const supabase = useMemo(() => getBrowserSupabaseClient(), []);
   const { session, loading } = useAuth();
+  const { setGuestMode } = useGuestMode();
 
   useEffect(() => {
     if (session) {
@@ -33,6 +35,11 @@ export function LoginPage() {
       console.error("Error signing in with Google", error);
       alert(`Error signing in with Google: ${error.message}`);
     }
+  };
+
+  const handleGuestMode = () => {
+    setGuestMode(true);
+    router.push("/command-hub");
   };
 
   if (loading) {
@@ -85,6 +92,10 @@ export function LoginPage() {
                 </g>
               </svg>
               Continue with Google
+            </button>
+
+            <button onClick={handleGuestMode} className="login-guest-btn">
+              Continue as Guest
             </button>
           </div>
 
