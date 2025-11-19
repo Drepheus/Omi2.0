@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DotGrid from './DotGrid';
-import { EvervaultCard } from './components/ui/evervault-card';
 
 interface AIWorkflowsPageProps {
   onClose?: () => void;
@@ -174,7 +173,6 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
 
         <div className="workflow-canvas-content drag-drop-area">
           <div className="workflow-overlay">
-            <EvervaultCard className="h-full w-full" />
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
               <h2 className="workflow-overlay-title">Build Your Workflow</h2>
               <p className="workflow-overlay-desc">Drag and drop modules here to create your custom AI workflow. You can also start from a template.</p>

@@ -175,6 +175,7 @@ const recentSearches = [
 export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -219,8 +220,16 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
         <div className="studio-gradient-orb studio-orb-4"></div>
       </div>
 
+      {/* Mobile Menu Toggle */}
+      <button
+        className="studio-mobile-toggle"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      >
+        <span className="mobile-toggle-icon">{mobileMenuOpen ? '✕' : '☰'}</span>
+      </button>
+
       {/* Vertex AI Sidebar */}
-      <div className={`studio-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      <div className={`studio-sidebar ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <span className="logo-icon">◆</span>
@@ -252,7 +261,7 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
             <span className="sidebar-icon">🎬</span>
             {!sidebarCollapsed && <span className="sidebar-label">Veo</span>}
           </button>
-          <button className="sidebar-item">
+          <button className="sidebar-item" onClick={() => router.push('/code-assist')}>
             <span className="sidebar-icon">💻</span>
             {!sidebarCollapsed && <span className="sidebar-label">Code Assist</span>}
           </button>

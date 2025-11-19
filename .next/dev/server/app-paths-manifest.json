@@ -1,12 +1,6 @@
 {
-  "/ai-workflows/page": "app/ai-workflows/page.js",
-  "/chat/page": "app/chat/page.js",
-  "/command-hub/page": "app/command-hub/page.js",
-  "/custom-omis/page": "app/custom-omis/page.js",
+  "/code-assist/page": "app/code-assist/page.js",
   "/google-ai-studio/page": "app/google-ai-studio/page.js",
   "/google-ai/page": "app/google-ai/page.js",
-  "/media-studio/page": "app/media-studio/page.js",
-  "/page": "app/page.js",
-  "/veo/page": "app/veo/page.js",
-  "/web-search/page": "app/web-search/page.js"
+  "/veo/page": "app/veo/page.js"
 }
