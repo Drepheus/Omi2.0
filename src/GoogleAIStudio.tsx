@@ -332,7 +332,7 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
 
         <div className="search-sidebar-footer">
           <button className="search-clear-history">
-            <span>Clear History</span>
+            Clear History
           </button>
         </div>
       </div>
@@ -344,7 +344,7 @@ export default function GoogleAIStudio({ onClose }: GoogleAIStudioProps) {
       <div className="studio-container">
         <div className="studio-hero" ref={heroRef}>
           <h1 className="studio-main-title">
-            Get started with <span className="studio-google-text">Google</span> <span className="studio-labs-text">Labs</span>
+            Welcome to <span className="studio-google-text">Google</span> <span className="studio-labs-text">Labs</span>
           </h1>
           <p className="studio-hero-description">
             Google Labs empowers creators, developers, and innovators to explore the cutting edge of AI.

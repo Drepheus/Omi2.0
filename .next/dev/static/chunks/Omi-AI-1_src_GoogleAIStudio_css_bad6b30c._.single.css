@@ -207,104 +207,6 @@
   padding: 12px;
 }
 
-.studio-mobile-toggle {
-  display: none;
-}
-
-.search-history-sidebar {
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 10;
-  background: #0a0a0f66;
-  border-right: 1px solid #ffffff14;
-  flex-direction: column;
-  width: 300px;
-  display: flex;
-  overflow: hidden;
-}
-
-.search-sidebar-header {
-  border-bottom: 1px solid #ffffff0d;
-  padding: 24px;
-}
-
-.search-sidebar-title {
-  color: #ffffffe6;
-  align-items: center;
-  gap: 10px;
-  font-size: .95rem;
-  font-weight: 600;
-  display: flex;
-}
-
-.search-history-list {
-  flex-direction: column;
-  flex: 1;
-  gap: 8px;
-  padding: 16px;
-  display: flex;
-  overflow-y: auto;
-}
-
-.search-history-item {
-  cursor: pointer;
-  text-align: left;
-  background: #ffffff08;
-  border: 1px solid #ffffff0d;
-  border-radius: 10px;
-  width: 100%;
-  padding: 12px 14px;
-  transition: all .2s;
-}
-
-.search-history-item:hover {
-  background: #ffffff14;
-  border-color: #ffffff1a;
-  transform: translateX(2px);
-}
-
-.search-history-query {
-  color: #ffffffe6;
-  margin-bottom: 6px;
-  font-size: .9rem;
-  line-height: 1.4;
-}
-
-.search-history-meta {
-  color: #fff6;
-  align-items: center;
-  gap: 8px;
-  font-size: .75rem;
-  display: flex;
-}
-
-.search-history-mode {
-  color: #8ab4f8;
-  font-weight: 500;
-}
-
-.search-sidebar-footer {
-  border-top: 1px solid #ffffff0d;
-  padding: 16px;
-}
-
-.search-clear-history {
-  color: #fff9;
-  cursor: pointer;
-  background: none;
-  border: 1px solid #ffffff1a;
-  border-radius: 8px;
-  width: 100%;
-  padding: 10px;
-  font-size: .85rem;
-  transition: all .2s;
-}
-
-.search-clear-history:hover {
-  color: #ff453a;
-  background: #ff3b301a;
-  border-color: #ff3b304d;
-}
-
 .studio-container {
   z-index: 1;
   scroll-behavior: smooth;
@@ -343,82 +245,6 @@
 
 .studio-back-arrow {
   font-size: 1.1rem;
-}
-
-.studio-hero {
-  max-width: 900px;
-  margin-bottom: 80px;
-}
-
-.studio-main-title {
-  letter-spacing: -.03em;
-  background: linear-gradient(#fff 0%, #ffffffb3 100%);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  margin-bottom: 24px;
-  font-size: 4rem;
-  font-weight: 500;
-  line-height: 1.1;
-}
-
-.studio-google-text {
-  background: linear-gradient(90deg, #4285f4, #ea4335, #fbbc04, #34a853);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  font-weight: 600;
-}
-
-.studio-labs-text {
-  color: #fff9;
-  -webkit-text-fill-color: #fff9;
-  font-weight: 300;
-}
-
-.studio-hero-description {
-  color: #fff9;
-  max-width: 700px;
-  margin-bottom: 40px;
-  font-size: 1.25rem;
-  line-height: 1.6;
-}
-
-.studio-learn-more {
-  color: #8ab4f8;
-  border-bottom: 1px solid #0000;
-  text-decoration: none;
-  transition: border-color .2s;
-}
-
-.studio-learn-more:hover {
-  border-bottom-color: #8ab4f8;
-}
-
-.studio-enable-btn {
-  color: #000;
-  cursor: pointer;
-  background: #fff;
-  border: none;
-  border-radius: 100px;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 32px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
-  display: inline-flex;
-}
-
-.studio-enable-btn:hover {
-  transform: scale(1.05);
-}
-
-.studio-tools-grid {
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 24px;
-  margin-bottom: 80px;
-  display: grid;
 }
 
 .studio-tool-card {
@@ -489,109 +315,6 @@
   color: #fff9;
   font-size: 1rem;
   line-height: 1.5;
-}
-
-@media (max-width: 1024px) {
-  .studio-container {
-    padding: 40px;
-  }
-
-  .studio-main-title {
-    font-size: 3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .studio-sidebar, .search-history-sidebar {
-    z-index: 100;
-    background: #0a0a0ff2;
-    width: 280px;
-    height: 100%;
-    position: fixed;
-    left: -100%;
-    box-shadow: 10px 0 30px #00000080;
-  }
-
-  .studio-sidebar.mobile-open {
-    left: 0;
-  }
-
-  .studio-mobile-toggle {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    z-index: 200;
-    cursor: pointer;
-    background: #141419cc;
-    border: 1px solid #ffffff1a;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    width: 44px;
-    height: 44px;
-    font-size: 1.5rem;
-    transition: all .2s;
-    display: flex;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-  }
-
-  .studio-mobile-toggle:hover {
-    background: #ffffff1a;
-  }
-
-  .studio-container {
-    padding: 80px 20px;
-  }
-
-  .studio-main-title {
-    font-size: 2.5rem;
-  }
-
-  .studio-tools-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .studio-tutorials-section {
-    padding: 32px 24px;
-  }
-
-  .tutorials-title {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .studio-container {
-    padding: 80px 16px 24px;
-  }
-
-  .studio-main-title {
-    font-size: 1.5rem;
-  }
-
-  .studio-enable-btn {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .studio-close-btn {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    top: 20px;
-    right: 16px;
-  }
-
-  .studio-close-btn span:not(.studio-back-arrow) {
-    display: none;
-  }
-
-  .tool-icon-wrapper {
-    width: 56px;
-    height: 56px;
-  }
 }
 
 .tool-card-footer {
@@ -682,118 +405,6 @@
   font-weight: 600;
 }
 
-@media (max-width: 1024px) {
-  .studio-container {
-    padding: 40px;
-  }
-
-  .studio-main-title {
-    font-size: 3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .studio-sidebar, .search-history-sidebar {
-    z-index: 100;
-    background: #0a0a0ff2;
-    width: 280px;
-    height: 100%;
-    position: fixed;
-    left: -100%;
-    box-shadow: 10px 0 30px #00000080;
-  }
-
-  .studio-sidebar.mobile-open {
-    left: 0;
-  }
-
-  .studio-mobile-toggle {
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    z-index: 200;
-    cursor: pointer;
-    background: #141419cc;
-    border: 1px solid #ffffff1a;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    width: 44px;
-    height: 44px;
-    font-size: 1.5rem;
-    transition: all .2s;
-    display: flex;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-  }
-
-  .studio-mobile-toggle:hover {
-    background: #ffffff1a;
-  }
-
-  .studio-container {
-    padding: 80px 20px;
-  }
-
-  .studio-main-title {
-    font-size: 2.5rem;
-  }
-
-  .studio-tools-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .studio-tutorials-section {
-    padding: 32px 24px;
-  }
-
-  .tutorials-title {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .studio-container {
-    padding: 80px 16px 24px;
-  }
-
-  .studio-main-title {
-    font-size: 1.5rem;
-  }
-
-  .studio-enable-btn {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .studio-close-btn {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    top: 20px;
-    right: 16px;
-  }
-
-  .studio-close-btn span:not(.studio-back-arrow) {
-    display: none;
-  }
-
-  .tool-icon-wrapper {
-    width: 56px;
-    height: 56px;
-  }
-
-  .tool-icon {
-    font-size: 1.75rem;
-  }
-
-  .view-tutorials-btn {
-    justify-content: center;
-    width: 100%;
-  }
-}
-
 .labs-buttons-group {
   gap: 16px;
   margin-top: 32px;
@@ -823,6 +434,120 @@
 
 .labs-icon {
   font-size: 1.2rem;
+}
+
+.studio-mobile-toggle {
+  z-index: 1002;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: #ffffff1a;
+  border: 1px solid #fff3;
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  transition: all .3s;
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+}
+
+.studio-mobile-toggle:hover {
+  background: #ffffff26;
+  border-color: #ffffff4d;
+  transform: scale(1.05);
+}
+
+.mobile-toggle-icon {
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+@media (max-width: 1024px) {
+  .studio-container {
+    padding: 40px;
+  }
+
+  .studio-main-title {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .studio-sidebar {
+    z-index: 100;
+    background: #0a0a0ff2;
+    width: 280px;
+    height: 100%;
+    transition: all .3s;
+    position: fixed;
+    left: -100%;
+    box-shadow: 10px 0 30px #00000080;
+  }
+
+  .studio-sidebar.mobile-open {
+    left: 0;
+  }
+
+  .studio-mobile-toggle {
+    display: flex;
+  }
+
+  .studio-container {
+    padding: 80px 20px;
+  }
+
+  .studio-main-title {
+    font-size: 2.5rem;
+  }
+
+  .studio-tutorials-section {
+    padding: 32px 24px;
+  }
+
+  .tutorials-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .studio-container {
+    padding: 80px 16px 24px;
+  }
+
+  .studio-main-title {
+    font-size: 1.5rem;
+  }
+
+  .studio-close-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    top: 20px;
+    right: 16px;
+  }
+
+  .studio-close-btn span:not(.studio-back-arrow) {
+    display: none;
+  }
+
+  .tool-icon-wrapper {
+    width: 56px;
+    height: 56px;
+  }
+
+  .tool-icon {
+    font-size: 1.75rem;
+  }
+
+  .view-tutorials-btn {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 /*# sourceMappingURL=Omi-AI-1_src_GoogleAIStudio_css_bad6b30c._.single.css.map*/
