@@ -1,4 +1,7 @@
 import { supabase } from './supabaseClient';
+import { chatWithVertexRAG } from './vertexService';
+
+export { chatWithVertexRAG };
 
 export interface CustomOmi {
   id: string;
@@ -34,18 +37,13 @@ export async function loadCustomOmis(userId: string): Promise<CustomOmi[]> {
     return [];
   }
 
-  // Get document and embedding counts for each bot
+  // Get document counts for each bot
   const botsWithCounts = await Promise.all(
     (bots || []).map(async (bot: any) => {
       const { count: docCount } = await supabase
         .from('knowledge_documents')
         .select('*', { count: 'exact', head: true })
         .eq('bot_id', bot.id);
-
-      const { count: embeddingCount } = await supabase
-        .from('document_embeddings')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId);
 
       return {
         id: bot.id,
@@ -54,7 +52,7 @@ export async function loadCustomOmis(userId: string): Promise<CustomOmi[]> {
         status: bot.status as 'idle' | 'training' | 'ready',
         accuracy: bot.accuracy || 0,
         documentsCount: docCount || 0,
-        embeddingsCount: embeddingCount || 0
+        embeddingsCount: 0 // Vertex manages embeddings
       };
     })
   );
@@ -106,66 +104,21 @@ export async function createCustomOmi(userId: string, name: string, description:
 }
 
 // Read file content as text or base64
-const MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1 MB
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB for Vertex
 const TEXT_EXTENSIONS = [
-  '.txt',
-  '.md',
-  '.markdown',
-  '.json',
-  '.yaml',
-  '.yml',
-  '.csv',
-  '.js',
-  '.jsx',
-  '.ts',
-  '.tsx',
-  '.py',
-  '.cs',
-  '.html',
-  '.htm',
-  '.css'
+  '.txt', '.md', '.markdown', '.json', '.yaml', '.yml', '.csv',
+  '.js', '.jsx', '.ts', '.tsx', '.py', '.cs', '.html', '.htm', '.css',
+  '.pdf', '.docx' // Vertex supports these
 ];
-const TEXT_MIME_TYPES = [
-  'text/plain',
-  'text/markdown',
-  'application/json',
-  'application/x-yaml',
-  'text/yaml',
-  'text/csv',
-  'application/javascript',
-  'text/javascript',
-  'application/typescript',
-  'text/typescript',
-  'text/css',
-  'text/html'
-];
-
-const ALLOWED_TYPES_MESSAGE =
-  '.txt, .md, .json, .yaml/.yml, .csv, .js/.ts/.tsx, .py, .cs, .html/.htm, .css';
 
 const getFileExtension = (fileName: string) => {
   const dotIndex = fileName.lastIndexOf('.');
   return dotIndex === -1 ? '' : fileName.slice(dotIndex).toLowerCase();
 };
 
-const isPlainTextFile = (file: File) => {
-  const ext = getFileExtension(file.name);
-  return TEXT_EXTENSIONS.includes(ext) || (!!file.type && TEXT_MIME_TYPES.includes(file.type));
-};
-
-const ensureValidFile = (file: File) => {
-  if (file.size > MAX_FILE_SIZE_BYTES) {
-    throw new Error('File size exceeds the 1 MB limit for document processing.');
-  }
-
-  if (!isPlainTextFile(file)) {
-    throw new Error(`Unsupported file type. Please upload plain text formats such as ${ALLOWED_TYPES_MESSAGE}.`);
-  }
-};
-
 const getDocumentTypeLabel = (fileName: string) => {
   const ext = getFileExtension(fileName);
-  return ext ? ext.replace('.', '').toUpperCase() : 'TEXT';
+  return ext ? ext.replace('.', '').toUpperCase() : 'FILE';
 };
 
 export async function readFileAsBase64(file: File): Promise<string> {
@@ -181,18 +134,17 @@ export async function readFileAsBase64(file: File): Promise<string> {
   });
 }
 
-// Upload and process a document
+// Upload document metadata (Actual upload should be to GCS)
 export async function uploadDocument(
   file: File,
   botId: string,
   onProgress?: (status: string) => void
 ): Promise<void> {
   try {
-    ensureValidFile(file);
     onProgress?.('Reading file...');
     const fileData = await readFileAsBase64(file);
 
-    onProgress?.('Uploading document...');
+    onProgress?.('Registering document...');
     const session = await supabase.auth.getSession();
     const token = session.data.session?.access_token;
 
@@ -200,17 +152,16 @@ export async function uploadDocument(
       throw new Error('Not authenticated');
     }
 
-    // Step 1: Upload document metadata
+    // We still use the old upload endpoint for now to register the doc in Supabase
+    // But we skip the "process-document" step which did the embeddings
     const uploadPayload = {
       fileName: file.name,
       fileType: file.type || getDocumentTypeLabel(file.name),
       fileSize: file.size,
       botId,
-      fileData
+      fileData // We send data so it's stored in Supabase Storage (optional backup)
     };
-    
-    console.log('Uploading with payload:', { ...uploadPayload, fileData: fileData ? `${fileData.length} bytes` : 'none' });
-    
+
     const uploadResponse = await fetch('/api/upload-document', {
       method: 'POST',
       headers: {
@@ -221,105 +172,17 @@ export async function uploadDocument(
     });
 
     if (!uploadResponse.ok) {
-      let errorMessage = 'Upload failed';
-      try {
-        const contentType = uploadResponse.headers.get('content-type');
-        if (contentType?.includes('application/json')) {
-          const error = await uploadResponse.json();
-          console.error('Upload API error:', error);
-          errorMessage = error.details || error.error || errorMessage;
-        } else {
-          const errorText = await uploadResponse.text();
-          console.error('Upload API non-JSON error:', errorText);
-          errorMessage = `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`;
-        }
-      } catch (parseError) {
-        console.error('Error parsing upload response:', parseError);
-        errorMessage = `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`;
-      }
-      throw new Error(errorMessage);
+      throw new Error('Upload failed');
     }
 
-    const { documentId } = await uploadResponse.json();
+    // We do NOT call process-document anymore.
+    // Vertex AI handles indexing asynchronously if linked to GCS.
+    // Since we can't upload to GCS directly from here without a signed URL,
+    // we assume the user will manage the Data Store sync separately or we'll add that later.
 
-    // Step 2: Process document (chunk and embed)
-    onProgress?.('Processing and generating embeddings...');
-    const processResponse = await fetch('/api/process-document', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        documentId,
-        fileData,
-        chunkSize: 1000,
-        overlap: 200
-      })
-    });
-
-    if (!processResponse.ok) {
-      let errorMessage = 'Processing failed';
-      try {
-        const contentType = processResponse.headers.get('content-type');
-        if (contentType?.includes('application/json')) {
-          const error = await processResponse.json();
-          console.error('Process API error:', error);
-          errorMessage = error.details || error.error || errorMessage;
-        } else {
-          const errorText = await processResponse.text();
-          console.error('Process API non-JSON error:', errorText);
-          errorMessage = `Processing failed: ${processResponse.status} ${processResponse.statusText}`;
-        }
-      } catch (parseError) {
-        console.error('Error parsing process response:', parseError);
-        errorMessage = `Processing failed: ${processResponse.status} ${processResponse.statusText}`;
-      }
-      throw new Error(errorMessage);
-    }
-
-    onProgress?.('Document indexed successfully!');
+    onProgress?.('Document registered. Please ensure it is synced to your Vertex Data Store.');
   } catch (error) {
     console.error('Upload error:', error);
-    throw error;
-  }
-}
-
-// Perform RAG search
-export async function performRAGSearch(
-  query: string,
-  matchThreshold: number = 0.7,
-  matchCount: number = 5
-) {
-  try {
-    const session = await supabase.auth.getSession();
-    const token = session.data.session?.access_token;
-
-    if (!token) {
-      throw new Error('Not authenticated');
-    }
-
-    const response = await fetch('/api/rag-search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        query,
-        matchThreshold,
-        matchCount
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Search failed');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('RAG search error:', error);
     throw error;
   }
 }
