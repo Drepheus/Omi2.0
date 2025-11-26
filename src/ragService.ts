@@ -103,6 +103,36 @@ export async function createCustomOmi(userId: string, name: string, description:
     return data;
 }
 
+// Upload document (placeholder - actual upload should be to GCS for Vertex AI)
+export async function uploadDocument(
+    file: File,
+    botId: string,
+    onProgress?: (status: string) => void
+): Promise<void> {
+    onProgress?.('Note: For Vertex AI RAG, please upload files directly to your GCS bucket linked to the Data Store.');
+
+    // For now, we'll just register the document in Supabase for tracking
+    // The actual indexing happens in Vertex AI when you upload to GCS
+    const { error } = await supabase
+        .from('knowledge_documents')
+        .insert({
+            bot_id: botId,
+            name: file.name,
+            type: file.type || 'text/plain',
+            size: file.size,
+            status: 'indexed',
+            chunk_count: 0,
+            uploaded_at: new Date().toISOString()
+        });
+
+    if (error) {
+        console.error('Error registering document:', error);
+        throw new Error('Failed to register document');
+    }
+
+    onProgress?.('Document registered. Upload to GCS bucket for Vertex AI indexing.');
+}
+
 // Delete a document
 export async function deleteDocument(documentId: string) {
     const { error } = await supabase
