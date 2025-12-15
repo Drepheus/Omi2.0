@@ -240,15 +240,52 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
     return () => clearInterval(interval);
   }, [activeTool, imageStudioHeroImages.length]);
 
-  const quickTools = [
-    { name: 'Image', icon: '🖼️' },
-    { name: 'Video', icon: '🎬' },
-    { name: 'Blueprints', icon: '✨', badge: 'NEW' },
-    { name: 'Flow State', icon: '∞' },
-    { name: 'Upscaler', icon: '🔍' },
-    { name: 'Canvas', icon: '🎨' },
-    { name: 'Draw', icon: '✏️' },
+  /* Tool Definitions */
+  const imageStudioTools = [
+    {
+      name: 'Model',
+      icon: '🧠',
+      tooltip: 'Choose your AI Model',
+      options: ['Flux Schnell', 'Flux Dev', 'Stable Diffusion 3', 'DALL-E 3', 'Midjourney V6']
+    },
+    {
+      name: 'Mode',
+      icon: '⚡',
+      tooltip: 'Select Generation Mode',
+      options: ['Quick (Instant)', 'Pro (High Quality)']
+    },
+    {
+      name: 'Style',
+      icon: '🎨',
+      tooltip: 'Apply an Artistic Style',
+      options: ['Cinematic', 'Photorealistic', 'Anime', 'Cyberpunk', 'Oil Painting', 'Abstract', '3D Render', 'Sketch']
+    },
+    {
+      name: 'Count',
+      icon: '🔢',
+      tooltip: 'Number of Images',
+      options: ['1 Image', '2 Images', '4 Images']
+    },
   ];
+
+  /* Dropdown State */
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState('Flux Schnell');
+  const [selectedMode, setSelectedMode] = useState('Quick (Instant)');
+  const [selectedStyle, setSelectedStyle] = useState('Cinematic');
+  const [selectedCount, setSelectedCount] = useState('1 Image');
+
+  const handleToolClick = (toolName: string) => {
+    setActiveDropdown(activeDropdown === toolName ? null : toolName);
+  };
+
+  const handleOptionSelect = (toolName: string, option: string) => {
+    if (toolName === 'Model') setSelectedModel(option);
+    if (toolName === 'Mode') setSelectedMode(option);
+    if (toolName === 'Style') setSelectedStyle(option);
+    if (toolName === 'Count') setSelectedCount(option);
+    setActiveDropdown(null);
+  };
 
   const holidayBlueprints = [
     { title: 'Bauble Macro Portrait', image: 'https://images.unsplash.com/photo-1606830733403-ad01843b23d9?w=400&h=400&fit=crop' },
@@ -259,6 +296,10 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
     { title: 'Festive Retail Scene', image: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?w=400&h=400&fit=crop' },
     { title: 'Place Person In Scene', image: 'https://images.unsplash.com/photo-1515488042361-25e6b80dd0e6?w=400&h=400&fit=crop' },
     { title: 'Background Change', image: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400&h=400&fit=crop' },
+    { title: 'Neon Cyberpunk City', image: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=400&h=400&fit=crop' },
+    { title: 'Abstract Oil Painting', image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=400&fit=crop' },
+    { title: 'Realistic Space Suit', image: 'https://images.unsplash.com/photo-1614728853913-1e32005e3073?w=400&h=400&fit=crop' },
+    { title: 'Underwater Coral Reef', image: 'https://images.unsplash.com/photo-1546026423-cc4642628d2b?w=400&h=400&fit=crop' },
   ];
 
   return (
@@ -450,18 +491,58 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                   </button>
                 </div>
                 <div className="quick-tools-row">
-                  {quickTools.map(t => (
-                    <div className="quick-tool-item" key={t.name}>
-                      <div className="quick-tool-icon-circle">
+                  {imageStudioTools.map(t => (
+                    <div
+                      className="quick-tool-item relative-container"
+                      key={t.name}
+                      onClick={() => handleToolClick(t.name)}
+                    >
+                      <div className={`quick-tool-icon-circle ${activeDropdown === t.name ? 'active-tool' : ''}`}>
                         {t.icon}
-                        {t.badge && <span className="tool-badge-floating">{t.badge}</span>}
                       </div>
-                      <span className="quick-tool-label">{t.name}</span>
+                      <span className="quick-tool-label">
+                        {t.name === 'Model' ? selectedModel.split(' ')[0] :
+                          t.name === 'Mode' ? selectedMode.split(' ')[0] :
+                            t.name === 'Style' ? selectedStyle :
+                              t.name === 'Count' ? selectedCount : t.name}
+                      </span>
+
+                      {/* Custom Tooltip */}
+                      <div className="custom-tooltip">
+                        {t.tooltip}
+                      </div>
+
+                      {/* Dropdown Menu */}
+                      <AnimatePresence>
+                        {activeDropdown === t.name && (
+                          <motion.div
+                            className="tool-dropdown-menu"
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {t.options.map(option => (
+                              <div
+                                key={option}
+                                className="dropdown-option"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOptionSelect(t.name, option);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+
 
 
 
@@ -492,14 +573,25 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 <h2 className="section-title"><span className="title-highlight">Featured</span> Blueprints</h2>
                 <span className="view-more">View More →</span>
               </div>
-              <div className="horizontal-cards-scroller">
-                {holidayBlueprints.map((bp, i) => (
-                  <div className="horizontal-card" key={i}>
-                    <img src={bp.image} alt={bp.title} />
-                    <span className="card-badge-new">New</span>
-                    <div className="card-overlay-title">{bp.title}</div>
-                  </div>
-                ))}
+              <div className="horizontal-cards-scroller-container">
+                <div className="horizontal-cards-scroller-track">
+                  {/* Original Items */}
+                  {holidayBlueprints.map((bp, i) => (
+                    <div className="horizontal-card" key={`orig-${i}`}>
+                      <img src={bp.image} alt={bp.title} />
+                      <span className="card-badge-new">New</span>
+                      <div className="card-overlay-title">{bp.title}</div>
+                    </div>
+                  ))}
+                  {/* Duplicated Items for Loop */}
+                  {holidayBlueprints.map((bp, i) => (
+                    <div className="horizontal-card" key={`dup-${i}`}>
+                      <img src={bp.image} alt={bp.title} />
+                      <span className="card-badge-new">New</span>
+                      <div className="card-overlay-title">{bp.title}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

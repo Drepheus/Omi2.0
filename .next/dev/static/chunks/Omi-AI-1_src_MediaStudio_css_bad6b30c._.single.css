@@ -920,8 +920,68 @@
   box-shadow: 0 2px 5px #0000004d;
 }
 
+.relative-container {
+  position: relative;
+}
+
+.tool-dropdown-menu {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  background: #140f23f2;
+  border: 1px solid #a855f74d;
+  border-radius: 12px;
+  flex-direction: column;
+  gap: 4px;
+  width: 200px;
+  margin-top: 12px;
+  padding: 8px;
+  display: flex;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 40px #00000080;
+}
+
+.tool-dropdown-menu:before {
+  content: "";
+  z-index: -1;
+  background: #140f23f2;
+  border-top: 1px solid #a855f74d;
+  border-left: 1px solid #a855f74d;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%)rotate(45deg);
+}
+
+.dropdown-option {
+  color: #fffc;
+  text-align: left;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: .9rem;
+  transition: all .2s;
+}
+
+.dropdown-option:hover {
+  color: #fff;
+  background: #a855f733;
+}
+
+.quick-tool-icon-circle.active-tool {
+  background: #a855f74d;
+  border-color: #a855f7;
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px #a855f766;
+}
+
 .quick-tool-label {
   color: #ffffffb3;
+  white-space: nowrap;
   font-size: .85rem;
   font-weight: 500;
   transition: color .3s;
@@ -929,6 +989,33 @@
 
 .quick-tool-item:hover .quick-tool-label {
   color: #fff;
+}
+
+.custom-tooltip {
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 200;
+  background: #0a050fe6;
+  border: 1px solid #a855f766;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .75rem;
+  font-weight: 500;
+  transition: all .2s;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%)translateY(10px);
+  box-shadow: 0 4px 15px #00000080;
+}
+
+.quick-tool-item:hover .custom-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%)translateY(0);
 }
 
 .horizontal-scroll-section {
@@ -942,16 +1029,32 @@
   display: flex;
 }
 
-.horizontal-cards-scroller {
-  scrollbar-width: none;
-  gap: 16px;
+.horizontal-cards-scroller-container {
+  width: 100%;
   padding-bottom: 20px;
-  display: flex;
-  overflow-x: auto;
+  position: relative;
+  overflow: hidden;
 }
 
-.horizontal-cards-scroller::-webkit-scrollbar {
-  display: none;
+.horizontal-cards-scroller-track {
+  gap: 16px;
+  width: max-content;
+  animation: 40s linear infinite scroll;
+  display: flex;
+}
+
+.horizontal-cards-scroller-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .horizontal-card {
