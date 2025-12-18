@@ -93,4 +93,13 @@
   }
 }
 
+.card-locked-overlay {
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.card:hover .card-locked-overlay {
+  opacity: 1;
+}
+
 /*# sourceMappingURL=Omi-AI-1_src_CommandHub_css_bad6b30c._.single.css.map*/

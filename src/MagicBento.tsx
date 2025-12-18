@@ -4,7 +4,10 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { gsap } from 'gsap';
 import SettingsModal from './SettingsModal';
+import PaywallModal from './PaywallModal';
 import { supabase } from './supabaseClient';
+import { useAuth } from '@/context/auth-context';
+import { useGuestMode } from '@/context/guest-mode-context';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
@@ -576,15 +579,34 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  
+  const { user } = useAuth();
+  const { isGuestMode } = useGuestMode();
+  const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro'>('free');
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    const fetchSubscription = async () => {
+      if (isGuestMode) {
+        setSubscriptionTier('free');
+        return;
+      }
+      
+      if (user) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('subscription_tier')
+          .eq('id', user.id)
+          .single();
+          
+        if (data && !error) {
+          setSubscriptionTier(data.subscription_tier as 'free' | 'pro');
+        }
+      }
     };
-    getUser();
-  }, []);
+    
+    fetchSubscription();
+  }, [user, isGuestMode]);
 
   // Handle card clicks
   const handleCardClick = (card: typeof cardData[0]) => {
@@ -628,6 +650,13 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         onClose={() => setIsSettingsOpen(false)} 
         user={user} 
       />
+      <PaywallModal
+        isOpen={isPaywallOpen}
+        onClose={() => setIsPaywallOpen(false)}
+        limitType="chat" // Dummy value
+        currentUsage={0} // Dummy value
+        usageLimit={100} // Dummy value
+      />
       {enableSpotlight && (
         <GlobalSpotlight
           gridRef={gridRef}
@@ -641,6 +670,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       <BentoCardGrid gridRef={gridRef}>
         {cardData.map((card, index) => {
           const baseClassName = `card ${textAutoHide ? 'card--text-autohide' : ''} ${enableBorderGlow ? 'card--border-glow' : ''}`;
+          const isLocked = ['aiworkflows', 'customomis', 'apistudio'].includes(card.action) && subscriptionTier !== 'pro';
+          
           const cardProps = {
             className: baseClassName,
             style: {
@@ -648,6 +679,40 @@ const MagicBento: React.FC<MagicBentoProps> = ({
               '--glow-color': glowColor
             } as React.CSSProperties
           };
+
+          const LockedOverlay = () => (
+            <div className="card-locked-overlay" style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 20,
+              backdropFilter: 'blur(2px)',
+              borderRadius: 'inherit',
+              pointerEvents: 'none' // Allow clicks to pass through to the card
+            }}>
+              <div style={{
+                padding: '8px 16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '20px',
+                color: 'white',
+                fontWeight: '500',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }}>
+                <span>🔒</span> Upgrade to Access
+              </div>
+            </div>
+          );
 
           if (enableStars) {
             return (
@@ -658,14 +723,15 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 particleCount={particleCount}
                 glowColor={glowColor}
                 enableTilt={enableTilt}
-                clickEffect={clickEffect}
+                clickEffect={clickEffect} // Enable click effect even if locked, as it opens modal
                 enableMagnetism={enableMagnetism}
-                onClick={() => handleCardClick(card)}
+                onClick={() => isLocked ? setIsPaywallOpen(true) : handleCardClick(card)}
                 style={{
                   ...cardProps.style,
                   cursor: card.action ? 'pointer' : 'default'
                 }}
               >
+                {isLocked && <LockedOverlay />}
                 <div className="card__header">
                   <div className="card__label">{card.label}</div>
                 </div>
@@ -682,12 +748,14 @@ const MagicBento: React.FC<MagicBentoProps> = ({
             <div 
               key={index} 
               {...cardProps}
-              onClick={() => handleCardClick(card)}
+              onClick={() => isLocked ? setIsPaywallOpen(true) : handleCardClick(card)}
               style={{
                 ...cardProps.style,
-                cursor: card.action ? 'pointer' : 'default'
+                cursor: card.action ? 'pointer' : 'default',
+                position: 'relative'
               }}
             >
+              {isLocked && <LockedOverlay />}
               <div className="card__header">
                 <div className="card__label">{card.label}</div>
               </div>

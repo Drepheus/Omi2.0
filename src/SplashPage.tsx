@@ -100,6 +100,66 @@ function SplashPage() {
   // Search Modal
   const [showSearch, setShowSearch] = useState(false);
 
+  // Mobile Mode Menu State
+  const [showMobileModeMenu, setShowMobileModeMenu] = useState(false);
+  
+  // Mobile Header Menu State
+  const [showMobileHeaderMenu, setShowMobileHeaderMenu] = useState(false);
+
+  // Music Player State
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [playlist, setPlaylist] = useState<string[]>([]);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Fetch music playlist
+  useEffect(() => {
+    const fetchMusic = async () => {
+      try {
+        const response = await fetch('/api/music');
+        const data = await response.json();
+        if (data.files && data.files.length > 0) {
+          setPlaylist(data.files);
+        }
+      } catch (error) {
+        console.error('Failed to fetch music:', error);
+      }
+    };
+    fetchMusic();
+  }, []);
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+    
+    if (isMusicPlaying) {
+      audioRef.current.pause();
+      setIsMusicPlaying(false);
+    } else {
+      // If no track is set but we have a playlist, set the first one
+      if ((!audioRef.current.src || audioRef.current.src === window.location.href) && playlist.length > 0) {
+        audioRef.current.src = `/music/${playlist[currentTrackIndex]}`;
+      }
+      
+      if (playlist.length > 0) {
+        audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+        setIsMusicPlaying(true);
+      } else {
+        alert("No music files found in public/music folder. Please add .mp3 files to the public/music directory.");
+      }
+    }
+  };
+
+  const handleTrackEnded = () => {
+    if (playlist.length > 0) {
+      const nextIndex = (currentTrackIndex + 1) % playlist.length;
+      setCurrentTrackIndex(nextIndex);
+      if (audioRef.current) {
+        audioRef.current.src = `/music/${playlist[nextIndex]}`;
+        audioRef.current.play();
+      }
+    }
+  };
+
   // Debug log for gallery state
   useEffect(() => {
     console.log('🎨 Media Gallery State:', showMediaGallery);
@@ -659,57 +719,83 @@ function SplashPage() {
 
         {/* Top Right Action Buttons - Fixed to top-right corner */}
         {!isFullscreen && (
-          <div className="top-right-actions">
-            {/* New Conversation Button - FIRST */}
-            <button
-              className="header-action-btn new-conversation-btn"
-              onClick={createNewConversation}
-              title="Start new conversation"
+          <div className={`top-right-actions ${showMobileHeaderMenu ? 'mobile-expanded' : ''}`}>
+            
+            {/* Mobile Toggle Button */}
+            <button 
+              className="mobile-header-toggle"
+              onClick={() => setShowMobileHeaderMenu(!showMobileHeaderMenu)}
             >
-              <span className="header-btn-icon">✦</span>
-              <span className="header-btn-text">New Chat</span>
+              <span className="header-btn-icon">⋮</span>
             </button>
 
-            {/* Upgrade Button (for free users) - No badge in header */}
-            {user && subscriptionTier === 'free' && (
+            <div className="header-buttons-group">
+              {/* New Conversation Button - FIRST */}
               <button
-                className="header-action-btn upgrade-btn"
-                onClick={() => setShowPaywall(true)}
-                title="Upgrade to Pro"
+                className="header-action-btn new-conversation-btn"
+                onClick={createNewConversation}
+                title="Start new conversation"
               >
-                <span className="header-btn-icon">◈</span>
-                <span className="header-btn-text">Upgrade</span>
+                <span className="header-btn-icon">＋</span>
               </button>
-            )}
 
-            {/* Account Tier Indicator (for pro users only) */}
-            {user && subscriptionTier === 'pro' && (
-              <div className="account-tier-badge pro-badge">
-                <span className="tier-icon">◆</span>
-                <span className="tier-text">Pro Account</span>
-              </div>
-            )}
+              {/* Music Player Button */}
+              <button
+                className="header-action-btn music-btn"
+                onClick={toggleMusic}
+                title={isMusicPlaying ? "Pause Music" : "Play Music"}
+              >
+                <span className="header-btn-icon">
+                  {isMusicPlaying ? "🔊" : "🔇"}
+                </span>
+              </button>
+              
+              {/* Hidden Audio Element */}
+              <audio 
+                ref={audioRef} 
+                onEnded={handleTrackEnded}
+                style={{ display: 'none' }} 
+              />
 
-            {/* Account Button */}
-            {user ? (
-              <button
-                className="header-action-btn account-btn"
-                onClick={() => setShowSettings(true)}
-                title="Account settings"
-              >
-                <span className="header-btn-icon">◉</span>
-                <span className="header-btn-text">{user.email?.split('@')[0] || 'Account'}</span>
-              </button>
-            ) : (
-              <button
-                className="header-action-btn guest-mode-btn"
-                onClick={() => window.location.href = '/login'}
-                title="Sign in to save your conversations"
-              >
-                <span className="header-btn-icon">◎</span>
-                <span className="header-btn-text">Guest Mode</span>
-              </button>
-            )}
+              {/* Upgrade Button (for free users) - No badge in header */}
+              {user && subscriptionTier === 'free' && (
+                <button
+                  className="header-action-btn upgrade-btn"
+                  onClick={() => setShowPaywall(true)}
+                  title="Upgrade to Pro"
+                >
+                  <span className="header-btn-icon">◈</span>
+                  <span className="header-btn-text">Upgrade</span>
+                </button>
+              )}
+
+              {/* Account Tier Indicator (for pro users only) */}
+              {user && subscriptionTier === 'pro' && (
+                <div className="account-tier-badge pro-badge">
+                  <span className="tier-icon">◆</span>
+                  <span className="tier-text">Pro Account</span>
+                </div>
+              )}
+
+              {/* Account Button */}
+              {user ? (
+                <button
+                  className="header-action-btn account-btn"
+                  onClick={() => setShowSettings(true)}
+                  title="Account settings"
+                >
+                  <span className="header-btn-icon">◉</span>
+                </button>
+              ) : (
+                <button
+                  className="header-action-btn guest-mode-btn"
+                  onClick={() => window.location.href = '/login'}
+                  title="Sign in to save your conversations"
+                >
+                  <span className="header-btn-icon">👤</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -725,18 +811,73 @@ function SplashPage() {
           <div className="chat-header">
             <div className="header-left">
               <h1 className="chat-title">Omi AI</h1>
-              <div className="selected-model">
+              <div 
+                className="selected-model"
+                onClick={() => setShowAIModels(true)}
+                title="Change AI model"
+              >
                 <span className="model-label">Active Model:</span>
                 <span className="model-name">{selectedModel}</span>
-                <button
-                  className="model-change-btn"
-                  onClick={() => setShowAIModels(true)}
-                  title="Change AI model"
-                >
-                  ⚙️
-                </button>
+                <span className="model-change-icon">⚙️</span>
               </div>
             </div>
+          </div>
+
+          {/* Mobile Mode Selector - Dropdown for mobile only */}
+          <div className="mobile-mode-selector-container">
+            <button 
+              className={`mobile-mode-trigger ${selectedFeature ? 'active' : ''}`}
+              onClick={() => setShowMobileModeMenu(!showMobileModeMenu)}
+            >
+              <span className="current-mode-text">
+                {selectedFeature ? (
+                  <>
+                    <span className="mode-icon">{featureButtons.find(b => b.name === selectedFeature)?.icon}</span>
+                    {selectedFeature}
+                  </>
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                      <rect x="3" y="3" width="7" height="7" />
+                      <circle cx="17.5" cy="6.5" r="3.5" />
+                      <rect x="3" y="14" width="7" height="7" rx="2" />
+                      <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                    Select Mode
+                  </>
+                )}
+              </span>
+              <span className="dropdown-arrow">{showMobileModeMenu ? '▲' : '▼'}</span>
+            </button>
+
+            {showMobileModeMenu && (
+              <div className="mobile-mode-dropdown">
+                {featureButtons.map((button) => {
+                  const isSelected = selectedFeature === button.name;
+                  const isPro = button.name === 'Compare' || button.name === 'Video Gen';
+                  
+                  return (
+                    <button
+                      key={button.name}
+                      className={`mobile-mode-option ${isSelected ? 'selected' : ''} ${isPro ? 'pro' : ''}`}
+                      onClick={() => {
+                        button.onClick();
+                        setShowMobileModeMenu(false);
+                      }}
+                    >
+                      <div className="option-left">
+                        <span className="option-icon">{button.icon}</span>
+                        <div className="option-details">
+                          <span className="option-name">{button.name}</span>
+                          <span className="option-desc">{button.description}</span>
+                        </div>
+                      </div>
+                      {isPro && <span className="pro-badge-mobile">PRO</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Feature Buttons - Above Dialog Box */}

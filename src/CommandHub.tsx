@@ -8,15 +8,6 @@ export default function CommandHub() {
 
   return (
     <div className="command-hub-container">
-      {/* Back button */}
-      <button 
-        className="command-hub-back"
-        onClick={() => router.push('/chat')}
-        title="Back to chat"
-      >
-        ← Back
-      </button>
-
       {/* Header */}
       <div className="command-hub-header">
         <h1 className="command-hub-title">Omi Command Hub</h1>
