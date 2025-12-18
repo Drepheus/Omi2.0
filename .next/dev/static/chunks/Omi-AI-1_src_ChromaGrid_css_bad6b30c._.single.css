@@ -180,23 +180,61 @@
 }
 
 @media (max-width: 768px) {
+  .chroma-grid {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+
   .chroma-grid-content {
+    flex-direction: column;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 2rem 1rem;
+    gap: 1rem;
+    height: auto;
+    padding: 5rem 1.5rem 2rem;
+    display: flex;
   }
 
   .chroma-grid-card {
-    padding: 1rem;
+    text-align: center;
+    background: #ffffff14;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    display: flex;
   }
 
   .chroma-grid-avatar {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
   }
 
   .chroma-grid-title {
-    font-size: 1.1rem;
+    color: #fff;
+    text-shadow: 0 2px 4px #00000080;
+    margin-bottom: .5rem;
+    font-size: 1.25rem;
+    display: block;
+  }
+
+  .chroma-grid-subtitle {
+    color: #ffffffe6;
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    display: block;
+  }
+
+  .chroma-grid-handle {
+    color: #ffffffb3;
+    font-size: .9rem;
+    display: block;
+  }
+
+  .chroma-grid-close {
+    background: #00000080;
+    border-color: #ffffff4d;
+    top: 1.5rem;
+    right: 1.5rem;
   }
 }
 

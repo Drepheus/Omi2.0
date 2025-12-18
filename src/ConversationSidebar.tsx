@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { DbConversation } from './databaseService'
 
 interface ConversationSidebarProps {
@@ -22,6 +23,7 @@ export default function ConversationSidebar({
   isOpen,
   onClose
 }: ConversationSidebarProps) {
+  const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   // Close sidebar with Escape key
@@ -91,6 +93,17 @@ export default function ConversationSidebar({
         >
           <span className="new-conversation-icon">+</span>
           New Conversation
+        </button>
+
+        <button 
+          className="gallery-sidebar-btn"
+          onClick={() => {
+            router.push('/media-studio')
+            onClose()
+          }}
+        >
+          <span className="gallery-icon">🖼️</span>
+          Media Gallery
         </button>
 
         <div className="conversations-list">

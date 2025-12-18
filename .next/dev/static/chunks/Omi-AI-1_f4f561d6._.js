@@ -3336,12 +3336,15 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Omi-AI-1/node_modules/.pnpm/next@16.0.3_@opentelemetry+_162ef2eee2977cfe0d3476575909914c/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Omi-AI-1/node_modules/.pnpm/next@16.0.3_@opentelemetry+_162ef2eee2977cfe0d3476575909914c/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Omi-AI-1/node_modules/.pnpm/next@16.0.3_@opentelemetry+_162ef2eee2977cfe0d3476575909914c/node_modules/next/navigation.js [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
 ;
+;
 function ConversationSidebar({ conversations, currentConversationId, onSelectConversation, onNewConversation, onDeleteConversation, isOpen, onClose }) {
     _s();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const [deletingId, setDeletingId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     // Close sidebar with Escape key
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -3390,7 +3393,7 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                 onClick: onClose
             }, void 0, false, {
                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                lineNumber: 66,
+                lineNumber: 68,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3404,7 +3407,7 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                 children: "Conversations"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                lineNumber: 75,
+                                lineNumber: 77,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3414,13 +3417,13 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                 children: "✕"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                lineNumber: 76,
+                                lineNumber: 78,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                        lineNumber: 74,
+                        lineNumber: 76,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3435,14 +3438,36 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                 children: "+"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                lineNumber: 92,
+                                lineNumber: 94,
                                 columnNumber: 11
                             }, this),
                             "New Conversation"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                        lineNumber: 85,
+                        lineNumber: 87,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        className: "gallery-sidebar-btn",
+                        onClick: ()=>{
+                            router.push('/media-studio');
+                            onClose();
+                        },
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "gallery-icon",
+                                children: "🖼️"
+                            }, void 0, false, {
+                                fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
+                                lineNumber: 105,
+                                columnNumber: 11
+                            }, this),
+                            "Media Gallery"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
+                        lineNumber: 98,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3454,7 +3479,7 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                     children: "No conversations yet"
                                 }, void 0, false, {
                                     fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                    lineNumber: 99,
+                                    lineNumber: 112,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3462,13 +3487,13 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                     children: "Start chatting to create one!"
                                 }, void 0, false, {
                                     fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                    lineNumber: 100,
+                                    lineNumber: 113,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                            lineNumber: 98,
+                            lineNumber: 111,
                             columnNumber: 13
                         }, this) : conversations.map((conversation)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: `conversation-item ${conversation.id === currentConversationId ? 'active' : ''} ${deletingId === conversation.id ? 'deleting' : ''}`,
@@ -3485,7 +3510,7 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                                 children: conversation.title
                                             }, void 0, false, {
                                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                                lineNumber: 115,
+                                                lineNumber: 128,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3496,7 +3521,7 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                                         children: conversation.model
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                                        lineNumber: 119,
+                                                        lineNumber: 132,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3504,19 +3529,19 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                                         children: formatDate(conversation.updated_at)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                                        lineNumber: 120,
+                                                        lineNumber: 133,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                                lineNumber: 118,
+                                                lineNumber: 131,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                        lineNumber: 114,
+                                        lineNumber: 127,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -3527,30 +3552,34 @@ function ConversationSidebar({ conversations, currentConversationId, onSelectCon
                                         children: deletingId === conversation.id ? '...' : '🗑️'
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 138,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, conversation.id, true, {
                                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                                lineNumber: 104,
+                                lineNumber: 117,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                        lineNumber: 96,
+                        lineNumber: 109,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Omi-AI-1/src/ConversationSidebar.tsx",
-                lineNumber: 73,
+                lineNumber: 75,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
 }
-_s(ConversationSidebar, "JBEjKr7KQQWv9oqInWsdNSWUGpY=");
+_s(ConversationSidebar, "/mysuVAcKTZEG5OfVjldZQYf52k=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
 _c = ConversationSidebar;
 var _c;
 __turbopack_context__.k.register(_c, "ConversationSidebar");
@@ -3587,65 +3616,247 @@ function NewsTicker() {
         }
     }["NewsTicker.useEffect"], []);
     const generateActivities = ()=>{
-        const usernames = [
-            'Alex414',
-            'SamantaGlory',
-            'Pirateboy',
-            'tomandjarry',
-            'DataNinja',
-            'CodeWizard',
-            'AIEnthusiast',
-            'TechSavvy',
-            'PixelMaster',
-            'DevGuru',
-            'CloudRider',
-            'ByteHunter',
-            'CyberPhoenix',
-            'QuantumLeap',
-            'NeonDreamer',
-            'SyntaxKing',
-            'LogicLord',
-            'BinaryBoss',
-            'ScriptMage',
-            'DigitalDuke',
-            'AlgoAce',
-            'MatrixMind',
-            'VirtualVoyager',
-            'CryptoChamp',
-            'WebWarrior',
-            'CodeCrusader',
-            'TechTitan',
-            'PixelPirate',
-            'DataDragon',
-            'CloudChaser',
-            'ByteBender',
-            'CyberSamurai',
-            'QuantumQuest',
-            'NeonNinja',
-            'SyntaxSage',
-            'LogicLegend',
-            'BinaryBard',
-            'ScriptSensei',
-            'DigitalDynamo',
-            'AlgoArchitect',
-            'MatrixMaverick'
+        const firstNames = [
+            'James',
+            'Mary',
+            'Robert',
+            'Patricia',
+            'John',
+            'Jennifer',
+            'Michael',
+            'Linda',
+            'David',
+            'Elizabeth',
+            'William',
+            'Barbara',
+            'Richard',
+            'Susan',
+            'Joseph',
+            'Jessica',
+            'Thomas',
+            'Sarah',
+            'Charles',
+            'Karen',
+            'Christopher',
+            'Lisa',
+            'Daniel',
+            'Nancy',
+            'Matthew',
+            'Betty',
+            'Anthony',
+            'Margaret',
+            'Mark',
+            'Sandra',
+            'Donald',
+            'Ashley',
+            'Steven',
+            'Kimberly',
+            'Paul',
+            'Emily',
+            'Andrew',
+            'Donna',
+            'Joshua',
+            'Michelle',
+            'Kenneth',
+            'Carol',
+            'Kevin',
+            'Amanda',
+            'Brian',
+            'Melissa',
+            'George',
+            'Deborah',
+            'Edward',
+            'Stephanie',
+            'Ronald',
+            'Rebecca',
+            'Timothy',
+            'Sharon',
+            'Jason',
+            'Laura',
+            'Jeffrey',
+            'Cynthia',
+            'Ryan',
+            'Dorothy',
+            'Jacob',
+            'Amy',
+            'Gary',
+            'Kathleen',
+            'Nicholas',
+            'Angela',
+            'Eric',
+            'Shirley',
+            'Jonathan',
+            'Brenda',
+            'Stephen',
+            'Emma',
+            'Larry',
+            'Anna',
+            'Justin',
+            'Pamela',
+            'Scott',
+            'Nicole',
+            'Brandon',
+            'Samantha',
+            'Benjamin',
+            'Katherine',
+            'Samuel',
+            'Christine',
+            'Gregory',
+            'Debra',
+            'Frank',
+            'Rachel',
+            'Alexander',
+            'Catherine',
+            'Raymond',
+            'Carolyn',
+            'Patrick',
+            'Janet',
+            'Jack',
+            'Ruth',
+            'Dennis',
+            'Maria',
+            'Jerry',
+            'Heather',
+            'Tyler',
+            'Diane',
+            'Aaron',
+            'Virginia',
+            'Jose',
+            'Julie',
+            'Adam',
+            'Joyce',
+            'Henry',
+            'Victoria',
+            'Nathan',
+            'Olivia',
+            'Douglas',
+            'Kelly',
+            'Zachary',
+            'Christina',
+            'Peter',
+            'Lauren',
+            'Kyle',
+            'Joan',
+            'Walter',
+            'Evelyn',
+            'Ethan',
+            'Judith',
+            'Jeremy',
+            'Megan',
+            'Harold',
+            'Cheryl',
+            'Keith',
+            'Andrea',
+            'Christian',
+            'Hannah',
+            'Roger',
+            'Martha',
+            'Noah',
+            'Jacqueline',
+            'Gerald',
+            'Frances',
+            'Carl',
+            'Gloria',
+            'Terry',
+            'Ann',
+            'Sean',
+            'Teresa',
+            'Austin',
+            'Kathryn',
+            'Arthur',
+            'Sara',
+            'Lawrence',
+            'Janice',
+            'Jesse',
+            'Jean',
+            'Dylan',
+            'Alice',
+            'Bryan',
+            'Madison',
+            'Joe',
+            'Doris',
+            'Jordan',
+            'Julia',
+            'Billy',
+            'Judy',
+            'Bruce',
+            'Grace',
+            'Gabriel',
+            'Denise',
+            'Logan',
+            'Marilyn',
+            'Albert',
+            'Amber',
+            'Willie',
+            'Danielle',
+            'Alan',
+            'Brittany',
+            'Juan',
+            'Rose',
+            'Wayne',
+            'Diana',
+            'Elijah',
+            'Abigail',
+            'Randy',
+            'Natalie',
+            'Roy',
+            'Jane',
+            'Vincent',
+            'Lori',
+            'Ralph',
+            'Alexis',
+            'Eugene',
+            'Tiffany',
+            'Russell',
+            'Kayla',
+            'Alex',
+            'Sam',
+            'Jordan',
+            'Casey',
+            'Riley',
+            'Jamie',
+            'Taylor',
+            'Morgan'
+        ];
+        const lastInitials = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const techSuffixes = [
+            'Dev',
+            'Design',
+            'Code',
+            'AI',
+            'Tech',
+            'Studio',
+            'Labs',
+            'Systems',
+            'Web',
+            'App',
+            'Soft',
+            'Net',
+            'Data',
+            'Cloud',
+            'Cyber',
+            'Pixel',
+            'Vector',
+            'Logic',
+            'Flow',
+            'Stack'
         ];
         const actions = [
             'just trained a Custom Omi',
-            'just chatted with Omi Chat',
-            'just generated a new image in the Media Studio',
+            'is chatting with Omi Chat',
+            'just generated a 4K image in Media Studio',
             'just Upgraded to the Pro Plan!',
             'just created a new AI Workflow',
-            'just generated a stunning video',
+            'just generated a stunning video with Veo',
             'just completed a deep web search',
             'just customized their AI assistant',
             'just exported media from the gallery',
             'just discovered a new feature',
-            'just integrated an API',
+            'just integrated a new API',
             'just automated a complex task',
-            'just analyzed data with AI',
+            'just analyzed financial data with AI',
             'just created research content',
-            'just generated code snippets',
+            'just generated Python code snippets',
             'just trained a specialized model',
             'just built a business workflow',
             'just designed a creative project',
@@ -3660,12 +3871,56 @@ function NewsTicker() {
             'just enhanced their workflow',
             'just automated data processing',
             'just built an intelligent system',
-            'just mastered a new AI tool'
+            'just mastered a new AI tool',
+            'just wrote a blog post with AI',
+            'just planned a travel itinerary',
+            'just debugged a React application',
+            'just learned a new skill',
+            'just created a marketing campaign',
+            'just generated a 3D asset',
+            'just composed a song',
+            'just edited a video',
+            'just transcribed a meeting',
+            'just organized their schedule',
+            'just brainstormed ideas',
+            'just solved a complex problem',
+            'just visualized data',
+            'just automated an email sequence',
+            'just built a landing page',
+            'just created a presentation',
+            'just wrote a poem',
+            'just generated a story',
+            'just simulated a scenario',
+            'just forecasted trends',
+            'just optimized a database',
+            'just secured their account',
+            'just connected a new integration',
+            'just invited a team member'
         ];
-        // Generate 40 random activities
+        // Generate 100 random activities for a longer, more varied loop
         const generatedActivities = [];
-        for(let i = 0; i < 40; i++){
-            const randomUsername = usernames[Math.floor(Math.random() * usernames.length)];
+        for(let i = 0; i < 100; i++){
+            let randomUsername = '';
+            const nameStyle = Math.random();
+            // Randomly choose a username style
+            if (nameStyle < 0.4) {
+                // Style 1: First Name + Last Initial (e.g., "Sarah J.")
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lastInitial = lastInitials[Math.floor(Math.random() * lastInitials.length)];
+                randomUsername = `${firstName} ${lastInitial}.`;
+            } else if (nameStyle < 0.7) {
+                // Style 2: First Name + Number (e.g., "David2024", "Alex_99")
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const number = Math.floor(Math.random() * 1000);
+                const separator = Math.random() > 0.5 ? '_' : '';
+                randomUsername = `${firstName}${separator}${number}`;
+            } else {
+                // Style 3: First Name + Tech Suffix (e.g., "Jessica_Design")
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const suffix = techSuffixes[Math.floor(Math.random() * techSuffixes.length)];
+                const separator = Math.random() > 0.5 ? '_' : '';
+                randomUsername = `${firstName}${separator}${suffix}`;
+            }
             const randomAction = actions[Math.floor(Math.random() * actions.length)];
             const randomMinutesAgo = Math.floor(Math.random() * 60) + 1;
             generatedActivities.push({
@@ -3702,20 +3957,20 @@ function NewsTicker() {
                                 children: "◈"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                lineNumber: 102,
+                                lineNumber: 168,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: "LIVE ACTIVITY"
                             }, void 0, false, {
                                 fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                lineNumber: 103,
+                                lineNumber: 169,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                        lineNumber: 101,
+                        lineNumber: 167,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3724,23 +3979,23 @@ function NewsTicker() {
                             children: "Loading user activity..."
                         }, void 0, false, {
                             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                            lineNumber: 106,
+                            lineNumber: 172,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                        lineNumber: 105,
+                        lineNumber: 171,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                lineNumber: 100,
+                lineNumber: 166,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-            lineNumber: 99,
+            lineNumber: 165,
             columnNumber: 7
         }, this);
     }
@@ -3757,20 +4012,20 @@ function NewsTicker() {
                             children: "◈"
                         }, void 0, false, {
                             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                            lineNumber: 117,
+                            lineNumber: 183,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                             children: "LIVE ACTIVITY"
                         }, void 0, false, {
                             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                            lineNumber: 118,
+                            lineNumber: 184,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                    lineNumber: 116,
+                    lineNumber: 182,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3789,7 +4044,7 @@ function NewsTicker() {
                                         children: "●"
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 191,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3797,7 +4052,7 @@ function NewsTicker() {
                                         children: item.username
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                        lineNumber: 126,
+                                        lineNumber: 192,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3805,7 +4060,7 @@ function NewsTicker() {
                                         children: item.action
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                        lineNumber: 127,
+                                        lineNumber: 193,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Omi$2d$AI$2d$1$2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$3_$40$opentelemetry$2b$_162ef2eee2977cfe0d3476575909914c$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3815,39 +4070,39 @@ function NewsTicker() {
                                             children: formatTimeAgo(item.timestamp)
                                         }, void 0, false, {
                                             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                            lineNumber: 129,
+                                            lineNumber: 195,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                        lineNumber: 128,
+                                        lineNumber: 194,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, index, true, {
                                 fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                                lineNumber: 124,
+                                lineNumber: 190,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                        lineNumber: 121,
+                        lineNumber: 187,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-                    lineNumber: 120,
+                    lineNumber: 186,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-            lineNumber: 115,
+            lineNumber: 181,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/Omi-AI-1/src/NewsTicker.tsx",
-        lineNumber: 114,
+        lineNumber: 180,
         columnNumber: 5
     }, this);
 }

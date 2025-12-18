@@ -39,9 +39,7 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
   // Recent searches data
   const recentSearches = [
     { query: 'Latest AI advancements 2024', mode: 'Search + Summarize', timestamp: '2 hours ago' },
-    { query: 'Machine learning frameworks comparison', mode: 'Continuous Research', timestamp: '5 hours ago' },
     { query: 'Neural network architectures', mode: 'Search + Summarize', timestamp: '1 day ago' },
-    { query: 'Natural language processing trends', mode: 'Continuous Research', timestamp: '2 days ago' },
     { query: 'Computer vision applications', mode: 'Search + Summarize', timestamp: '3 days ago' },
   ];
 
@@ -53,20 +51,9 @@ const WebSearch: React.FC<WebSearchProps> = ({ onClose }) => {
       description: 'AI-powered contextual summaries'
     },
     {
-      name: 'Continuous Research',
-      icon: '◇',
-      description: '60-second deep research mode'
-    },
-    {
       name: 'AI Web Task',
       icon: '🧭',
       description: 'Smart context navigation',
-      isPro: true
-    },
-    {
-      name: 'Browser Voice Control',
-      icon: '🎙️',
-      description: 'Voice commands for headless browser automation',
       isPro: true
     },
     {

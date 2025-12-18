@@ -191,10 +191,11 @@
 /* Mobile Optimization */
 @media (max-width: 768px) {
     .glowing-dots-nav-container {
-        bottom: 65px;
+        bottom: 20px;
         /* Above news ticker */
-        right: 50%;
-        transform: translateX(50%);
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
         gap: 10px;
         padding: 8px 14px;
     }
