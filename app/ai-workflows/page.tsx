@@ -8,7 +8,7 @@ export default function WorkflowsRoute() {
 
   return (
     <div className="page-transition fade-in">
-      <AIWorkflowsPage onClose={() => router.back()} />
+      <AIWorkflowsPage onClose={() => router.push('/command-hub')} />
     </div>
   );
 }

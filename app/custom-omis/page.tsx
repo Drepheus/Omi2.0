@@ -8,7 +8,7 @@ export default function CustomOmisPage() {
 
   return (
     <div className="page-transition fade-in">
-      <CustomOmis onClose={() => router.back()} />
+      <CustomOmis onClose={() => router.push('/command-hub')} />
     </div>
   );
 }

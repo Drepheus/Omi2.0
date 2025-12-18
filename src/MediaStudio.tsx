@@ -218,6 +218,9 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
   const [generatedVideo, setGeneratedVideo] = useState<string | null>(null);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
 
+  // MusicFX State
+  const [showMusicFX, setShowMusicFX] = useState(false);
+
   const handleGenerateVideo = async () => {
     if (!videoPromptInput.trim() || isGeneratingVideo) return;
 
@@ -398,11 +401,12 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
   ];
 
   const featuredVideos = [
-    { title: 'Cosmic Journey', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=400&fit=crop' },
-    { title: 'Ocean Depth', image: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop' },
-    { title: 'City Lights', image: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=400&fit=crop' },
-    { title: 'Forest Mist', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop' },
-    { title: 'Desert Dunes', image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=400&h=400&fit=crop' },
+    { title: 'Hair Simulation', image: '/videos/mediafeaturedvids/imagehairvid.mp4' },
+    { title: 'Image to Video', image: '/videos/mediafeaturedvids/imageto vid.mp4' },
+    { title: 'Motion Transfer', image: '/videos/mediafeaturedvids/imagetovid.mp4' },
+    { title: 'Multi-Model Gen', image: '/videos/mediafeaturedvids/multimodelvid1.mp4' },
+    { title: 'AI Prediction', image: '/videos/mediafeaturedvids/replicate-prediction-nxmrtf1fsdrma0cv4qrbq5grzg.mp4' },
+    { title: 'Video Example', image: '/videos/mediafeaturedvids/videxample.mp4' },
   ];
 
   const featuredVoices = [
@@ -937,19 +941,47 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                   {/* Original Items */}
                   {featuredVideos.map((vid, i) => (
                     <div className="horizontal-card" key={`orig-${i}`}>
-                      <img src={vid.image} alt={vid.title} />
+                      <video 
+                        src={vid.image} 
+                        loop 
+                        playsInline 
+                        onMouseOver={e => {
+                          e.currentTarget.muted = false;
+                          e.currentTarget.play().catch(err => console.error("Video play failed:", err));
+                        }} 
+                        onMouseOut={e => {
+                          e.currentTarget.pause();
+                          e.currentTarget.currentTime = 0;
+                          e.currentTarget.muted = true; // Reset to muted
+                        }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
                       <span className="card-badge-new">New</span>
                       <div className="card-overlay-title">{vid.title}</div>
-                      <div className="card-overlay-icon" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem' }}>▶</div>
+                      <div className="card-overlay-icon" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem', pointerEvents: 'none' }}>▶</div>
                     </div>
                   ))}
                   {/* Duplicated Items for Loop */}
                   {featuredVideos.map((vid, i) => (
                     <div className="horizontal-card" key={`dup-${i}`}>
-                      <img src={vid.image} alt={vid.title} />
+                      <video 
+                        src={vid.image} 
+                        loop 
+                        playsInline 
+                        onMouseOver={e => {
+                          e.currentTarget.muted = false;
+                          e.currentTarget.play().catch(err => console.error("Video play failed:", err));
+                        }} 
+                        onMouseOut={e => {
+                          e.currentTarget.pause();
+                          e.currentTarget.currentTime = 0;
+                          e.currentTarget.muted = true;
+                        }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
                       <span className="card-badge-new">New</span>
                       <div className="card-overlay-title">{vid.title}</div>
-                      <div className="card-overlay-icon" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem' }}>▶</div>
+                      <div className="card-overlay-icon" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '2rem', pointerEvents: 'none' }}>▶</div>
                     </div>
                   ))}
                 </div>
@@ -1220,31 +1252,263 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 <h2 className="section-title"><span className="title-highlight">Featured</span> Tracks</h2>
                 <span className="view-more">View More →</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', padding: '0 40px 60px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', padding: '0 40px 60px' }}>
                 {featuredMusic.map((track, i) => (
                   <motion.div
                     key={i}
+                    className="music-track-card"
                     style={{
-                      background: 'rgba(34, 197, 94, 0.1)',
-                      border: '1px solid rgba(34, 197, 94, 0.3)',
-                      borderRadius: '16px',
-                      padding: '20px',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '24px',
+                      padding: '24px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '16px',
+                      gap: '20px',
                       cursor: 'pointer',
+                      backdropFilter: 'blur(10px)',
+                      position: 'relative',
+                      overflow: 'hidden'
                     }}
-                    whileHover={{ scale: 1.02, borderColor: 'rgba(34, 197, 94, 0.6)' }}
+                    whileHover={{ 
+                      scale: 1.02, 
+                      backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                      borderColor: 'rgba(168, 85, 247, 0.4)'
+                    }}
                   >
-                    <div style={{ fontSize: '2.5rem', background: 'rgba(34, 197, 94, 0.2)', padding: '16px', borderRadius: '12px' }}>{track.icon}</div>
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ color: 'white', marginBottom: '4px' }}>{track.title}</h3>
-                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{track.genre} • {track.duration}</p>
+                    {/* Animated Soundwave Background */}
+                    <div className="soundwave-bg" style={{
+                      position: 'absolute',
+                      inset: 0,
+                      opacity: 0.1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      pointerEvents: 'none'
+                    }}>
+                      {[...Array(20)].map((_, j) => (
+                        <motion.div
+                          key={j}
+                          style={{
+                            width: '4px',
+                            background: 'linear-gradient(180deg, #a855f7, #ec4899)',
+                            borderRadius: '2px',
+                          }}
+                          animate={{
+                            height: [10, Math.random() * 40 + 10, 10],
+                          }}
+                          transition={{
+                            duration: 0.8,
+                            repeat: Infinity,
+                            delay: j * 0.05,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      ))}
                     </div>
-                    <button style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(34, 197, 94, 0.5)', border: 'none', color: 'white', fontSize: '1.2rem', cursor: 'pointer' }}>▶</button>
+
+                    {/* Hover Gradient Overlay */}
+                    <div className="card-hover-gradient" style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(236, 72, 153, 0.1))',
+                      opacity: 0,
+                      transition: 'opacity 0.3s ease'
+                    }} />
+
+                    <div style={{ 
+                      width: '60px', 
+                      height: '60px', 
+                      borderRadius: '50%', 
+                      background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem',
+                      boxShadow: '0 8px 16px rgba(168, 85, 247, 0.3)',
+                      zIndex: 1,
+                      position: 'relative'
+                    }}>
+                      {track.icon}
+                      {/* Pulse Effect */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: -4,
+                        borderRadius: '50%',
+                        border: '2px solid rgba(255, 255, 255, 0.2)',
+                        animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite'
+                      }} />
+                    </div>
+                    
+                    <div style={{ flex: 1, zIndex: 1 }}>
+                      <h3 style={{ 
+                        color: 'white', 
+                        marginBottom: '6px', 
+                        fontSize: '1.1rem', 
+                        fontWeight: '600',
+                        letterSpacing: '-0.01em'
+                      }}>
+                        {track.title}
+                      </h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ 
+                          fontSize: '0.75rem', 
+                          color: '#e9d5ff', 
+                          background: 'rgba(168, 85, 247, 0.15)', 
+                          padding: '2px 8px', 
+                          borderRadius: '12px',
+                          border: '1px solid rgba(168, 85, 247, 0.2)'
+                        }}>
+                          {track.genre}
+                        </span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>• {track.duration}</span>
+                      </div>
+                    </div>
+
+                    <button style={{ 
+                      width: '44px', 
+                      height: '44px', 
+                      borderRadius: '50%', 
+                      background: 'rgba(255, 255, 255, 0.1)', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)', 
+                      color: 'white', 
+                      fontSize: '1rem', 
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease',
+                      zIndex: 1
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #a855f7, #ec4899)';
+                      e.currentTarget.style.border = 'none';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 0 15px rgba(168, 85, 247, 0.5)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                      e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                    >
+                      ▶
+                    </button>
                   </motion.div>
                 ))}
               </div>
+            </div>
+
+            {/* MusicFX DJ Section */}
+            <div className="musicfx-section" style={{ padding: '0 40px 60px' }}>
+               <div className="section-header-row" style={{ marginBottom: '20px' }}>
+                <h2 className="section-title">
+                  <span className="title-highlight" style={{ 
+                    background: 'linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}>MusicFX DJ</span> powered by Google
+                </h2>
+              </div>
+              
+              {!showMusicFX ? (
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  borderRadius: '24px',
+                  padding: '40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  textAlign: 'center'
+                }}>
+                  <h3 style={{ fontSize: '1.5rem', marginBottom: '16px', color: '#fff' }}>
+                    Experience the future of music creation
+                  </h3>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.7)', maxWidth: '600px', marginBottom: '30px' }}>
+                    Create your own DJ sets in real-time using Google's advanced MusicFX AI. 
+                    Mix genres, instruments, and styles seamlessly.
+                  </p>
+                  
+                  <button
+                    onClick={() => setShowMusicFX(true)}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      padding: '16px 40px',
+                      borderRadius: '50px',
+                      color: '#fff',
+                      fontSize: '1.1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                  >
+                    <span style={{ 
+                      background: 'linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      fontWeight: '800'
+                    }}>G</span> Try Now
+                  </button>
+                </div>
+              ) : (
+                <div style={{
+                  width: '100%',
+                  height: '800px',
+                  borderRadius: '24px',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  position: 'relative',
+                  background: '#000'
+                }}>
+                  <button 
+                    onClick={() => setShowMusicFX(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '20px',
+                      right: '20px',
+                      zIndex: 10,
+                      background: 'rgba(0, 0, 0, 0.6)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: '#fff',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backdropFilter: 'blur(5px)'
+                    }}
+                  >
+                    ✕
+                  </button>
+                  <iframe 
+                    src="https://labs.google/fx/tools/music-fx-dj"
+                    style={{ width: '100%', height: '100%', border: 'none' }}
+                    title="MusicFX DJ"
+                    allow="microphone; midi; encrypted-media"
+                  />
+                </div>
+              )}
             </div>
           </motion.div>
         ) : activeTool === 'Avatars' ? (

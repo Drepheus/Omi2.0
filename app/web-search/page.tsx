@@ -8,7 +8,7 @@ export default function WebSearchPage() {
 
   return (
     <div className="page-transition fade-in">
-      <WebSearch onClose={() => router.back()} />
+      <WebSearch onClose={() => router.push('/command-hub')} />
     </div>
   );
 }

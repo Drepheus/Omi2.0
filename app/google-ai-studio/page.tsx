@@ -8,7 +8,7 @@ export default function GoogleAIStudioPage() {
 
   return (
     <div className="page-transition fade-in">
-      <GoogleAIStudio />
+      <GoogleAIStudio onClose={() => router.push('/command-hub')} />
     </div>
   );
 }

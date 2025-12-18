@@ -8,7 +8,7 @@ export default function MediaStudioPage() {
 
   return (
     <div className="page-transition fade-in">
-      <MediaStudio onClose={() => router.back()} />
+      <MediaStudio onClose={() => router.push('/command-hub')} />
     </div>
   );
 }

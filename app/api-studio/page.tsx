@@ -8,7 +8,7 @@ export default function APIStudioPage() {
 
   return (
     <div className="page-transition fade-in">
-      <APIStudio onClose={() => router.back()} />
+      <APIStudio onClose={() => router.push('/command-hub')} />
     </div>
   );
 }
