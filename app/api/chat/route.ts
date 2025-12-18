@@ -4,7 +4,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
-export const runtime = "edge";
+// export const runtime = "edge"; // Switch to Node.js runtime for better stability in Cloud Run
 
 interface Message {
   role: 'user' | 'assistant';
@@ -152,7 +152,8 @@ Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain 
 
     return NextResponse.json({ 
       error: 'Failed to process chat request',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined // Include stack for debugging
     }, { status: 500 });
   }
 }
