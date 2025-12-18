@@ -105,21 +105,28 @@ Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain 
     
     console.log('Response received from Gemini');
 
-    // Track usage and log API call
+    // Track usage and log API call - FIRE AND FORGET
     if (user) {
-      // Track usage asynchronously
-      trackUsage(user.id, 'chat').catch(err => console.error('Usage tracking error:', err));
-      
-      // Log API call asynchronously
-      logApiCall({
-        user_id: user.id,
-        email: user.email,
-        endpoint: '/api/chat',
-        status_code: 200,
-        duration_ms: Date.now() - startTime,
-        request_data: { message_count: messages.length },
-        response_data: { success: true }
-      }).catch(err => console.error('API logging error:', err));
+      (async () => {
+        try {
+          // Track usage
+          await trackUsage(user.id, 'chat');
+          
+          // Log API call
+          await logApiCall({
+            user_id: user.id,
+            email: user.email,
+            endpoint: '/api/chat',
+            status_code: 200,
+            duration_ms: Date.now() - startTime,
+            request_data: { message_count: messages.length },
+            response_data: { success: true }
+          });
+        } catch (trackingError) {
+          // SILENT FAILURE - Do not crash the chat if tracking fails
+          console.error('BACKGROUND TRACKING ERROR (Non-fatal):', trackingError);
+        }
+      })();
     }
 
     return NextResponse.json({ 
