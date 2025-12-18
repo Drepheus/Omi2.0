@@ -1,6 +1,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Replicate from 'replicate';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 const replicate = new Replicate({
     auth: process.env.REPLICATE_API_TOKEN,
@@ -9,6 +12,13 @@ const replicate = new Replicate({
 export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
+    const startTime = Date.now();
+    
+    // Get user session
+    const supabase = createRouteHandlerClient({ cookies });
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+
     try {
         const { prompt } = await req.json();
 
@@ -52,10 +62,38 @@ export async function POST(req: NextRequest) {
             videoUrl = output;
         }
 
+        // Track usage and log API call
+        if (user) {
+            trackUsage(user.id, 'video_gen').catch(err => console.error('Usage tracking error:', err));
+            
+            logApiCall({
+                user_id: user.id,
+                email: user.email,
+                endpoint: '/api/generate-video',
+                status_code: 200,
+                duration_ms: Date.now() - startTime,
+                request_data: { prompt_length: prompt.length },
+                response_data: { success: true }
+            }).catch(err => console.error('API logging error:', err));
+        }
+
         return NextResponse.json({ videoUrl });
 
     } catch (error: any) {
         console.error('Video generation error:', error);
+        
+        // Log error
+        if (user) {
+            logApiCall({
+                user_id: user.id,
+                email: user.email,
+                endpoint: '/api/generate-video',
+                status_code: 500,
+                duration_ms: Date.now() - startTime,
+                request_data: { error: error.message || 'Unknown' }
+            }).catch(err => console.error('API logging error:', err));
+        }
+
         return NextResponse.json(
             { error: error.message || 'Failed to generate video' },
             { status: 500 }

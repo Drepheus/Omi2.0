@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { AppProviders } from "@/components/providers/app-providers";
 import "./globals.css";
 
@@ -17,6 +18,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#020205] text-white antialiased">
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-METV2JRB51"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-METV2JRB51');
+          `}
+        </Script>
+
         <AppProviders>
           {children}
           <GlowingDotsNav />

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 export const runtime = "edge";
 
@@ -10,7 +13,13 @@ interface Message {
 
 export async function POST(req: Request) {
   console.log('=== CHAT API ROUTE CALLED ===');
+  const startTime = Date.now();
   
+  // Get user session
+  const supabase = createRouteHandlerClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+
   try {
     const { messages } = await req.json() as { messages: Message[] };
     console.log('Messages extracted:', messages?.length, 'messages');
@@ -96,6 +105,23 @@ Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain 
     
     console.log('Response received from Gemini');
 
+    // Track usage and log API call
+    if (user) {
+      // Track usage asynchronously
+      trackUsage(user.id, 'chat').catch(err => console.error('Usage tracking error:', err));
+      
+      // Log API call asynchronously
+      logApiCall({
+        user_id: user.id,
+        email: user.email,
+        endpoint: '/api/chat',
+        status_code: 200,
+        duration_ms: Date.now() - startTime,
+        request_data: { message_count: messages.length },
+        response_data: { success: true }
+      }).catch(err => console.error('API logging error:', err));
+    }
+
     return NextResponse.json({ 
       message: text,
       role: 'assistant'
@@ -104,6 +130,19 @@ Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain 
     console.error('=== CHAT API ERROR ===');
     console.error('Chat API error:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
+    // Log error
+    if (user) {
+      logApiCall({
+        user_id: user.id,
+        email: user.email,
+        endpoint: '/api/chat',
+        status_code: 500,
+        duration_ms: Date.now() - startTime,
+        request_data: { error: error instanceof Error ? error.message : 'Unknown' }
+      }).catch(err => console.error('API logging error:', err));
+    }
+
     return NextResponse.json({ 
       error: 'Failed to process chat request',
       details: error instanceof Error ? error.message : 'Unknown error'

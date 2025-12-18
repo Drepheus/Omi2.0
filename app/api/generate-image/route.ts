@@ -1,6 +1,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Replicate from 'replicate';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 // Initialize Replicate client
 const replicate = new Replicate({
@@ -10,6 +13,13 @@ const replicate = new Replicate({
 export const runtime = 'edge'; // Optional: Use edge runtime if supported/preferred
 
 export async function POST(req: NextRequest) {
+    const startTime = Date.now();
+    
+    // Get user session
+    const supabase = createRouteHandlerClient({ cookies });
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+
     try {
         const { prompt, aspectRatio = '3:2' } = await req.json();
 
@@ -60,10 +70,38 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Failed to parse generation output' }, { status: 500 });
         }
 
+        // Track usage and log API call
+        if (user) {
+            trackUsage(user.id, 'image_gen').catch(err => console.error('Usage tracking error:', err));
+            
+            logApiCall({
+                user_id: user.id,
+                email: user.email,
+                endpoint: '/api/generate-image',
+                status_code: 200,
+                duration_ms: Date.now() - startTime,
+                request_data: { prompt_length: prompt.length, aspect_ratio: aspectRatio },
+                response_data: { success: true }
+            }).catch(err => console.error('API logging error:', err));
+        }
+
         return NextResponse.json({ imageUrl });
 
     } catch (error: any) {
         console.error('Image generation error:', error);
+        
+        // Log error
+        if (user) {
+            logApiCall({
+                user_id: user.id,
+                email: user.email,
+                endpoint: '/api/generate-image',
+                status_code: 500,
+                duration_ms: Date.now() - startTime,
+                request_data: { error: error.message || 'Unknown' }
+            }).catch(err => console.error('API logging error:', err));
+        }
+
         return NextResponse.json(
             { error: error.message || 'Failed to generate image' },
             { status: 500 }
