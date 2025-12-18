@@ -132,6 +132,33 @@ export default function SettingsModal({ isOpen, onClose, user }: SettingsModalPr
                 </div>
               </div>
 
+              {/* Admin Section */}
+              {(userEmail === 'andregreengp@gmail.com' || user?.email === 'andregreengp@gmail.com') && (
+                <div className="settings-section">
+                  <div className="section-label">Admin</div>
+                  <div className="settings-card">
+                    <button 
+                      className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors rounded-lg text-left"
+                      onClick={() => {
+                        onClose();
+                        window.location.href = '/admin';
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+                          <Shield size={16} />
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">Admin Dashboard</div>
+                          <div className="text-xs text-gray-400">Manage users and view analytics</div>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="text-gray-500" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* API Keys Section */}
               <div className="settings-section">
                 <div className="section-label">API Configuration</div>
