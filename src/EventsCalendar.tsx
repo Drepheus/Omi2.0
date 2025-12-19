@@ -114,7 +114,7 @@ const EventsCalendar: React.FC = () => {
 
   return (
     <div className="events-calendar-page">
-      <button onClick={() => router.push('/command-hub')} className="calendar-back-btn">
+      <button onClick={() => router.push('/media-studio')} className="calendar-back-btn">
         ← Back
       </button>
 

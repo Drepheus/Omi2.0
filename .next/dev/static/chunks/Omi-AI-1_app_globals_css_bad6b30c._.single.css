@@ -1230,6 +1230,10 @@ body {
   background-color: #a855f71a;
 }
 
+.bg-purple-500\/20 {
+  background-color: #a855f733;
+}
+
 .bg-transparent {
   background-color: #0000;
 }

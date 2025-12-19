@@ -1295,4 +1295,29 @@
   animation: 3s linear infinite shine;
 }
 
+.hero-glass-btn {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  border-radius: 30px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all .3s;
+  display: flex;
+  box-shadow: 0 0 15px #a855f733;
+}
+
+.hero-glass-btn:hover {
+  background: #ffffff1a;
+  border-color: #a855f780;
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px #a855f766;
+}
+
 /*# sourceMappingURL=Omi-AI-1_src_MediaStudio_css_bad6b30c._.single.css.map*/

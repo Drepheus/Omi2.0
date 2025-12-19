@@ -1738,6 +1738,21 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 <p className="banner-subtitle">
                   Discover 50+ ready-made workflows for effortless AI creation. All Blueprints 75% off for a limited time!
                 </p>
+                
+                <div className="hero-actions" style={{ display: 'flex', gap: '20px', marginTop: '30px', justifyContent: 'center' }}>
+                  <button 
+                    className="hero-glass-btn"
+                    onClick={() => setActiveTool('Image')}
+                  >
+                    Create <ShinyText text="Image" speed={10} className="media-studio-shiny-text" />
+                  </button>
+                  <button 
+                    className="hero-glass-btn"
+                    onClick={() => setActiveTool('Video')}
+                  >
+                    Create <ShinyText text="Video" speed={10} className="media-studio-shiny-text" />
+                  </button>
+                </div>
               </div>
             </motion.div>
 

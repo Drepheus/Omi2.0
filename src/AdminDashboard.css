@@ -1,7 +1,7 @@
 .admin-dashboard {
   position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
   color: #ffffff;
   padding: 2rem;
   overflow-x: hidden;
@@ -20,8 +20,8 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(138, 43, 226, 0.2);
-  border-top-color: #8a2be2;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -33,7 +33,7 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid rgba(138, 43, 226, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-left {
@@ -43,8 +43,8 @@
 }
 
 .back-btn {
-  background: rgba(138, 43, 226, 0.2);
-  border: 1px solid rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #ffffff;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -54,7 +54,7 @@
 }
 
 .back-btn:hover {
-  background: rgba(138, 43, 226, 0.4);
+  background: rgba(255, 255, 255, 0.15);
   transform: translateX(-5px);
 }
 
@@ -67,7 +67,7 @@
 .admin-title h1 {
   margin: 0;
   font-size: 2rem;
-  background: linear-gradient(135deg, #8a2be2 0%, #ff6ec7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -77,13 +77,13 @@
 
 .admin-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #ff0080 0%, #ff8c00 100%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 1px;
-  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -100,14 +100,14 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .refresh-toggle input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #8a2be2;
+  accent-color: #ffffff;
 }
 
 .refresh-toggle label {
@@ -116,8 +116,8 @@
 }
 
 .refresh-btn {
-  background: linear-gradient(135deg, #8a2be2 0%, #9333ea 100%);
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
@@ -129,7 +129,8 @@
 
 .refresh-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Metrics Grid */
@@ -143,7 +144,7 @@
 .metric-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
@@ -161,7 +162,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -171,12 +172,12 @@
 }
 
 .metric-card:hover {
-  border-color: #8a2be2;
-  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .metric-card.revenue {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(138, 43, 226, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%);
   border-color: rgba(255, 215, 0, 0.5);
 }
 
@@ -241,9 +242,9 @@
 }
 
 .tier-badge.ultra {
-  background: rgba(138, 43, 226, 0.3);
-  color: #c084fc;
-  border: 1px solid rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Tabs */
@@ -254,7 +255,7 @@
   background: rgba(255, 255, 255, 0.03);
   padding: 0.5rem;
   border-radius: 12px;
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow-x: auto;
 }
 
@@ -276,13 +277,13 @@
 
 .tab-btn:hover {
   color: #ffffff;
-  background: rgba(138, 43, 226, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #8a2be2 0%, #9333ea 100%);
+  background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .tab-icon {
@@ -292,7 +293,7 @@
 /* Content Area */
 .admin-content {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 2rem;
   min-height: 500px;
@@ -301,7 +302,7 @@
 .tab-content h2 {
   margin: 0 0 1.5rem 0;
   font-size: 1.8rem;
-  background: linear-gradient(135deg, #ffffff 0%, #c084fc 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -318,7 +319,7 @@
 
 .search-input {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 0.6rem 1rem;
   color: #ffffff;
@@ -329,8 +330,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #8a2be2;
-  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .search-input::placeholder {
@@ -340,7 +341,7 @@
 /* Section Cards */
 .section-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -349,7 +350,7 @@
 .section-card h3 {
   margin: 0 0 1rem 0;
   font-size: 1.2rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 /* Activity List */
@@ -366,13 +367,13 @@
   background: rgba(255, 255, 255, 0.03);
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid rgba(138, 43, 226, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
 
 .activity-item:hover {
-  background: rgba(138, 43, 226, 0.1);
-  border-color: rgba(138, 43, 226, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .activity-icon {
@@ -413,7 +414,7 @@
   background: rgba(255, 255, 255, 0.03);
   padding: 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(138, 43, 226, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-info {
@@ -435,7 +436,7 @@
 
 .activity-bar {
   height: 8px;
-  background: linear-gradient(90deg, #8a2be2 0%, #ff6ec7 100%);
+  background: linear-gradient(90deg, #ffffff 0%, #e5e5e5 100%);
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -450,7 +451,7 @@
 .users-table-container {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .users-table {
@@ -460,27 +461,27 @@
 }
 
 .users-table thead {
-  background: rgba(138, 43, 226, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .users-table th {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #c084fc;
+  color: #ffffff;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .users-table tbody tr {
-  border-bottom: 1px solid rgba(138, 43, 226, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .users-table tbody tr:hover {
-  background: rgba(138, 43, 226, 0.1);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .users-table td {
@@ -499,8 +500,8 @@
 }
 
 .action-btn {
-  background: rgba(138, 43, 226, 0.3);
-  border: 1px solid rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
@@ -511,7 +512,7 @@
 }
 
 .action-btn:hover {
-  background: rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
@@ -523,7 +524,7 @@
 
 .filter-btn {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -534,14 +535,14 @@
 }
 
 .filter-btn:hover {
-  background: rgba(138, 43, 226, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #8a2be2 0%, #9333ea 100%);
+  background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  border-color: #8a2be2;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .logs-container {
@@ -563,13 +564,13 @@
 }
 
 .logs-container::-webkit-scrollbar-thumb {
-  background: rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 }
 
 .log-item {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.3s ease;
@@ -594,7 +595,7 @@
 }
 
 .log-status {
-  background: rgba(138, 43, 226, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   padding: 0.25rem 0.6rem;
   border-radius: 12px;
   font-size: 0.75rem;
@@ -622,7 +623,7 @@
 }
 
 .log-user {
-  color: #c084fc;
+  color: #ffffff;
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -635,7 +636,7 @@
 
 .log-details summary {
   cursor: pointer;
-  color: #8a2be2;
+  color: #ffffff;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 0.5rem 0;
@@ -643,7 +644,7 @@
 }
 
 .log-details summary:hover {
-  color: #c084fc;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .log-data {
@@ -656,7 +657,7 @@
 .log-section h4 {
   margin: 0 0 0.5rem 0;
   font-size: 0.85rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .log-section pre {
@@ -666,7 +667,7 @@
   overflow-x: auto;
   font-size: 0.75rem;
   color: #22c55e;
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   max-height: 300px;
   overflow-y: auto;
 }
@@ -680,7 +681,7 @@
 
 .analytics-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -688,7 +689,7 @@
 .analytics-card h3 {
   margin: 0 0 1rem 0;
   font-size: 1.2rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .chart-placeholder {
@@ -698,7 +699,7 @@
   justify-content: center;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  border: 2px dashed rgba(138, 43, 226, 0.3);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
 }
 
 .coming-soon {
@@ -735,7 +736,7 @@
 
 .usage-bar {
   height: 100%;
-  background: linear-gradient(90deg, #8a2be2 0%, #ff6ec7 100%);
+  background: linear-gradient(90deg, #ffffff 0%, #e5e5e5 100%);
   transition: width 0.5s ease;
   display: flex;
   align-items: center;
@@ -746,7 +747,7 @@
 
 .usage-percent {
   font-size: 0.85rem;
-  color: #c084fc;
+  color: #ffffff;
   font-weight: 600;
   min-width: 50px;
   text-align: right;
@@ -765,19 +766,19 @@
 }
 
 .funnel-bar {
-  background: linear-gradient(90deg, #8a2be2 0%, #9333ea 100%);
+  background: rgba(255, 255, 255, 0.1);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   color: #ffffff;
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .funnel-bar:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Control Panel */
@@ -789,7 +790,7 @@
 
 .control-card {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
@@ -805,7 +806,7 @@
 .control-card h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .control-card.danger h3 {
@@ -813,8 +814,8 @@
 }
 
 .control-btn {
-  background: rgba(138, 43, 226, 0.3);
-  border: 1px solid rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -826,7 +827,7 @@
 }
 
 .control-btn:hover {
-  background: rgba(138, 43, 226, 0.5);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateX(5px);
 }
 
@@ -881,8 +882,8 @@
 }
 
 .user-detail-modal {
-  background: linear-gradient(135deg, #1a0a2e 0%, #16213e 100%);
-  border: 2px solid rgba(138, 43, 226, 0.5);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   max-width: 600px;
   width: 100%;
@@ -896,13 +897,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  background: linear-gradient(135deg, #8a2be2 0%, #ff6ec7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -940,12 +941,12 @@
   grid-template-columns: 180px 1fr;
   gap: 1rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(138, 43, 226, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .detail-label {
   font-weight: 600;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .detail-value {
@@ -964,13 +965,13 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 12px;
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .usage-summary h3 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .usage-grid {
@@ -980,11 +981,11 @@
 }
 
 .usage-stat {
-  background: rgba(138, 43, 226, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
-  border: 1px solid rgba(138, 43, 226, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stat-value {
@@ -1005,13 +1006,13 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 12px;
-  border: 1px solid rgba(138, 43, 226, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-actions h3 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
-  color: #c084fc;
+  color: #ffffff;
 }
 
 .action-buttons {
@@ -1062,10 +1063,10 @@
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(138, 43, 226, 0.6);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   animation: particleFloat 10s infinite ease-in-out;
-  box-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 @keyframes particleFloat {

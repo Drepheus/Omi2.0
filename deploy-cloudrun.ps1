@@ -71,6 +71,9 @@ $envVars = @(
     "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "GOOGLE_GENERATIVE_AI_API_KEY=AIzaSyAPUrVUTLGnhPOY6KFypgSqqFB3hRKLEug",
     "TAVILY_API_KEY=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",
+    "REPLICATE_API_TOKEN=r8_7Rzu9SCF1v90RVWZ8BFxqGASScz0yQX2LDb0U",
+    "OPENAI_API_KEY=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",
+    "GROQ_API_KEY=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",
     "GOOGLE_CLOUD_PROJECT_ID=$ProjectId",
     "GOOGLE_CLOUD_LOCATION=us-central1"
 )
@@ -87,7 +90,8 @@ $cmd = "gcloud run deploy $ServiceName --image $ImageName --platform managed --r
 
 if ($envVars.Count -gt 0) {
     $vars = $envVars -join ","
-    $cmd += " --set-env-vars ""$vars"""
+    # Use update-env-vars to preserve other variables (like OPENAI_API_KEY) added via Console
+    $cmd += " --update-env-vars ""$vars"""
 }
 
 Write-Host "Executing deployment command..." -ForegroundColor Gray

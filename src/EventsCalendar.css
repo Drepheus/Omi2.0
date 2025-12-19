@@ -327,3 +327,117 @@
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .events-calendar-page {
+    padding: 1rem;
+  }
+
+  .calendar-back-btn {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .calendar-container {
+    margin-top: 3.5rem;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .calendar-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .current-month {
+    font-size: 1.1rem;
+    min-width: auto;
+  }
+
+  /* Switch to List View for Mobile */
+  .calendar-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: transparent;
+    border: none;
+  }
+
+  .calendar-day-header {
+    display: none;
+  }
+
+  .calendar-day.other-month {
+    display: none;
+  }
+
+  .calendar-day {
+    min-height: auto;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .calendar-day:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .day-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0;
+    min-width: 2rem;
+    text-align: center;
+  }
+  
+  .calendar-day.today .day-number {
+    width: 32px;
+    height: 32px;
+  }
+
+  .day-events {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .event-pill {
+    margin-bottom: 0;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    white-space: normal;
+  }
+
+  .event-modal {
+    width: 95%;
+    padding: 1.5rem;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .event-modal h2 {
+    font-size: 1.3rem;
+  }
+
+  /* Hide tooltip on mobile since events are listed */
+  .calendar-tooltip {
+    display: none !important;
+  }
+}

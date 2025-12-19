@@ -291,13 +291,22 @@ function SplashPage() {
     return () => document.removeEventListener('keydown', handleEscapeKey);
   }, [isFullscreen, showAIModels, showCreateMenu, isPulseActive]);
 
-  // Load conversations when user logs in (but start fresh)
+  // Load conversations when user logs in (and restore last active session)
   useEffect(() => {
     if (user) {
-      // Clear current messages to start fresh
-      setMessages([]);
-      setCurrentConversationId(null);
-      // Just load the list, don't auto-load a conversation
+      // Check for last active conversation
+      const lastActiveId = localStorage.getItem('lastActiveConversationId');
+      
+      if (lastActiveId) {
+        console.log('Restoring last active conversation:', lastActiveId);
+        loadConversation(lastActiveId);
+      } else {
+        // Start fresh if no history
+        setMessages([]);
+        setCurrentConversationId(null);
+      }
+      
+      // Just load the list
       loadConversationsOnly();
       // Fetch subscription tier
       fetchSubscriptionTier();
@@ -327,8 +336,13 @@ function SplashPage() {
   useEffect(() => {
     if (user && currentConversationId && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      // Save the last message to database (only user and assistant messages)
-      if (lastMessage.role === 'user' || lastMessage.role === 'assistant') {
+      
+      // Only save if it's a temporary ID (starts with user- or assistant-)
+      // This prevents re-saving messages loaded from the database (which have UUIDs)
+      const isTempId = typeof lastMessage.id === 'string' && 
+                      (lastMessage.id.startsWith('user-') || lastMessage.id.startsWith('assistant-'));
+
+      if (isTempId && (lastMessage.role === 'user' || lastMessage.role === 'assistant')) {
         const messageText = getMessageText(lastMessage);
         db.saveMessage(currentConversationId, lastMessage.role, messageText);
       }
@@ -345,6 +359,7 @@ function SplashPage() {
 
   const loadConversation = async (conversationId: string) => {
     setCurrentConversationId(conversationId);
+    localStorage.setItem('lastActiveConversationId', conversationId); // Persist state
     const dbMessages = await db.getConversationMessages(conversationId);
 
     // Convert database messages to simple Message format
@@ -354,7 +369,15 @@ function SplashPage() {
       content: msg.content,
     }));
 
-    setMessages(aiMessages);
+    // Deduplicate messages to fix visual bug from previous double-saving
+    // We filter out messages that have the same content and role as an earlier message
+    const uniqueMessages = aiMessages.filter((msg, index, self) => 
+      index === self.findIndex((t) => (
+        t.content === msg.content && t.role === msg.role
+      ))
+    );
+
+    setMessages(uniqueMessages);
   };
 
   const createNewConversation = async () => {
@@ -368,6 +391,7 @@ function SplashPage() {
     const newConversation = await db.createConversation(user.id, 'New Conversation', selectedModel);
     if (newConversation) {
       setCurrentConversationId(newConversation.id);
+      localStorage.setItem('lastActiveConversationId', newConversation.id); // Persist state
       setMessages([]);
       await loadConversationsOnly(); // Refresh list only
     }
@@ -402,6 +426,136 @@ function SplashPage() {
   // Input change handler for v5
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
+  };
+
+  const sendChatMessage = async (text: string, historyOverride?: Message[]) => {
+    if (!text.trim() || isLoading) return;
+
+    // Create a new conversation if this is the first message and user is logged in
+    if (user && !currentConversationId && messages.length === 0) {
+      console.log('Creating new conversation for logged-in user...');
+      const title = db.generateConversationTitle(text.trim());
+      const newConversation = await db.createConversation(user.id, title, selectedModel);
+      if (newConversation) {
+        setCurrentConversationId(newConversation.id);
+        localStorage.setItem('lastActiveConversationId', newConversation.id); // Persist state
+        await loadConversationsOnly(); // Refresh sidebar list only
+      }
+    } else if (!user) {
+      console.log('Guest mode - no conversation to create');
+    }
+
+    try {
+      setIsLoading(true);
+      console.log('Sending message:', { text: text.trim() });
+
+      // Add user message to UI immediately ONLY if we are not overriding history (which implies a regeneration)
+      // If historyOverride is present, it means we've already set the state to the truncated history, 
+      // and the 'text' passed here is the user message that was already in history or a modified version.
+      // Actually, for regeneration, we want to send the request but NOT duplicate the user message in the UI if it's already there.
+      
+      let currentMessages = historyOverride || messages;
+      
+      // If this is a normal send (no override), add the user message to state
+      if (!historyOverride) {
+        const userMessage: Message = {
+          id: `user-${Date.now()}`,
+          role: 'user',
+          content: text.trim(),
+        };
+        setMessages(prev => [...prev, userMessage]);
+        currentMessages = [...messages, userMessage];
+      }
+
+      setAttachedFiles([]);
+
+      // Call chat API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: currentMessages,
+          model: selectedModel // Pass the selected model
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('API call failed');
+      }
+
+      const data = await response.json();
+      console.log('API response:', data);
+
+      // Add assistant message to UI
+      const assistantMessage: Message = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: data.message,
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+      setIsLoading(false);
+
+    } catch (error) {
+      console.error('Error in sendMessage:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleMessageAction = (action: 'elaborate' | 'reply' | 'redo', message: Message, index: number) => {
+    if (action === 'reply') {
+      setInput(message.content);
+      // Focus the input field
+      const inputElement = document.querySelector('.chat-input') as HTMLInputElement;
+      if (inputElement) {
+        inputElement.focus();
+      }
+      return;
+    }
+
+    // For Elaborate and Redo, we need to regenerate the response
+    // We find the user message that triggered this assistant response
+    // The assistant message is at 'index'. The user message should be at 'index - 1'.
+    
+    if (index > 0) {
+      const userMessageIndex = index - 1;
+      const userMessage = messages[userMessageIndex];
+      
+      // Truncate history to remove the assistant message and anything after it
+      // We keep messages up to the user message (inclusive)
+      const truncatedHistory = messages.slice(0, index);
+      
+      // Update UI to remove the old response
+      setMessages(truncatedHistory);
+      
+      // Prepare the prompt for the API
+      // We use the original user message content, but we can append a system instruction to the API call
+      // to guide the regeneration without showing it in the UI.
+      // Since our API takes the full message history, we can modify the last message in the payload.
+      
+      const payloadMessages = [...truncatedHistory];
+      const lastMsg = payloadMessages[payloadMessages.length - 1];
+      
+      // Create a copy of the last message to modify it for the API call only
+      const modifiedLastMsg = { ...lastMsg };
+      
+      if (action === 'elaborate') {
+        modifiedLastMsg.content += "\n\n[System Instruction: Please regenerate your response, but this time provide much more detail and elaboration.]";
+      } else if (action === 'redo') {
+        modifiedLastMsg.content += "\n\n[System Instruction: Please regenerate your response, but this time use a different style or format.]";
+      }
+      
+      // Replace the last message in the payload with the modified one
+      payloadMessages[payloadMessages.length - 1] = modifiedLastMsg;
+      
+      // Call sendChatMessage with the modified history payload
+      // We pass the original text just for logging/logic, but the payload is what matters
+      sendChatMessage(userMessage.content, payloadMessages);
+    }
   };
 
   // Wrapper for handleSubmit to integrate with conversation management  
@@ -537,70 +691,10 @@ function SplashPage() {
 
       // NO USAGE LIMIT FOR CHAT - unlimited messages for all users
 
-      // Create a new conversation if this is the first message and user is logged in
-      if (user && !currentConversationId && messages.length === 0) {
-        console.log('Creating new conversation for logged-in user...');
-        const title = db.generateConversationTitle(input.trim());
-        const newConversation = await db.createConversation(user.id, title, selectedModel);
-        if (newConversation) {
-          setCurrentConversationId(newConversation.id);
-          await loadConversationsOnly(); // Refresh sidebar list only
-        }
-      } else if (!user) {
-        console.log('Guest mode - no conversation to create');
-      }
+      const textToSend = input;
+      setInput(''); // Clear input immediately
+      await sendChatMessage(textToSend);
 
-      try {
-        setIsLoading(true);
-        console.log('Sending message:', { text: input.trim() });
-
-        // Add user message to UI immediately
-        const userMessage: Message = {
-          id: `user-${Date.now()}`,
-          role: 'user',
-          content: input.trim(),
-        };
-
-        setMessages(prev => [...prev, userMessage]);
-        setInput(''); // Clear input immediately
-        setAttachedFiles([]);
-
-        // Call chat API
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: [...messages, userMessage]
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('API call failed');
-        }
-
-        const data = await response.json();
-        console.log('API response:', data);
-
-        // Add assistant message to UI
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: data.message,
-        };
-
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
-
-        // NO USAGE TRACKING FOR CHAT - unlimited messages
-
-      } catch (error) {
-        console.error('Error in sendMessage:', error);
-        console.error('Error details:', {
-          message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined,
-        });
-        setIsLoading(false);
-      }
     } else {
       console.log('Submit blocked - Empty input or already loading');
     }
@@ -675,8 +769,8 @@ function SplashPage() {
     }, 300);
   };
 
-  // AI Models data - simple names only
-  const aiModelsData = ['GPT', 'Claude', 'Gemini', 'Grok', 'DeepSeek', 'Perplexity', 'Qwen'];
+  // AI Models data
+  const aiModelsData = ['Gemini', 'OpenAI', 'Groq'];
 
   // Transform data for InfiniteScroll component
   const infiniteScrollItems = aiModelsData.map((modelName) => ({
@@ -974,7 +1068,7 @@ function SplashPage() {
                       </div>
                     ) : (
                       <>
-                        {messages.map((message) => (
+                        {messages.map((message, index) => (
                           <div key={message.id} className={`message ${message.role}`}>
                             <div className="message-content">
                               {message.role === 'assistant' ? (
@@ -988,9 +1082,9 @@ function SplashPage() {
                             </div>
                             {message.role === 'assistant' && (
                               <div className="message-actions">
-                                <button className="msg-action-btn" title="Want a shorter version?">Shorten</button>
-                                <button className="msg-action-btn" title="Turn this into an email?">Email</button>
-                                <button className="msg-action-btn" title="Make this visual?">Visual</button>
+                                <button className="msg-action-btn" onClick={() => handleMessageAction('elaborate', message, index)} title="Ask for more details">Elaborate</button>
+                                <button className="msg-action-btn" onClick={() => handleMessageAction('reply', message, index)} title="Draft a reply">Reply</button>
+                                <button className="msg-action-btn" onClick={() => handleMessageAction('redo', message, index)} title="Regenerate response">Redo</button>
                               </div>
                             )}
                           </div>

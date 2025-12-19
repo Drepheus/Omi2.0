@@ -1,43 +1,19 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
-// export const runtime = "edge"; // Switch to Node.js runtime for better stability in Cloud Run
+// Force Node.js runtime
+export const runtime = "nodejs"; 
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export async function POST(req: Request) {
-  console.log('=== CHAT API ROUTE CALLED ===');
-  const startTime = Date.now();
-  
-  // Get user session
-  const supabase = createRouteHandlerClient({ cookies });
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user;
-
-  try {
-    const { messages } = await req.json() as { messages: Message[] };
-    console.log('Messages extracted:', messages?.length, 'messages');
-
-    // Verify API key is available
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    if (!apiKey) {
-      console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable');
-      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
-    }
-
-    console.log('API key found, initializing Gemini...');
-    
-    // Initialize Gemini
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash-exp',
-      systemInstruction: `You are Omi, a highly advanced AI assistant created by Drepheus. Your primary directive is to provide intelligent, precise, and helpful responses.
+const SYSTEM_INSTRUCTION = `You are Omi, a highly advanced AI assistant created by Drepheus. Your primary directive is to provide intelligent, precise, and helpful responses.
 
 # Core Identity
 - Name: Omi
@@ -83,61 +59,167 @@ export async function POST(req: Request) {
 - For learning queries: Teach concepts, don't just give answers
 - For debugging: Explain the problem, the solution, and why it works
 
-Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain high standards in every interaction.`
-    });
+Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain high standards in every interaction.`;
 
-    // Convert messages to Gemini format (exclude system messages, take last 10 for context)
-    const history = messages.slice(-10, -1).map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }],
-    }));
+export async function POST(req: Request) {
+  console.log('=== CHAT API ROUTE CALLED ===');
+  const startTime = Date.now();
+  let user = null;
 
-    // Get the latest user message
-    const latestMessage = messages[messages.length - 1];
-    
-    console.log('Starting chat with', history.length, 'history messages');
-    const chat = model.startChat({ history });
-    
-    console.log('Sending message to Gemini...');
-    const result = await chat.sendMessage(latestMessage.content);
-    const response = await result.response;
-    const text = response.text();
-    
-    console.log('Response received from Gemini');
+  try {
+    // 1. Safe Auth Check
+    try {
+      const cookieStore = cookies(); 
+      // In Next.js 15+, cookies() is async. We await it if it's a promise, or use it directly.
+      // @ts-ignore - Handling potential Promise return from cookies()
+      const resolvedCookies = typeof cookieStore.then === 'function' ? await cookieStore : cookieStore;
+      
+      const supabase = createRouteHandlerClient({ cookies: () => resolvedCookies });
+      const { data: { session } } = await supabase.auth.getSession();
+      user = session?.user;
+      if (user) console.log('User authenticated:', user.id);
+      else console.log('Guest user');
+    } catch (authError) {
+      console.warn('Auth check failed (continuing as guest):', authError);
+    }
 
-    // Track usage and log API call - FIRE AND FORGET
+    // 2. Parse Request
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      console.error('Failed to parse JSON body:', e);
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    const { messages, model = 'Gemini' } = body as { messages: Message[], model?: string };
+    console.log('Messages extracted:', messages?.length, 'messages');
+    console.log('Selected Model:', model);
+
+    if (!messages || !Array.isArray(messages)) {
+      return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
+    }
+
+    let responseText = '';
+
+    // 3. Model Selection & Execution
+    if (model === 'OpenAI') {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        console.error('Missing OPENAI_API_KEY');
+        throw new Error('OpenAI API key is not configured');
+      }
+
+      const openai = new OpenAI({ apiKey });
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: SYSTEM_INSTRUCTION },
+          ...messages.map(m => ({ role: m.role, content: m.content }))
+        ],
+      });
+      responseText = completion.choices[0].message.content || '';
+
+    } else if (model === 'Groq') {
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) {
+        console.error('Missing GROQ_API_KEY');
+        throw new Error('Groq API key is not configured');
+      }
+
+      const groq = new OpenAI({
+        apiKey: apiKey,
+        baseURL: "https://api.groq.com/openai/v1",
+      });
+      const completion = await groq.chat.completions.create({
+        model: "llama3-70b-8192",
+        messages: [
+          { role: "system", content: SYSTEM_INSTRUCTION },
+          ...messages.map(m => ({ role: m.role, content: m.content }))
+        ],
+      });
+      responseText = completion.choices[0].message.content || '';
+
+    } else {
+      // Default to Gemini
+      const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+      if (!apiKey) {
+        console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY');
+        throw new Error('Gemini API key is not configured');
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      
+      // Try Gemini 3 first, fallback to 2.0 Flash Exp if it fails
+      try {
+        console.log('Attempting to use gemini-3-flash-preview...');
+        const geminiModel = genAI.getGenerativeModel({ 
+          model: 'gemini-3-flash-preview',
+          systemInstruction: SYSTEM_INSTRUCTION
+        });
+
+        const history = messages.slice(0, -1).map(msg => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        }));
+
+        const latestMessage = messages[messages.length - 1];
+        const chat = geminiModel.startChat({ history });
+        const result = await chat.sendMessage(latestMessage.content);
+        const response = await result.response;
+        responseText = response.text();
+      } catch (geminiError) {
+        console.warn('Gemini 3 failed, falling back to gemini-2.0-flash-exp:', geminiError);
+        
+        const geminiModel = genAI.getGenerativeModel({ 
+          model: 'gemini-2.0-flash-exp',
+          systemInstruction: SYSTEM_INSTRUCTION
+        });
+
+        const history = messages.slice(0, -1).map(msg => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        }));
+
+        const latestMessage = messages[messages.length - 1];
+        const chat = geminiModel.startChat({ history });
+        const result = await chat.sendMessage(latestMessage.content);
+        const response = await result.response;
+        responseText = response.text();
+      }
+    }
+    
+    console.log('Response received from', model);
+
+    // 4. Track Usage (Fire and Forget)
     if (user) {
       (async () => {
         try {
-          // Track usage
           await trackUsage(user.id, 'chat');
-          
-          // Log API call
           await logApiCall({
             user_id: user.id,
             email: user.email,
             endpoint: '/api/chat',
             status_code: 200,
             duration_ms: Date.now() - startTime,
-            request_data: { message_count: messages.length },
+            request_data: { message_count: messages.length, model },
             response_data: { success: true }
           });
         } catch (trackingError) {
-          // SILENT FAILURE - Do not crash the chat if tracking fails
           console.error('BACKGROUND TRACKING ERROR (Non-fatal):', trackingError);
         }
       })();
     }
 
     return NextResponse.json({ 
-      message: text,
+      message: responseText,
       role: 'assistant'
     });
-  } catch (error) {
-    console.error('=== CHAT API ERROR ===');
-    console.error('Chat API error:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
 
+  } catch (error) {
+    console.error('=== CHAT API CRITICAL ERROR ===');
+    console.error('Error details:', error);
+    
     // Log error
     if (user) {
       logApiCall({
@@ -152,8 +234,7 @@ Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain 
 
     return NextResponse.json({ 
       error: 'Failed to process chat request',
-      details: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined // Include stack for debugging
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
