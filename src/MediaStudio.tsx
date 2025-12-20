@@ -384,20 +384,14 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
     setActiveDropdown(null);
   };
 
-  const holidayBlueprints = [
-    { title: 'Bauble Macro Portrait', image: 'https://images.unsplash.com/photo-1606830733403-ad01843b23d9?w=400&h=400&fit=crop' },
-    { title: 'Pet Christmas Portrait', image: 'https://images.unsplash.com/photo-1545048702-79362596cdc9?w=400&h=400&fit=crop' },
-    { title: 'Holiday Portrait Reindeer', image: 'https://images.unsplash.com/photo-1482638167565-e752496a7a0e?w=400&h=400&fit=crop' },
-    { title: 'Northern Lights Portrait', image: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=400&fit=crop' },
-    { title: "Santa's Gift Drop", image: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=400&h=400&fit=crop' },
-    { title: 'Festive Retail Scene', image: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?w=400&h=400&fit=crop' },
-    { title: 'Place Person In Scene', image: 'https://images.unsplash.com/photo-1515488042361-25e6b80dd0e6?w=400&h=400&fit=crop' },
-    { title: 'Background Change', image: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400&h=400&fit=crop' },
-    { title: 'Neon Cyberpunk City', image: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=400&h=400&fit=crop' },
-    { title: 'Abstract Oil Painting', image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=400&fit=crop' },
-    { title: 'Realistic Space Suit', image: 'https://images.unsplash.com/photo-1614728853913-1e32005e3073?w=400&h=400&fit=crop' },
-    { title: 'Underwater Coral Reef', image: 'https://images.unsplash.com/photo-1546026423-cc4642628d2b?w=400&h=400&fit=crop' },
-    { title: 'Underwater Coral Reef', image: 'https://images.unsplash.com/photo-1546026423-cc4642628d2b?w=400&h=400&fit=crop' },
+  const imageBlueprints = [
+    { title: 'AI Portrait', image: '/images/blueprints/ai.jpg', type: 'image' },
+    { title: 'Standard Avatar', image: '/images/blueprints/avatar-standard-1760736610612-0.png', type: 'image' },
+    { title: 'Lucky Dice', image: '/images/blueprints/dice.png', type: 'image' },
+    { title: 'Abstract Composition', image: '/images/blueprints/image (35).jpg', type: 'image' },
+    { title: 'Little Character', image: '/images/blueprints/little guy.png', type: 'image' },
+    { title: 'Phone Demo', image: '/images/blueprints/caphone.mp4', type: 'video' },
+    { title: 'Rocket Kid', image: '/images/blueprints/frogkidrocket.mp4', type: 'video' },
   ];
 
   const featuredVideos = [
@@ -782,17 +776,55 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               <div className="horizontal-cards-scroller-container">
                 <div className="horizontal-cards-scroller-track">
                   {/* Original Items */}
-                  {holidayBlueprints.map((bp, i) => (
+                  {imageBlueprints.map((bp, i) => (
                     <div className="horizontal-card" key={`orig-${i}`}>
-                      <img src={bp.image} alt={bp.title} />
+                      {bp.type === 'video' ? (
+                        <video 
+                          src={bp.image} 
+                          muted 
+                          loop 
+                          playsInline 
+                          onMouseOver={e => {
+                            e.currentTarget.muted = false;
+                            e.currentTarget.play().catch(err => console.error("Video play failed:", err));
+                          }} 
+                          onMouseOut={e => {
+                            e.currentTarget.pause();
+                            e.currentTarget.currentTime = 0;
+                            e.currentTarget.muted = true;
+                          }}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <img src={bp.image} alt={bp.title} />
+                      )}
                       <span className="card-badge-new">New</span>
                       <div className="card-overlay-title">{bp.title}</div>
                     </div>
                   ))}
                   {/* Duplicated Items for Loop */}
-                  {holidayBlueprints.map((bp, i) => (
+                  {imageBlueprints.map((bp, i) => (
                     <div className="horizontal-card" key={`dup-${i}`}>
-                      <img src={bp.image} alt={bp.title} />
+                      {bp.type === 'video' ? (
+                        <video 
+                          src={bp.image} 
+                          muted 
+                          loop 
+                          playsInline 
+                          onMouseOver={e => {
+                            e.currentTarget.muted = false;
+                            e.currentTarget.play().catch(err => console.error("Video play failed:", err));
+                          }} 
+                          onMouseOut={e => {
+                            e.currentTarget.pause();
+                            e.currentTarget.currentTime = 0;
+                            e.currentTarget.muted = true;
+                          }}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <img src={bp.image} alt={bp.title} />
+                      )}
                       <span className="card-badge-new">New</span>
                       <div className="card-overlay-title">{bp.title}</div>
                     </div>
@@ -1812,7 +1844,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                   fit={0.5}
                   minRadius={500}
                   maxRadius={800}
-                  segments={15}
+                  segments={11}
                   dragDampening={5}
                   overlayBlurColor="#0a0a0a"
                   imageBorderRadius="30px"
