@@ -203,12 +203,6 @@
     display: flex;
   }
 
-  .chroma-grid-avatar {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 1rem;
-  }
-
   .chroma-grid-title {
     color: #fff;
     text-shadow: 0 2px 4px #00000080;
@@ -235,6 +229,42 @@
     border-color: #ffffff4d;
     top: 1.5rem;
     right: 1.5rem;
+  }
+
+  .chroma-grid-content {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    gap: 1rem;
+    padding: 4rem 1rem 2rem;
+  }
+
+  .chroma-grid-card {
+    padding: 1rem;
+  }
+
+  .chroma-grid-avatar {
+    width: 60px;
+    height: 60px;
+    margin-bottom: .75rem;
+  }
+
+  .chroma-grid-title {
+    font-size: 1.1rem;
+  }
+
+  .chroma-grid-subtitle {
+    font-size: .9rem;
+  }
+
+  .chroma-grid-handle {
+    font-size: .8rem;
+  }
+
+  .chroma-grid-close {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    top: 1rem;
+    right: 1rem;
   }
 }
 

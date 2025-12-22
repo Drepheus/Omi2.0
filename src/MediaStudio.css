@@ -610,9 +610,10 @@
 
 .section-title {
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 100;
   color: white;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .title-highlight {
@@ -838,6 +839,23 @@
 }
 
 @media (max-width: 768px) {
+  .community-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .community-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .media-sidebar {
     position: fixed;
     left: -240px;
@@ -1355,4 +1373,127 @@
   border-color: rgba(168, 85, 247, 0.5);
   box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
   transform: translateY(-2px);
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+ .media-studio-page {
+ flex-direction: column;
+ }
+
+ .media-sidebar {
+ position: fixed;
+ top: 0;
+ left: 0;
+ height: 100%;
+ z-index: 2000;
+ transform: translateX(-100%);
+ transition: transform 0.3s ease;
+ width: 280px;
+ }
+
+ .media-sidebar.open {
+ transform: translateX(0);
+ }
+
+ .sidebar-overlay {
+ display: block;
+ position: fixed;
+ inset: 0;
+ background: rgba(0, 0, 0, 0.6);
+ backdrop-filter: blur(4px);
+ z-index: 1900;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s ease;
+ }
+
+ .media-sidebar.open + .media-main-content .sidebar-overlay,
+ .sidebar-overlay:has(+ .media-sidebar.open) { /* This selector might not work as intended depending on DOM order, but the JS handles the overlay rendering usually */
+ /* Actually, the overlay is rendered conditionally in React, so we just need basic styles */
+ }
+ 
+ /* Since the overlay is conditionally rendered in React, we just need to style it when it exists */
+ .sidebar-overlay {
+ opacity: 1;
+ pointer-events: auto;
+ }
+
+ .mobile-menu-btn {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ position: fixed;
+ top: 16px;
+ left: 16px;
+ width: 40px;
+ height: 40px;
+ background: rgba(20, 10, 35, 0.6);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(168, 85, 247, 0.3);
+ border-radius: 10px;
+ color: white;
+ font-size: 1.5rem;
+ z-index: 100;
+ cursor: pointer;
+ }
+
+ .mobile-sidebar-close {
+ display: block;
+ position: absolute;
+ top: 16px;
+ right: 16px;
+ background: transparent;
+ border: none;
+ color: rgba(255, 255, 255, 0.6);
+ font-size: 1.2rem;
+ cursor: pointer;
+ }
+
+ .media-main-content {
+ padding: 60px 16px 80px; /* Top padding for menu btn, bottom for safe area */
+ }
+
+ .close-btn {
+ top: 16px;
+ right: 16px;
+ width: 40px;
+ height: 40px;
+ font-size: 1.1rem;
+ }
+
+ .banner-content {
+ padding: 40px 20px;
+ }
+
+ .banner-title {
+ font-size: 2rem;
+ }
+
+ .banner-subtitle {
+ font-size: 0.9rem;
+ }
+
+ .hero-glass-btn {
+ padding: 10px 24px;
+ font-size: 1rem;
+ }
+
+ /* Grid Adjustments */
+ .blueprints-grid,
+ .community-grid,
+ .models-grid {
+ grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+ gap: 16px;
+ }
+ 
+ /* Adjust specific grid classes if they exist, otherwise generic grid handling */
+ [class*=-grid] {
+ grid-template-columns: 1fr;
+ }
+
+ .blueprint-card,
+ .community-card {
+ min-height: 200px;
+ }
 }

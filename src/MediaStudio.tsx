@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import DomeGallery from './DomeGallery';
 import LogoLoop from './LogoLoop';
 import { ShinyText } from '@/components/typography/shiny-text';
 import './MediaStudio.css';
@@ -169,6 +168,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
   const [showPaywall, setShowPaywall] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
+  const [spotlightUrl, setSpotlightUrl] = useState<string | null>(null);
 
   // Image Generation State
   const [promptInput, setPromptInput] = useState('');
@@ -287,6 +287,17 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
     }
     return () => clearInterval(interval);
   }, [activeTool, imageStudioHeroImages.length]);
+
+  // Handle Escape key to close spotlight modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && spotlightUrl) {
+        setSpotlightUrl(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [spotlightUrl]);
 
   /* Tool Definitions */
   const imageStudioTools = [
@@ -543,29 +554,6 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               {tool.section && index > 0 && sidebarTools[index - 1].section !== tool.section && (
                 <div className="nav-section-title">{tool.section}</div>
               )}
-              {tool.name === 'Library' && (
-                <div style={{ padding: '0 12px 8px', display: 'flex' }}>
-                  <button
-                    className="sidebar-upgrade-btn-large"
-                    style={{
-                      width: '100%',
-                      padding: '8px',
-                      background: 'linear-gradient(135deg, #a855f7 0%, #d946ef 100%)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      marginBottom: '8px',
-                      fontSize: '0.85rem',
-                      boxShadow: '0 4px 12px rgba(168, 85, 247, 0.3)'
-                    }}
-                    onClick={() => setShowPaywall(true)}
-                  >
-                    🚀 Upgrade Plan
-                  </button>
-                </div>
-              )}
               <button
                 className={`sidebar-item ${activeTool === tool.name ? 'active' : ''}`}
                 onClick={() => {
@@ -621,20 +609,24 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
             <h2 className="section-title" style={{ marginBottom: '30px' }}>
               <span className="title-highlight">My</span> Library
             </h2>
-            <div className="dome-gallery-container" style={{ height: 'calc(100vh - 120px)' }}>
-              {/* Using featured blueprints as a placeholder for user library for now */}
-              <DomeGallery
-                images={featuredBlueprints.map(bp => ({ src: bp.image, alt: bp.title, type: bp.type as 'image' | 'video' | undefined }))}
-                fit={0.5}
-                minRadius={500}
-                maxRadius={800}
-                segments={30}
-                dragDampening={5}
-                overlayBlurColor="#0a0a0a"
-                imageBorderRadius="30px"
-                openedImageBorderRadius="30px"
-                grayscale={false}
-              />
+            <div className="library-grid" style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+              gap: '20px',
+              padding: '20px 0'
+            }}>
+              {featuredBlueprints.map((bp, i) => (
+                <div key={i} style={{ borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '2/3' }}>
+                  {bp.type === 'video' ? (
+                    <video src={bp.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted loop />
+                  ) : (
+                    <img src={bp.image} alt={bp.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem' }}>{bp.title}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </motion.div>
         ) : activeTool === 'Image' ? (
@@ -1819,41 +1811,6 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               ))}
             </div>
 
-            {/* Featured Blueprints */}
-            <section id="blueprints-section" className="featured-section">
-              <div
-                className="section-header"
-              >
-                <h2 className="section-title">
-                  <span style={{ color: 'white' }}>Featured</span> <ShinyText text="Blueprints" speed={6} className="premium-gradient-text" />
-                </h2>
-                <button 
-                  className="view-more-btn"
-                  onClick={() => {
-                    setActiveTool('Blueprints');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                >
-                  View More <span className="arrow">→</span>
-                </button>
-              </div>
-
-              <div className="dome-gallery-container">
-                <DomeGallery
-                  images={featuredBlueprints.map(bp => ({ src: bp.image, alt: bp.title, type: bp.type as 'image' | 'video' | undefined }))}
-                  fit={0.5}
-                  minRadius={500}
-                  maxRadius={800}
-                  segments={11}
-                  dragDampening={5}
-                  overlayBlurColor="#0a0a0a"
-                  imageBorderRadius="30px"
-                  openedImageBorderRadius="30px"
-                  grayscale={false}
-                />
-              </div>
-            </section>
-
             {/* Community Creations */}
             <section id="community-section" className="community-section">
               <div className="section-header">
@@ -2043,6 +2000,97 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 </div>
               </div>
             </section>
+
+            {/* Spotlight Section */}
+            <section id="spotlight-section" className="spotlight-section" style={{ padding: '40px' }}>
+              <div className="section-header">
+                <h2 className="section-title">
+                  <span style={{ color: 'white' }}>Spotlighted</span> <ShinyText text="Models & Partners" speed={6} className="premium-gradient-text" />
+                </h2>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px', marginTop: '30px' }}>
+                {[
+                  {
+                    name: 'Snap Research EgoEdit',
+                    description: 'Explore the latest in ego-centric video editing from Snap Research.',
+                    url: 'https://snap-research.github.io/EgoEdit/',
+                    icon: '👻'
+                  },
+                  {
+                    name: 'Black Forest Labs',
+                    description: 'Creators of the Flux image generation models.',
+                    url: 'https://bfl.ai/',
+                    icon: '🌲'
+                  },
+                  {
+                    name: 'LongCat Video Avatar',
+                    description: 'Generate long videos from a single portrait image.',
+                    url: 'https://meigen-ai.github.io/LongCat-Video-Avatar/',
+                    icon: '🐱'
+                  },
+                  {
+                    name: 'Microsoft TRELLIS',
+                    description: 'Structured 3D generation from a single image.',
+                    url: 'https://microsoft.github.io/TRELLIS.2/',
+                    icon: '🧊'
+                  },
+                  {
+                    name: 'Luma Labs',
+                    description: 'Building the future of visual AI with Dream Machine.',
+                    url: 'https://lumalabs.ai/#team',
+                    icon: '☁️'
+                  },
+                  {
+                    name: 'Kling AI',
+                    description: 'Next-generation video generation model.',
+                    url: 'https://klingai.com/global/',
+                    icon: '🎬'
+                  },
+                  {
+                    name: 'Wan Video',
+                    description: 'Advanced video synthesis technology.',
+                    url: 'https://wan.video/',
+                    icon: '🎥'
+                  },
+                  {
+                    name: 'Seedance 1.5 Pro',
+                    description: 'Advanced dance generation model by ByteDance.',
+                    url: 'https://seed.bytedance.com/en/seedance1_5_pro',
+                    icon: '💃'
+                  }
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSpotlightUrl(item.url)}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '20px',
+                      padding: '24px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px'
+                    }}
+                  >
+                    <div style={{ height: '160px', background: '#000', borderRadius: '12px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: '3rem' }}>{item.icon}</span>
+                    </div>
+                    <div>
+                      <h3 style={{ color: 'white', fontSize: '1.2rem', marginBottom: '8px' }}>{item.name}</h3>
+                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>
+                        {item.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+
+
 
             {/* Models Section */}
             <section id="models-section" className="models-section" style={{ padding: '60px 40px' }}>
@@ -2294,9 +2342,174 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                 ))}
               </div>
             </section>
+
+            {/* Featured Blueprints (Moved to Bottom) */}
+            <section id="blueprints-section" className="featured-section" style={{ padding: '40px', marginBottom: '40px' }}>
+              <div className="section-header">
+                <h2 className="section-title">
+                  <span style={{ color: 'white' }}>Featured</span> <ShinyText text="Blueprints" speed={6} className="premium-gradient-text" />
+                </h2>
+                <button 
+                  className="view-more-btn"
+                  onClick={() => {
+                    setActiveTool('Blueprints');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  View More <span className="arrow">→</span>
+                </button>
+              </div>
+
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+                gap: '24px',
+                marginTop: '30px'
+              }}>
+                {featuredBlueprints.map((bp, i) => (
+                  <motion.div
+                    key={i}
+                    style={{
+                      borderRadius: '20px',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      aspectRatio: '2/3',
+                      cursor: 'pointer',
+                      border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {bp.type === 'video' ? (
+                      <video src={bp.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted loop />
+                    ) : (
+                      <img src={bp.image} alt={bp.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    )}
+                    <div style={{ 
+                      position: 'absolute', 
+                      bottom: 0, 
+                      left: 0, 
+                      right: 0, 
+                      padding: '20px', 
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' 
+                    }}>
+                      <h3 style={{ color: 'white', fontSize: '1rem', margin: 0 }}>{bp.title}</h3>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
           </>
         )}
       </motion.div>
+
+      {/* Spotlight Iframe Modal */}
+      <AnimatePresence>
+        {spotlightUrl && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 200,
+              background: 'rgba(0,0,0,0.9)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px' // Mobile optimized padding
+            }}
+            onClick={() => setSpotlightUrl(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                height: '100%',
+                maxWidth: '1400px',
+                background: '#000',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                position: 'relative',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              {/* Modal Header / Toolbar */}
+              <div style={{
+                height: '50px',
+                background: '#111',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 20px'
+              }}>
+                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '8px', height: '8px', background: '#22c55e', borderRadius: '50%' }}></span>
+                  External Content
+                </span>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <button
+                    onClick={() => window.open(spotlightUrl, '_blank')}
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      border: 'none',
+                      color: 'white',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                  >
+                    Open in New Tab ↗
+                  </button>
+                  <button
+                    onClick={() => setSpotlightUrl(null)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '1.2rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '30px',
+                      height: '30px',
+                      marginLeft: '10px'
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, position: 'relative', background: '#000' }}>
+                <iframe
+                  src={spotlightUrl}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  title="Spotlight Content"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div >
   );
 }

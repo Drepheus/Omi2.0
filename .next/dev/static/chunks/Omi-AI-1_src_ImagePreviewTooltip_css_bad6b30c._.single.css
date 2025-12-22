@@ -5,7 +5,7 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  z-index: 2000;
+  z-index: 99999;
   background: #0f0f19fa;
   border: 1px solid #8a2be24d;
   border-radius: 16px;

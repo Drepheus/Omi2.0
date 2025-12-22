@@ -10,7 +10,7 @@
   "static/chunks/747af_@sentry-internal_replay_build_npm_esm_index_bfb4d7e7.js",
   "static/chunks/3a5a7__pnpm_4fb828d7._.js",
   "static/chunks/Omi-AI-1_fbad5d62._.js",
-  "static/chunks/Omi-AI-1_d2f9ab8f._.css"
+  "static/chunks/Omi-AI-1_89f3e8c4._.css"
 ],
     source: "dynamic"
 });

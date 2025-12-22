@@ -41,6 +41,15 @@ interface Message {
   content: string;
 }
 
+const personaColors: Record<string, string> = {
+  'The Teacher': '#4F46E5',
+  'The Critic': '#EF4444',
+  'The Explorer': '#F59E0B',
+  'The Poet': '#8B5CF6',
+  'The Scientist': '#10B981',
+  'The Friend': '#06B6D4'
+};
+
 function SplashPage() {
   // Authentication
   const { user } = useAuth();
@@ -176,9 +185,14 @@ function SplashPage() {
       description: 'Enter distraction-free fullscreen mode',
       onClick: () => {
         setIsFullscreen(true);
+        // Disable all other modes
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
+        setIsInstantGenActive(false);
+        setIsVideoGenActive(false);
+        setIsCompareMode(false);
+        setSelectedFeature(null);
         console.log('Focus mode activated');
       }
     },
@@ -187,11 +201,26 @@ function SplashPage() {
       icon: '◐',
       description: selectedPersona ? `Active: ${selectedPersona}` : 'Shift Omi\'s voice (teacher, critic, explorer, poet)',
       onClick: () => {
-        const isActivating = selectedFeature !== 'Personas';
-        setSelectedFeature(isActivating ? 'Personas' : null);
-        setIsPersonasActive(isActivating); // Toggle ChromaGrid overlay
-        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        console.log('Personas clicked - ChromaGrid', isActivating ? 'activated' : 'deactivated');
+        // If already active, disable it and return to default chat
+        if (selectedFeature === 'Personas') {
+          setSelectedFeature(null);
+          setIsPersonasActive(false);
+          console.log('Personas deactivated - Returning to default chat');
+          return;
+        }
+
+        // Activate Personas
+        setSelectedFeature('Personas');
+        setIsPersonasActive(true);
+        
+        // Disable all other modes
+        setIsSynthesizeActive(false);
+        setIsPulseActive(false);
+        setIsInstantGenActive(false);
+        setIsVideoGenActive(false);
+        setIsCompareMode(false);
+        
+        console.log('Personas clicked - ChromaGrid activated');
       }
     },
     {
@@ -199,16 +228,31 @@ function SplashPage() {
       icon: '🖼️',
       description: isInstantGenActive ? 'Image generation active - type a prompt!' : 'Real-time AI image generation',
       onClick: () => {
-        const isActivating = selectedFeature !== 'Image Gen';
-        setSelectedFeature(isActivating ? 'Image Gen' : null);
-        setIsInstantGenActive(isActivating);
+        // If already active, disable it and return to default chat
+        if (selectedFeature === 'Image Gen') {
+          setSelectedFeature(null);
+          setIsInstantGenActive(false);
+          setGeneratedImage(null);
+          console.log('Image Gen deactivated - Returning to default chat');
+          return;
+        }
+
+        setSelectedFeature('Image Gen');
+        setIsInstantGenActive(true);
+        
+        // Disable all other modes
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
-        if (!isActivating) {
-          setGeneratedImage(null); // Clear image when deactivating
-        }
-        console.log('Image Gen mode', isActivating ? 'activated' : 'deactivated');
+        setIsVideoGenActive(false);
+        setIsCompareMode(false);
+          
+        // Setup for Image Gen
+        setMessages([]); // Clear chat messages
+        setIsChatHidden(false); // Ensure chat is open
+        setInput(''); // Clear input
+        
+        console.log('Image Gen mode activated');
       }
     },
     {
@@ -216,15 +260,26 @@ function SplashPage() {
       icon: '⚖',
       description: 'Instantly query multiple LLMs side-by-side',
       onClick: () => {
-        const isActivating = selectedFeature !== 'Compare';
-        setSelectedFeature(isActivating ? 'Compare' : null);
-        setIsCompareMode(isActivating);
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        if (!isActivating) {
+        // If already active, disable it and return to default chat
+        if (selectedFeature === 'Compare') {
+          setSelectedFeature(null);
+          setIsCompareMode(false);
           setSecondaryMessages([]);
           setSecondaryModel(null);
+          console.log('Compare deactivated - Returning to default chat');
+          return;
         }
+
+        setSelectedFeature('Compare');
+        setIsCompareMode(true);
+        
+        // Disable all other modes
+        setIsPersonasActive(false);
+        setIsSynthesizeActive(false);
+        setIsPulseActive(false);
+        setIsInstantGenActive(false);
+        setIsVideoGenActive(false);
+        
         console.log('Compare Minds clicked');
       }
     },
@@ -233,16 +288,31 @@ function SplashPage() {
       icon: '🎬',
       description: 'Generate AI videos from text prompts',
       onClick: () => {
-        const isActivating = selectedFeature !== 'Video Gen';
-        setSelectedFeature(isActivating ? 'Video Gen' : null);
-        setIsVideoGenActive(isActivating); // Activate video generation mode
-        setIsPersonasActive(false); // Turn off ChromaGrid animation
-        setIsSynthesizeActive(false); // Turn off ElectricBorder animation
-        setIsPulseActive(false);
-        if (!isActivating) {
-          setGeneratedVideo(null); // Clear video when deactivating
+        // If already active, disable it and return to default chat
+        if (selectedFeature === 'Video Gen') {
+          setSelectedFeature(null);
+          setIsVideoGenActive(false);
+          setGeneratedVideo(null);
+          console.log('Video Gen deactivated - Returning to default chat');
+          return;
         }
-        console.log('Video Gen mode', isActivating ? 'activated' : 'deactivated');
+
+        setSelectedFeature('Video Gen');
+        setIsVideoGenActive(true);
+        
+        // Disable all other modes
+        setIsPersonasActive(false);
+        setIsSynthesizeActive(false);
+        setIsPulseActive(false);
+        setIsInstantGenActive(false);
+        setIsCompareMode(false);
+          
+        // Setup for Video Gen
+        setMessages([]); // Clear chat messages
+        setIsChatHidden(false); // Ensure chat is open
+        setInput(''); // Clear input
+        
+        console.log('Video Gen mode activated');
       }
     }
   ];
@@ -982,6 +1052,10 @@ function SplashPage() {
               const isVideoGenButton = button.name === 'Video Gen';
               const isCompareButton = button.name === 'Compare';
               const isPro = isCompareButton || isVideoGenButton;
+              
+              // Persona styling logic
+              const isPersonaButton = button.name === 'Personas';
+              const personaColor = isPersonaButton && selectedPersona ? personaColors[selectedPersona] : undefined;
 
               return (
                 <button
@@ -997,10 +1071,17 @@ function SplashPage() {
                     if (isVideoGenButton) setIsHoveringVideoGen(false);
                   }}
                   style={{
-                    animationDelay: `${index * 0.1}s`
+                    animationDelay: `${index * 0.1}s`,
+                    ...(personaColor ? { 
+                      borderColor: personaColor,
+                      boxShadow: `0 0 15px ${personaColor}40, inset 0 0 10px ${personaColor}20`,
+                      background: `linear-gradient(135deg, ${personaColor}20 0%, rgba(255,255,255,0.05) 100%)`
+                    } : {})
                   }}
                 >
-                  <span className={isSelected ? "feature-button-selected-text" : "feature-button-static-text"}>
+                  <span className={isSelected ? "feature-button-selected-text" : "feature-button-static-text"}
+                    style={personaColor ? { color: personaColor, textShadow: `0 0 10px ${personaColor}60` } : {}}
+                  >
                     {button.icon} {button.name}
                     {isPro && <span className="pro-badge-inline">PRO</span>}
                   </span>
@@ -1045,13 +1126,15 @@ function SplashPage() {
                       )}
                     </h3>
                     <div className="panel-controls">
-                      <button
-                        className="panel-control-btn hide-chat-btn"
-                        onClick={() => setIsChatHidden(true)}
-                        title="Hide Chat"
-                      >
-                        ─
-                      </button>
+                      {!isInstantGenActive && !isVideoGenActive && (
+                        <button
+                          className="panel-control-btn hide-chat-btn"
+                          onClick={() => setIsChatHidden(true)}
+                          title="Hide Chat"
+                        >
+                          ─
+                        </button>
+                      )}
                       <button
                         className="panel-control-btn fullscreen-toggle"
                         onClick={() => setIsFullscreen(!isFullscreen)}
@@ -1157,182 +1240,156 @@ function SplashPage() {
               </div>
             )}
 
-            <form className="chat-form" onSubmit={handleSubmit}>
-              {/* Attached files display */}
-              {attachedFiles.length > 0 && (
-                <div className="attached-files">
-                  {attachedFiles.map((file, index) => (
-                    <div key={index} className="attached-file">
-                      <span className="file-icon">
-                        {file.type.startsWith('image/') ? '🖼️' :
-                          file.type.startsWith('video/') ? '🎥' :
-                            file.type.includes('pdf') ? '📄' : '📎'}
-                      </span>
-                      <span className="file-name">{file.name}</span>
-                      <button
-                        type="button"
-                        className="remove-file"
-                        onClick={() => removeAttachedFile(index)}
-                        title="Remove file"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Image Gen Mode Indicator */}
-              {isInstantGenActive && (
-                <div className="instant-gen-indicator">
-                  <span className="instant-gen-icon">⚡</span>
-                  <span className="instant-gen-text">
-                    Image Gen Mode Active - Describe the image you want to create
-                  </span>
-                </div>
-              )}
-
-              {/* Video Gen Mode Indicator */}
-              {isVideoGenActive && (
-                <div className="video-gen-indicator">
-                  <span className="video-gen-icon">🎬</span>
-                  <span className="video-gen-text">
-                    Video Gen Mode Active - Describe the video scene you want to create
-                  </span>
-                </div>
-              )}
-
-              <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''} ${isInstantGenActive ? 'instant-gen-active' : ''} ${isVideoGenActive ? 'video-gen-active' : ''}`}>
-                <input
-                  type="file"
-                  id="file-input"
-                  className="file-input"
-                  onChange={handleFileAttach}
-                  multiple
-                  accept="image/*,video/*,.pdf,.doc,.docx,.txt"
-                  style={{ display: 'none' }}
-                />
-                {!isInstantGenActive && (
-                  <>
-                    <button
-                      type="button"
-                      className="attach-file-btn"
-                      onClick={() => document.getElementById('file-input')?.click()}
-                      title="Attach files"
-                      disabled={isLoading}
-                    >
-                      📎
-                    </button>
-                    <button
-                      type="button"
-                      className={`voice-mode-btn ${isVoiceModeActive ? 'active' : ''}`}
-                      onClick={() => setIsVoiceModeActive(!isVoiceModeActive)}
-                      title={isVoiceModeActive ? "Disable Voice Mode" : "Enable Voice Mode"}
-                      disabled={isLoading}
-                    >
-                      <div className="sound-wave-icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
+            {!isInstantGenActive && !isVideoGenActive && (
+              <form className="chat-form" onSubmit={handleSubmit}>
+                {/* Attached files display */}
+                {attachedFiles.length > 0 && (
+                  <div className="attached-files">
+                    {attachedFiles.map((file, index) => (
+                      <div key={index} className="attached-file">
+                        <span className="file-icon">
+                          {file.type.startsWith('image/') ? '🖼️' :
+                            file.type.startsWith('video/') ? '🎥' :
+                              file.type.includes('pdf') ? '📄' : '📎'}
+                        </span>
+                        <span className="file-name">{file.name}</span>
+                        <button
+                          type="button"
+                          className="remove-file"
+                          onClick={() => removeAttachedFile(index)}
+                          title="Remove file"
+                        >
+                          ×
+                        </button>
                       </div>
-                    </button>
-                  </>
-                )}
-                <input
-                  type="text"
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder={
-                    isVideoGenActive
-                      ? "🎬 Describe your video scene (e.g., 'a woman walking through Tokyo at night')..."
-                      : isInstantGenActive
-                        ? "⚡ Describe your image (e.g., 'A sunset over mountains')..."
-                        : isSynthesizeActive
-                          ? "Type your message in Synthesize mode..."
-                          : "Type your message..."
-                  }
-                  className="chat-input"
-                  autoFocus
-                  disabled={isLoading || isGeneratingImage || isGeneratingVideo}
-                />
-                <button
-                  type="submit"
-                  className="chat-submit"
-                  disabled={!input.trim() || isLoading || isGeneratingImage || isGeneratingVideo}
-                >
-                  {isLoading ? (
-                    <div className="loading-spinner">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.3" />
-                        <path d="M12 2A10 10 0 0 1 22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </div>
-                  ) : (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 12L22 2L13 21L11 13L2 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Electric Border Animation Overlay for Synthesize Mode */}
-                {isSynthesizeActive && (
-                  <div className="electric-border-overlay">
-                    <svg className="electric-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                      <defs>
-                        <filter id="electric-glow">
-                          <feTurbulence baseFrequency="0.02" numOctaves="3" result="noise" seed="1">
-                            <animate attributeName="seed" values="1;5;1" dur="3s" repeatCount="indefinite" />
-                          </feTurbulence>
-                          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
-                          <feGaussianBlur stdDeviation="0.5" />
-                          <feColorMatrix values="0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 1 0" />
-                        </filter>
-                      </defs>
-                      <rect
-                        x="1"
-                        y="1"
-                        width="98"
-                        height="98"
-                        fill="none"
-                        stroke="#e5e5e5"
-                        strokeWidth="0.5"
-                        filter="url(#electric-glow)"
-                        rx="3"
-                        ry="3"
-                      >
-                        <animate
-                          attributeName="stroke-opacity"
-                          values="0.3;1;0.3"
-                          dur="2s"
-                          repeatCount="indefinite"
-                        />
-                      </rect>
-                      <rect
-                        x="0.5"
-                        y="0.5"
-                        width="99"
-                        height="99"
-                        fill="none"
-                        stroke="#e5e5e5"
-                        strokeWidth="0.3"
-                        rx="3"
-                        ry="3"
-                        opacity="0.6"
-                      >
-                        <animate
-                          attributeName="stroke-dasharray"
-                          values="0,400;200,200;400,0;0,400"
-                          dur="4s"
-                          repeatCount="indefinite"
-                        />
-                      </rect>
-                    </svg>
+                    ))}
                   </div>
                 )}
-              </div>
-            </form>
+
+                <div className={`chat-input-container ${isSynthesizeActive ? 'synthesize-active' : ''}`}>
+                  <input
+                    type="file"
+                    id="file-input"
+                    className="file-input"
+                    onChange={handleFileAttach}
+                    multiple
+                    accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    className="attach-file-btn"
+                    onClick={() => document.getElementById('file-input')?.click()}
+                    title="Attach files"
+                    disabled={isLoading}
+                  >
+                    📎
+                  </button>
+                  <button
+                    type="button"
+                    className={`voice-mode-btn ${isVoiceModeActive ? 'active' : ''}`}
+                    onClick={() => setIsVoiceModeActive(!isVoiceModeActive)}
+                    title={isVoiceModeActive ? "Disable Voice Mode" : "Enable Voice Mode"}
+                    disabled={isLoading}
+                  >
+                    <div className="sound-wave-icon">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </button>
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={handleInputChange}
+                    placeholder={
+                      isSynthesizeActive
+                        ? "Type your message in Synthesize mode..."
+                        : "Type your message..."
+                    }
+                    className="chat-input"
+                    autoFocus
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="submit"
+                    className="chat-submit"
+                    disabled={!input.trim() || isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="loading-spinner">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.3" />
+                          <path d="M12 2A10 10 0 0 1 22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 12L22 2L13 21L11 13L2 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* Electric Border Animation Overlay for Synthesize Mode */}
+                  {isSynthesizeActive && (
+                    <div className="electric-border-overlay">
+                      <svg className="electric-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                          <filter id="electric-glow">
+                            <feTurbulence baseFrequency="0.02" numOctaves="3" result="noise" seed="1">
+                              <animate attributeName="seed" values="1;5;1" dur="3s" repeatCount="indefinite" />
+                            </feTurbulence>
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+                            <feGaussianBlur stdDeviation="0.5" />
+                            <feColorMatrix values="0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 0 0.9 0 0 0 1 0" />
+                          </filter>
+                        </defs>
+                        <rect
+                          x="1"
+                          y="1"
+                          width="98"
+                          height="98"
+                          fill="none"
+                          stroke="#e5e5e5"
+                          strokeWidth="0.5"
+                          filter="url(#electric-glow)"
+                          rx="3"
+                          ry="3"
+                        >
+                          <animate
+                            attributeName="stroke-opacity"
+                            values="0.3;1;0.3"
+                            dur="2s"
+                            repeatCount="indefinite"
+                          />
+                        </rect>
+                        <rect
+                          x="0.5"
+                          y="0.5"
+                          width="99"
+                          height="99"
+                          fill="none"
+                          stroke="#e5e5e5"
+                          strokeWidth="0.3"
+                          rx="3"
+                          ry="3"
+                          opacity="0.6"
+                        >
+                          <animate
+                            attributeName="stroke-dasharray"
+                            values="0,400;200,200;400,0;0,400"
+                            dur="4s"
+                            repeatCount="indefinite"
+                          />
+                        </rect>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </form>
+            )}
           </div>
 
           {/* Generated Image Display */}
@@ -1391,7 +1448,25 @@ function SplashPage() {
               ) : (
                 <div className="instant-gen-placeholder">
                   <div className="placeholder-icon">⚡</div>
-                  <p className="placeholder-text">Enter a prompt above to generate an image</p>
+                  <p className="placeholder-text">
+                    Media generation has now moved to the{' '}
+                    <span 
+                      className="media-studio-link"
+                      onClick={() => router.push('/media-studio')}
+                      style={{
+                        cursor: 'pointer',
+                        background: 'linear-gradient(135deg, #FF00D4 0%, #00C8FF 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        fontWeight: 'bold',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'rgba(255, 0, 212, 0.3)',
+                        animation: 'pulse 2s infinite'
+                      }}
+                    >
+                      Media Studio
+                    </span>
+                  </p>
                   <p className="placeholder-subtext">Describe what you want to see and press enter</p>
                 </div>
               )}
@@ -1454,7 +1529,25 @@ function SplashPage() {
               ) : (
                 <div className="video-gen-placeholder">
                   <div className="placeholder-icon">🎬</div>
-                  <p className="placeholder-text">Enter a prompt above to generate a video</p>
+                  <p className="placeholder-text">
+                    Media generation has now moved to the{' '}
+                    <span 
+                      className="media-studio-link"
+                      onClick={() => router.push('/media-studio')}
+                      style={{
+                        cursor: 'pointer',
+                        background: 'linear-gradient(135deg, #FF00D4 0%, #00C8FF 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        fontWeight: 'bold',
+                        textDecoration: 'underline',
+                        textDecorationColor: 'rgba(255, 0, 212, 0.3)',
+                        animation: 'pulse 2s infinite'
+                      }}
+                    >
+                      Media Studio
+                    </span>
+                  </p>
                   <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>
                 </div>
               )}
@@ -1595,9 +1688,6 @@ function SplashPage() {
           💬 Show Chat
         </button>
       )}
-
-      {/* Dock - always visible - Outside scrollable container */}
-      {!isFullscreen && <Dock items={dockItems} />}
 
       {/* Infinite Menu Overlay */}
       <InfiniteMenu
