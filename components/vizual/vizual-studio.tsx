@@ -2,10 +2,23 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ChevronDown, ChevronUp } from "lucide-react";
 import { Inter, Space_Grotesk, Playfair_Display } from "next/font/google";
-import { MetallicText } from "./MetallicText";
 import { useAuth } from "@/context/auth-context";
+
+// Chrome/Silver gradient text component
+const ChromeText = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <span 
+    className={`bg-gradient-to-b from-white via-gray-300 via-50% to-gray-500 bg-clip-text text-transparent ${className}`}
+    style={{
+      backgroundImage: 'linear-gradient(180deg, #ffffff 0%, #e8e8e8 20%, #b8b8b8 40%, #888888 60%, #666666 80%, #444444 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+    }}
+  >
+    {children}
+  </span>
+);
 
 const inter = Inter({ subsets: ["latin"], weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"] });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
@@ -15,6 +28,7 @@ export function VizualStudio() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   
   // Handle Try Now button click
   const handleTryNow = () => {
@@ -81,8 +95,48 @@ export function VizualStudio() {
   return (
     <div className={`relative w-full bg-black text-white selection:bg-white/20 ${inter.className}`}>
       
-      {/* Hero Section - Sticky */}
-      <div className="sticky top-0 z-10 h-screen w-full">
+      {/* Navigation - Always visible */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] transition-all duration-300 bg-black/40 backdrop-blur-xl border-b border-white/5 py-3 md:py-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div 
+              onClick={() => router.push('/command-hub')}
+              className="cursor-pointer flex items-center gap-2 group"
+            >
+               {/* Logo Icon */}
+               <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white transition-transform group-hover:scale-110 md:w-6 md:h-6">
+                <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
+              </svg>
+              <div className="font-bold text-lg md:text-xl tracking-tight flex items-center">
+                <ChromeText>VIZUAL</ChromeText>
+              </div>
+            </div>
+            
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
+              <a href="#" className="hover:text-white transition-colors">STUDIO</a>
+              <a href="#" className="hover:text-white transition-colors">API</a>
+              <a href="#" className="hover:text-white transition-colors">ENTERPRISE</a>
+              <a href="#" className="hover:text-white transition-colors">RESEARCH</a>
+              <a href="#" className="hover:text-white transition-colors">COMMUNITY</a>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+             <button className="hidden md:block px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-all border border-white/10 backdrop-blur-sm">
+              JOIN US
+            </button>
+            <button 
+              onClick={handleTryNow}
+              className="px-5 py-2 md:px-6 md:py-2 rounded-full bg-white text-black text-xs md:text-sm font-bold hover:bg-gray-200 transition-colors"
+            >
+              TRY NOW
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="relative z-10 h-screen w-full">
         {/* Background Video */}
         <div className="absolute inset-0 z-0 bg-black flex items-center justify-center">
           <video
@@ -98,53 +152,13 @@ export function VizualStudio() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
         </div>
 
-        {/* Navigation */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/80 backdrop-blur-md py-3' : 'bg-transparent py-4 md:py-6'}`}>
-          <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <div 
-                onClick={() => router.push('/command-hub')}
-                className="cursor-pointer flex items-center gap-2 group"
-              >
-                 {/* Logo Icon */}
-                 <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white transition-transform group-hover:scale-110 md:w-6 md:h-6">
-                  <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
-                </svg>
-                <div className="font-bold text-lg md:text-xl tracking-tight flex items-center">
-                  <MetallicText text="VIZUAL" height={100} />
-                </div>
-              </div>
-              
-              <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
-                <a href="#" className="hover:text-white transition-colors">STUDIO</a>
-                <a href="#" className="hover:text-white transition-colors">API</a>
-                <a href="#" className="hover:text-white transition-colors">ENTERPRISE</a>
-                <a href="#" className="hover:text-white transition-colors">RESEARCH</a>
-                <a href="#" className="hover:text-white transition-colors">COMMUNITY</a>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-               <button className="hidden md:block px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-all border border-white/10 backdrop-blur-sm">
-                JOIN US
-              </button>
-              <button 
-                onClick={handleTryNow}
-                className="px-5 py-2 md:px-6 md:py-2 rounded-full bg-white text-black text-xs md:text-sm font-bold hover:bg-gray-200 transition-colors"
-              >
-                TRY NOW
-              </button>
-            </div>
-          </div>
-        </nav>
-
         {/* Hero Content */}
         <main className="relative z-10 flex flex-col items-center justify-between min-h-screen px-4 pt-24 pb-8 md:justify-center md:pt-20">
           <div className="flex-1 flex flex-col items-center justify-center w-full">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-light tracking-tight mb-6 max-w-4xl mx-auto leading-[1.1] text-center w-full break-words px-2">
               Use Your <br />
-              <span className={`${spaceGrotesk.className} inline-block`}>
-                <MetallicText text="Imagination" height={300} />
+              <span className={`${spaceGrotesk.className} inline-block font-bold`}>
+                <ChromeText>Imagination</ChromeText>
               </span>
             </h1>
             
@@ -172,6 +186,14 @@ export function VizualStudio() {
               </div>
             </div>
           </div>
+
+          {/* Powered by Omi AI */}
+          <div className="mt-8 flex justify-center">
+            <div className="flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+              <span className="text-gray-500 text-sm">powered by</span>
+              <span className={`text-white text-base font-bold ${playfair.className} italic`}>Omi AI</span>
+            </div>
+          </div>
         </main>
       </div>
 
@@ -181,7 +203,7 @@ export function VizualStudio() {
           <h2 className="text-4xl md:text-6xl font-bold text-center mb-10 tracking-tight">
             Do it all with <br />
             <span className={`${spaceGrotesk.className} inline-block`}>
-              <MetallicText text="Vizual Studio" height={250} />
+              <ChromeText>Vizual Studio</ChromeText>
             </span>
           </h2>
 
@@ -215,6 +237,13 @@ export function VizualStudio() {
       {/* No Prompt Engineering Section */}
       <section className="relative z-30 w-full min-h-screen bg-black py-24 px-4 flex items-center">
         <div className="max-w-7xl mx-auto text-center">
+          <button 
+            onClick={handleTryNow}
+            className="mb-12 px-8 py-4 rounded-full bg-white text-black text-lg font-bold hover:bg-gray-200 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-white/20"
+          >
+            Start Vizualizing
+          </button>
+          
           <h2 className="text-5xl md:text-7xl font-bold mb-16 tracking-tight leading-tight">
             No prompt <br />
             engineering needed,
@@ -235,8 +264,8 @@ export function VizualStudio() {
 
             {/* Content Overlay */}
             <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center z-10">
-              <div className={`${spaceGrotesk.className} text-6xl md:text-8xl mb-8 tracking-tighter transform -translate-y-8 flex justify-center`}>
-                <MetallicText text="just ask" height={300} />
+              <div className={`${spaceGrotesk.className} text-6xl md:text-8xl mb-8 tracking-tighter transform -translate-y-8 flex justify-center font-bold`}>
+                <ChromeText>just ask</ChromeText>
               </div>
               <div className="h-12 flex items-center justify-center">
                 <p className="text-xl md:text-3xl text-white/90 font-light tracking-wide">
@@ -250,7 +279,7 @@ export function VizualStudio() {
       </section>
 
       {/* Film & Design Carousels */}
-      <section className="relative z-40 w-full min-h-screen bg-black py-24 overflow-hidden flex flex-col justify-center">
+      <section className="relative z-40 w-full bg-black py-24 overflow-hidden">
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes scroll-left {
             0% { transform: translateX(0); }
@@ -279,18 +308,36 @@ export function VizualStudio() {
           }
         `}} />
 
-        {/* Film Section */}
-        <div className="mb-24">
+        {/* Section Header with See More */}
+        <div className="max-w-7xl mx-auto px-4 mb-12 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className={`text-4xl md:text-5xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Categories</h2>
+            <p className="text-gray-400 text-lg">Explore what you can create with Vizual</p>
+          </div>
+          <button 
+            onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all group"
+          >
+            <span className="text-white font-medium">{categoriesExpanded ? 'See Less' : 'See More'}</span>
+            {categoriesExpanded ? (
+              <ChevronUp className="w-5 h-5 text-white transition-transform group-hover:-translate-y-0.5" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-white transition-transform group-hover:translate-y-0.5" />
+            )}
+          </button>
+        </div>
+
+        {/* Film Section - Always visible */}
+        <div className="mb-16">
           <div className="max-w-7xl mx-auto px-4 mb-8">
-            <h3 className={`text-4xl md:text-5xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Film</h3>
-            <p className="text-gray-400 text-lg hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+            <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Film</h3>
+            <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
               View model preference chart
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </p>
           </div>
           
           <div className="flex gap-4 w-max animate-scroll-left hover:[animation-play-state:paused]">
-            {/* Duplicate items for seamless loop */}
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex gap-4">
                 <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
@@ -313,37 +360,216 @@ export function VizualStudio() {
           </div>
         </div>
 
-        {/* Design Section */}
-        <div>
-          <div className="max-w-7xl mx-auto px-4 mb-8">
-            <h3 className={`text-4xl md:text-5xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Design</h3>
-            <p className="text-gray-400 text-lg hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
-              View model preference chart
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </p>
+        {/* Collapsible Categories */}
+        <div className={`overflow-hidden transition-all duration-700 ease-in-out ${categoriesExpanded ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+          {/* Design Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Design</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                View model preference chart
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-right hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/ai.jpg" alt="Design sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/little guy.png" alt="Design sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/dice.png" alt="Design sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/image (35).jpg" alt="Design sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                   <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/personas/scientist.jpg" alt="Design sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="flex gap-4 w-max animate-scroll-right hover:[animation-play-state:paused]">
-             {/* Duplicate items for seamless loop */}
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
-                   <img src="/images/samples/ai.jpg" alt="Design sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+
+          {/* Animated Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Animated</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                Explore animated styles
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-left hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (45).jpg" alt="Animated sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (52).jpg" alt="Animated sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (59).jpg" alt="Animated sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (63).jpg" alt="Animated sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/CYBER DRE.png" alt="Animated sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-                <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
-                   <img src="/images/samples/little guy.png" alt="Design sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+              ))}
+            </div>
+          </div>
+
+          {/* Podcast Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Podcast</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                Create podcast visuals
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-right hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/ai.jpg" alt="Podcast sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/little guy.png" alt="Podcast sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/dice.png" alt="Podcast sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/image (35).jpg" alt="Podcast sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/personas/scientist.jpg" alt="Podcast sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-                <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
-                   <img src="/images/blueprints/dice.png" alt="Design sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+              ))}
+            </div>
+          </div>
+
+          {/* Brainrot Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Brainrot</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                Embrace the chaos
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-left hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (45).jpg" alt="Brainrot sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (52).jpg" alt="Brainrot sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (59).jpg" alt="Brainrot sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (63).jpg" alt="Brainrot sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/CYBER DRE.png" alt="Brainrot sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-                <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
-                   <img src="/images/blueprints/image (35).jpg" alt="Design sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+              ))}
+            </div>
+          </div>
+
+          {/* Products Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Products</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                Showcase your products
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-right hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/ai.jpg" alt="Products sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/little guy.png" alt="Products sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/dice.png" alt="Products sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/blueprints/image (35).jpg" alt="Products sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/personas/scientist.jpg" alt="Products sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-                 <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
-                   <img src="/images/personas/scientist.jpg" alt="Design sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+              ))}
+            </div>
+          </div>
+
+          {/* Music Videos Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 mb-8">
+              <h3 className={`text-3xl md:text-4xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Music Videos</h3>
+              <p className="text-gray-400 text-base hover:text-white cursor-pointer transition-colors inline-flex items-center gap-2">
+                Visualize your sound
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </p>
+            </div>
+            
+            <div className="flex gap-4 w-max animate-scroll-left hover:[animation-play-state:paused]">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (45).jpg" alt="Music Videos sample 1" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (52).jpg" alt="Music Videos sample 2" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (59).jpg" alt="Music Videos sample 3" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/image (63).jpg" alt="Music Videos sample 4" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="carousel-item rounded-xl overflow-hidden relative group bg-gray-900">
+                     <img src="/images/samples/CYBER DRE.png" alt="Music Videos sample 5" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* And More Section */}
+          <div className="mt-16">
+            <div className="max-w-7xl mx-auto px-4 text-center">
+              <h3 className={`text-4xl md:text-6xl font-bold text-white mb-4 ${spaceGrotesk.className}`}>
+                and more...
+              </h3>
+              <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+                Whatever you can imagine, Vizual can create. Explore endless possibilities across every creative category.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -376,10 +602,195 @@ export function VizualStudio() {
                <span className="text-6xl md:text-8xl text-white font-bold tracking-tighter mb-2">freedoms</span>
                <span className="text-5xl md:text-7xl text-white font-bold tracking-tighter mb-2">of</span>
                <span className="text-6xl md:text-8xl font-bold tracking-tighter flex justify-center">
-                  <MetallicText text="imagination" height={300} />
+                  <ChromeText>imagination</ChromeText>
                </span>
             </div>
          </div>
+      </section>
+
+      {/* Video Section Showcase */}
+      <section className="relative z-[70] w-full bg-black py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`text-4xl md:text-6xl font-bold text-center mb-6 tracking-tight ${spaceGrotesk.className}`}>
+            Seamless <ChromeText>Integration</ChromeText>
+          </h2>
+          <p className="text-gray-400 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
+            See how Vizual fits naturally into your creative workflow
+          </p>
+          <div className="relative w-full max-w-6xl mx-auto rounded-[32px] overflow-hidden border border-white/10">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto"
+            >
+              <source src="/videos/videsectionloop.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+
+      {/* Portrait Video Feature Section */}
+      <section className="relative z-[80] w-full bg-black py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+            {/* Text Content */}
+            <div className="order-2 md:order-1 text-center md:text-left">
+              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-tight ${spaceGrotesk.className}`}>
+                Create for <br />
+                <span className="inline-block">
+                  <ChromeText>Every Format</ChromeText>
+                </span>
+              </h2>
+              <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
+                From cinematic widescreen to vertical social content. Vizual adapts to your vision, not the other way around.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <button 
+                  onClick={handleTryNow}
+                  className="px-8 py-4 rounded-full bg-white text-black font-bold hover:bg-gray-200 transition-all transform hover:scale-105"
+                >
+                  Try It Free
+                </button>
+                <button className="px-8 py-4 rounded-full bg-white/10 text-white font-medium hover:bg-white/20 transition-all border border-white/10">
+                  View Examples
+                </button>
+              </div>
+            </div>
+            
+            {/* Portrait Video */}
+            <div className="order-1 md:order-2 flex justify-center">
+              <div className="relative w-full max-w-[300px] md:max-w-[350px] aspect-[9/16] rounded-[32px] overflow-hidden border border-white/10 shadow-2xl shadow-white/5">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/videos/verticalvid.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Text to Image Section */}
+      <section className="relative z-[85] w-full bg-black py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`text-4xl md:text-6xl font-bold text-center mb-6 tracking-tight ${spaceGrotesk.className}`}>
+            Text to <ChromeText>Image</ChromeText>
+          </h2>
+          <p className="text-gray-400 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
+            Transform your words into stunning visuals with unparalleled precision and creativity
+          </p>
+          <div className="relative w-full max-w-6xl mx-auto rounded-[32px] overflow-hidden border border-white/10">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto"
+            >
+              <source src="/videos/text2image.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </section>
+
+      {/* Character Consistency Section */}
+      <section className="relative z-[90] w-full bg-black py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+            {/* Portrait Video */}
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-[300px] md:max-w-[350px] aspect-[9/16] rounded-[32px] overflow-hidden border border-white/10 shadow-2xl shadow-white/5">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/videos/samchar.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+            
+            {/* Text Content */}
+            <div className="text-center md:text-left">
+              <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-tight ${spaceGrotesk.className}`}>
+                Character <br />
+                <span className="inline-block">
+                  <ChromeText>Consistency</ChromeText>
+                </span>
+              </h2>
+              <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
+                Keep your characters looking the same across every scene. From the first frame to the last, maintain perfect visual coherence for your stories.
+              </p>
+              <ul className="space-y-4 text-gray-300 text-left max-w-lg mx-auto md:mx-0">
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
+                  <span>Same character, different scenes and poses</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
+                  <span>Preserve facial features and expressions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-white mt-2 flex-shrink-0" />
+                  <span>Perfect for storytelling and brand mascots</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Avatar Demos Section */}
+      <section className="relative z-[95] w-full bg-black py-24 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className={`text-4xl md:text-6xl font-bold text-center mb-6 tracking-tight ${spaceGrotesk.className}`}>
+            AI <ChromeText>Avatars</ChromeText>
+          </h2>
+          <p className="text-gray-400 text-lg md:text-xl text-center mb-12 max-w-2xl mx-auto">
+            Create lifelike digital humans that speak, move, and express emotions naturally
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Avatar Scene Video */}
+            <div className="relative rounded-[24px] overflow-hidden border border-white/10 bg-[#111] group">
+              <video
+                controls
+                preload="metadata"
+                className="w-full aspect-video object-cover"
+              >
+                <source src="/videos/avatarscene.mp4" type="video/mp4" />
+              </video>
+              <div className="p-4">
+                <h3 className={`text-xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Scene Generation</h3>
+                <p className="text-gray-400 text-sm">Full avatar in dynamic environments</p>
+              </div>
+            </div>
+            
+            {/* Two Avatars Video */}
+            <div className="relative rounded-[24px] overflow-hidden border border-white/10 bg-[#111] group">
+              <video
+                controls
+                preload="metadata"
+                className="w-full aspect-video object-cover"
+              >
+                <source src="/videos/twoavatars.mp4" type="video/mp4" />
+              </video>
+              <div className="p-4">
+                <h3 className={`text-xl font-bold text-white mb-2 ${spaceGrotesk.className}`}>Multi-Avatar Conversations</h3>
+                <p className="text-gray-400 text-sm">Multiple avatars interacting together</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
