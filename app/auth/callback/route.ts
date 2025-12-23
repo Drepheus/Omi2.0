@@ -32,6 +32,6 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // URL to redirect to after sign in process completes
-  return NextResponse.redirect(`${origin}/command-hub`)
+  // Redirect to auth-redirect page which will check sessionStorage for intended destination
+  return NextResponse.redirect(`${origin}/auth/redirect`)
 }

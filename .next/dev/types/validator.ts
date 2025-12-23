@@ -74,6 +74,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../app/auth/redirect/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/auth/redirect">> = Specific
+  const handler = {} as typeof import("../../../app/auth/redirect/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../app/calendar/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/calendar">> = Specific
@@ -204,6 +213,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends AppPageConfig<"/vizual">> = Specific
   const handler = {} as typeof import("../../../app/vizual/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/vizual/studio/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/vizual/studio">> = Specific
+  const handler = {} as typeof import("../../../app/vizual/studio/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

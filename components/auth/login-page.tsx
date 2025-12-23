@@ -1,24 +1,31 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
 import { useAuth } from "@/context/auth-context";
 import { useGuestMode } from "@/context/guest-mode-context";
 
 export function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/command-hub';
   const supabase = useMemo(() => getBrowserSupabaseClient(), []);
   const { session, loading } = useAuth();
   const { setGuestMode } = useGuestMode();
 
   useEffect(() => {
     if (session) {
-      router.replace("/command-hub");
+      router.replace(redirectTo);
     }
-  }, [router, session]);
+  }, [router, session, redirectTo]);
 
   const signInWithGoogle = async () => {
+    // Store redirect URL for after OAuth callback
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('authRedirect', redirectTo);
+    }
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -39,7 +46,7 @@ export function LoginPage() {
 
   const handleGuestMode = () => {
     setGuestMode(true);
-    router.push("/command-hub");
+    router.push(redirectTo);
   };
 
   if (loading) {

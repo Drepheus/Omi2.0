@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { Inter, Space_Grotesk, Playfair_Display } from "next/font/google";
 import { MetallicText } from "./MetallicText";
+import { useAuth } from "@/context/auth-context";
 
 const inter = Inter({ subsets: ["latin"], weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"] });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
@@ -12,7 +13,18 @@ const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "
 
 export function VizualStudio() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Handle Try Now button click
+  const handleTryNow = () => {
+    if (loading) return;
+    if (user) {
+      router.push('/vizual/studio');
+    } else {
+      router.push('/login?redirect=/vizual/studio');
+    }
+  };
   
   // Typing animation state
   const [typingText, setTypingText] = useState("");
@@ -116,7 +128,10 @@ export function VizualStudio() {
                <button className="hidden md:block px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-sm font-medium transition-all border border-white/10 backdrop-blur-sm">
                 JOIN US
               </button>
-              <button className="px-5 py-2 md:px-6 md:py-2 rounded-full bg-white text-black text-xs md:text-sm font-bold hover:bg-gray-200 transition-colors">
+              <button 
+                onClick={handleTryNow}
+                className="px-5 py-2 md:px-6 md:py-2 rounded-full bg-white text-black text-xs md:text-sm font-bold hover:bg-gray-200 transition-colors"
+              >
                 TRY NOW
               </button>
             </div>
