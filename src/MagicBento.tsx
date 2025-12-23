@@ -81,6 +81,19 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
+    icon: (
+      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
+        <text x="32" y="54" fontSize="11" fill="#000" fontWeight="900" style={{ fontFamily: 'sans-serif' }}>VIZUAL</text>
+      </svg>
+    ),
+    title: 'Vizual',
+    description: 'Advanced video production and visual storytelling studio',
+    label: 'Video',
+    action: 'vizual'
+  },
+  {
+    color: '#0a0a0a',
     icon: '⚙️',
     title: 'Account and API Settings',
     description: 'Configure API\'s and Account',
@@ -640,6 +653,9 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         break;
       case 'apistudio':
         router.push('/api-studio');
+        break;
+      case 'vizual':
+        router.push('/vizual');
         break;
       case 'settings':
         setIsSettingsOpen(true);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Orb } from "@/components/visuals/orb";
 import { ShinyText } from "@/components/typography/shiny-text";
@@ -12,6 +12,12 @@ export function LandingPage() {
   const { session } = useAuth();
   const { isGuestMode } = useGuestMode();
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (session) {
+      router.replace("/command-hub");
+    }
+  }, [session, router]);
 
   const handleStartClick = () => {
     setIsTransitioning(true);

@@ -20,9 +20,11 @@ export async function GET(request: NextRequest) {
 
   // HARD OVERRIDE: If we are on the cloud run URL, try to redirect to the custom domain
   // This fixes the issue where users get stuck on the .run.app domain
+  /*
   if (origin.includes('run.app')) {
     origin = 'https://useomiai.com';
   }
+  */
 
   if (code) {
     const cookieStore = cookies()
