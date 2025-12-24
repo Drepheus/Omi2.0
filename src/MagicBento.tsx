@@ -41,6 +41,19 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
+    icon: (
+      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
+        <text x="32" y="54" fontSize="11" fill="#000" fontWeight="900" style={{ fontFamily: 'sans-serif' }}>VIZUAL</text>
+      </svg>
+    ),
+    title: 'Vizual',
+    description: 'Advanced video production and visual storytelling studio',
+    label: 'Video',
+    action: 'vizual'
+  },
+  {
+    color: '#0a0a0a',
     icon: '⚡',
     title: 'AI Workflows',
     description: 'Automate complex tasks or multi-step reasoning with agentic systems',
@@ -78,19 +91,6 @@ const cardData = [
     description: 'View upcoming AI challenges, workshops, and product launches',
     label: 'Schedule',
     action: 'calendar'
-  },
-  {
-    color: '#0a0a0a',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
-        <text x="32" y="54" fontSize="11" fill="#000" fontWeight="900" style={{ fontFamily: 'sans-serif' }}>VIZUAL</text>
-      </svg>
-    ),
-    title: 'Vizual',
-    description: 'Advanced video production and visual storytelling studio',
-    label: 'Video',
-    action: 'vizual'
   },
   {
     color: '#0a0a0a',
