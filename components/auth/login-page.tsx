@@ -9,7 +9,7 @@ import { useGuestMode } from "@/context/guest-mode-context";
 export function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/studio';
+  const redirectTo = searchParams.get('redirect') || '/command-hub';
   const supabase = useMemo(() => getBrowserSupabaseClient(), []);
   const { session, loading } = useAuth();
   const { setGuestMode } = useGuestMode();
@@ -25,7 +25,7 @@ export function LoginPage() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('authRedirect', redirectTo);
     }
-
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -69,7 +69,7 @@ export function LoginPage() {
         <div className="login-card">
           <div className="login-header">
             <h1 className="login-title">Welcome to Omi AI</h1>
-            <p className="login-subtitle">Sign in to start creating</p>
+            <p className="login-subtitle">Sign in to start your AI conversation</p>
           </div>
 
           <div className="login-buttons">

@@ -1,5 +1,5 @@
-import { OmiAIStudio } from "@/components/omi/omi-studio";
+import { LandingPage } from "@/components/landing/landing-page";
 
 export default function HomePage() {
-  return <OmiAIStudio />;
+  return <LandingPage />;
 }
