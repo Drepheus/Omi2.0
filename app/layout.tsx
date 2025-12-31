@@ -3,11 +3,9 @@ import Script from "next/script";
 import { AppProviders } from "@/components/providers/app-providers";
 import "./globals.css";
 
-import GlowingDotsNav from "@/src/GlowingDotsNav";
-
 export const metadata: Metadata = {
   title: "Omi AI",
-  description: "Multimodal AI workbench powered by Supabase + Next.js",
+  description: "Advanced AI Visual Studio",
 };
 
 export default function RootLayout({
@@ -58,7 +56,6 @@ export default function RootLayout({
 
         <AppProviders>
           {children}
-          <GlowingDotsNav />
         </AppProviders>
       </body>
     </html>

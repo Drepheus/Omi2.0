@@ -1,16 +1,15 @@
 # Omi AI - Tech Stack & Infrastructure
 
 ## 📋 Executive Summary
-Full-stack AI chat application built on Next.js, deployed on Google Cloud Run, using Supabase for data/auth and Google Gemini for AI intelligence.
+Advanced AI Visual Studio built on Next.js, deployed on Google Cloud Run, using Supabase for data/auth and multiple AI models (Veo, Imagen, Replicate) for media generation.
 
 ---
 
 ## 🏗️ Architecture Overview
 
 ### Deployment Model: **Containerized Serverless**
-- **Platform**: Google Cloud Run (fully managed serverless containers)
+- **Platform**: Google Cloud Run
 - **Container**: Docker (Node.js 18-alpine)
-- **Region**: us-central1 (recommended)
 - **Scaling**: Auto-scaling 0 to N instances
 
 ### Core Stack
@@ -23,59 +22,29 @@ Full-stack AI chat application built on Next.js, deployed on Google Cloud Run, u
 
 ## 💻 Frontend Stack
 
-### Core
-- **Next.js**: Server-side rendering & API routes
-- **React**: UI library
-- **TypeScript**: Type safety
-
 ### Styling & Animation
 - **Tailwind CSS**: Utility-first styling
 - **Framer Motion**: React animations
 - **GSAP**: Advanced animations
-- **Lucide React**: Icons
+- **Three.js**: WebGL visual effects
 
 ---
 
-## 🔧 Backend Stack (Next.js API Routes)
-
-### API Endpoints (`/app/api/...`)
-- **Chat**: Streaming responses with Google Gemini
-- **RAG**: (Planned) Vertex AI Search / Supabase pgvector
-- **Media**: Replicate API for image/video generation
-- **Search**: Tavily API for web grounding
+## 🔧 Backend Stack
 
 ### AI Services
-- **LLM**: Google Gemini 1.5 Pro / Flash
-- **SDK**: `@google/generative-ai` (Migrating to Vertex AI SDK)
-- **Search**: Tavily Search API
-- **Media**: Replicate (Stable Diffusion, etc.)
+- **Video**: Veo (Google), Replicate
+- **Images**: Imagen 3 (Google), Stable Diffusion (Replicate)
+- **Avatars**: Custom AI Avatar pipelines
 
 ---
 
 ## ☁️ Google Cloud Infrastructure
 
 ### Services Used
-- **Cloud Run**: Hosting the Next.js application
-- **Cloud Build**: CI/CD for building Docker images
-- **Container Registry (GCR)**: Storing Docker images
-- **Vertex AI**: (Planned) Advanced RAG and model serving
-
-### Environment Variables
-Required in Cloud Run:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `GOOGLE_GENERATIVE_AI_API_KEY` (or Vertex AI credentials)
-- `TAVILY_API_KEY`
-
----
-
-## 🗄️ Database (Supabase)
-
-### Tables
-- `conversations`: User chat history
-- `messages`: Individual chat messages
-- `users`: User profiles and settings
-- `documents`: (If using pgvector) RAG documents
+- **Cloud Run**: Hosting the application
+- **Cloud Build**: CI/CD
+- **Vertex AI**: Advanced model access
 
 ---
 
@@ -85,7 +54,3 @@ Required in Cloud Run:
 2. **Deploy**: `gcloud run deploy omi-ai --image gcr.io/PROJECT_ID/omi-ai`
 
 ---
-
-## 📞 Contact & Support
-- **Repository**: GitHub
-- **Infrastructure**: Google Cloud Platform
