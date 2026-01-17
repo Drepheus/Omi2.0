@@ -337,6 +337,23 @@
   padding: 16px 12px;
 }
 
+.sidebar-item.command-hub-back {
+  background: #8a2be214;
+  border: 1px solid #8a2be233;
+  margin-bottom: 8px;
+}
+
+.sidebar-item.command-hub-back:hover {
+  background: #8a2be226;
+  border-color: #8a2be266;
+  box-shadow: 0 0 15px #8a2be24d;
+}
+
+.sidebar-item.command-hub-back:before {
+  background: linear-gradient(#a855f7 0%, #d946ef 100%);
+  transform: scaleY(1);
+}
+
 .mobile-menu-btn, .mobile-sidebar-close, .sidebar-overlay {
   display: none;
 }

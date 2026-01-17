@@ -170,7 +170,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
   const [spotlightUrl, setSpotlightUrl] = useState<string | null>(null);
-  
+
   // View All Modal State
   const [viewAllModal, setViewAllModal] = useState<{ isOpen: boolean, title: string, items: any[], renderItem: (item: any, index: number) => React.ReactNode } | null>(null);
 
@@ -489,112 +489,112 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
     { name: 'Creativity', icon: '✨', tooltip: 'Creative level', options: ['Conservative', 'Balanced', 'Creative', 'Wild'] },
   ];
 
-const spotlightItems = [
-  {
-    name: 'Snap Research EgoEdit',
-    description: 'Explore the latest in ego-centric video editing from Snap Research.',
-    url: 'https://snap-research.github.io/EgoEdit/',
-    icon: '👻'
-  },
-  {
-    name: 'Black Forest Labs',
-    description: 'Creators of the Flux image generation models.',
-    url: 'https://bfl.ai/',
-    icon: '🌲'
-  },
-  {
-    name: 'LongCat Video Avatar',
-    description: 'Generate long videos from a single portrait image.',
-    url: 'https://meigen-ai.github.io/LongCat-Video-Avatar/',
-    icon: '🐱'
-  },
-  {
-    name: 'Microsoft TRELLIS',
-    description: 'Structured 3D generation from a single image.',
-    url: 'https://microsoft.github.io/TRELLIS.2/',
-    icon: '🧊'
-  },
-  {
-    name: 'Luma Labs',
-    description: 'Building the future of visual AI with Dream Machine.',
-    url: 'https://lumalabs.ai/#team',
-    icon: '☁️'
-  },
-  {
-    name: 'Kling AI',
-    description: 'Next-generation video generation model.',
-    url: 'https://klingai.com/global/',
-    icon: '🎬'
-  },
-  {
-    name: 'Wan Video',
-    description: 'Advanced video synthesis technology.',
-    url: 'https://wan.video/',
-    icon: '🎥'
-  },
-  {
-    name: 'Seedance 1.5 Pro',
-    description: 'Advanced dance generation model by ByteDance.',
-    url: 'https://seed.bytedance.com/en/seedance1_5_pro',
-    icon: '💃'
+  const spotlightItems = [
+    {
+      name: 'Snap Research EgoEdit',
+      description: 'Explore the latest in ego-centric video editing from Snap Research.',
+      url: 'https://snap-research.github.io/EgoEdit/',
+      icon: '👻'
+    },
+    {
+      name: 'Black Forest Labs',
+      description: 'Creators of the Flux image generation models.',
+      url: 'https://bfl.ai/',
+      icon: '🌲'
+    },
+    {
+      name: 'LongCat Video Avatar',
+      description: 'Generate long videos from a single portrait image.',
+      url: 'https://meigen-ai.github.io/LongCat-Video-Avatar/',
+      icon: '🐱'
+    },
+    {
+      name: 'Microsoft TRELLIS',
+      description: 'Structured 3D generation from a single image.',
+      url: 'https://microsoft.github.io/TRELLIS.2/',
+      icon: '🧊'
+    },
+    {
+      name: 'Luma Labs',
+      description: 'Building the future of visual AI with Dream Machine.',
+      url: 'https://lumalabs.ai/#team',
+      icon: '☁️'
+    },
+    {
+      name: 'Kling AI',
+      description: 'Next-generation video generation model.',
+      url: 'https://klingai.com/global/',
+      icon: '🎬'
+    },
+    {
+      name: 'Wan Video',
+      description: 'Advanced video synthesis technology.',
+      url: 'https://wan.video/',
+      icon: '🎥'
+    },
+    {
+      name: 'Seedance 1.5 Pro',
+      description: 'Advanced dance generation model by ByteDance.',
+      url: 'https://seed.bytedance.com/en/seedance1_5_pro',
+      icon: '💃'
+    }
+  ];
+
+  const aiModelsItems = [
+    { name: 'Flux Schnell', description: 'Ultra-fast image generation', icon: '⚡', color: '#f59e0b', speed: 'Fast', type: 'image' },
+    { name: 'Midjourney V6', description: 'Artistic and creative outputs', icon: '🎨', color: '#ec4899', speed: 'Medium', type: 'image' },
+    { name: 'Kling AI', description: 'Advanced video generation', icon: '🎬', color: '#8b5cf6', speed: 'Medium', type: 'video' },
+    { name: 'Runway Gen-3', description: 'Professional video synthesis', icon: '🎥', color: '#06b6d4', speed: 'Slow', type: 'video' },
+    { name: 'Stable Diffusion 3', description: 'Open-source image model', icon: '🖼️', color: '#22c55e', speed: 'Fast', type: 'image' },
+    { name: 'Luma Dream Machine', description: 'Dreamy visual effects', icon: '☁️', color: '#a855f7', speed: 'Medium', type: 'video' },
+  ];
+
+  interface ViewAllModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    items: any[];
+    renderItem: (item: any, index: number) => React.ReactNode;
   }
-];
 
-const aiModelsItems = [
-  { name: 'Flux Schnell', description: 'Ultra-fast image generation', icon: '⚡', color: '#f59e0b', speed: 'Fast', type: 'image' },
-  { name: 'Midjourney V6', description: 'Artistic and creative outputs', icon: '🎨', color: '#ec4899', speed: 'Medium', type: 'image' },
-  { name: 'Kling AI', description: 'Advanced video generation', icon: '🎬', color: '#8b5cf6', speed: 'Medium', type: 'video' },
-  { name: 'Runway Gen-3', description: 'Professional video synthesis', icon: '🎥', color: '#06b6d4', speed: 'Slow', type: 'video' },
-  { name: 'Stable Diffusion 3', description: 'Open-source image model', icon: '🖼️', color: '#22c55e', speed: 'Fast', type: 'image' },
-  { name: 'Luma Dream Machine', description: 'Dreamy visual effects', icon: '☁️', color: '#a855f7', speed: 'Medium', type: 'video' },
-];
+  const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModalProps) => {
+    if (!isOpen) return null;
 
-interface ViewAllModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  items: any[];
-  renderItem: (item: any, index: number) => React.ReactNode;
-}
-
-const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModalProps) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/90 backdrop-blur-md p-4" onClick={onClose}>
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-6xl h-[85vh] bg-[#0f0f1a] rounded-2xl border border-purple-500/20 flex flex-col overflow-hidden shadow-2xl"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#13131f]">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-            <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
-            {title}
-          </h2>
-          <button 
-            onClick={onClose}
-            className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {items.map((item, index) => (
-              <div key={index} className="animate-fadeIn" style={{ animationDelay: `${index * 0.05}s` }}>
-                {renderItem(item, index)}
-              </div>
-            ))}
+    return (
+      <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/90 backdrop-blur-md p-4" onClick={onClose}>
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="w-full max-w-6xl h-[85vh] bg-[#0f0f1a] rounded-2xl border border-purple-500/20 flex flex-col overflow-hidden shadow-2xl"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between p-6 border-b border-white/10 bg-[#13131f]">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
           </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
+
+          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {items.map((item, index) => (
+                <div key={index} className="animate-fadeIn" style={{ animationDelay: `${index * 0.05}s` }}>
+                  {renderItem(item, index)}
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -639,7 +639,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
               </div>
               <span className="user-plan-text">Free Plan</span>
             </div>
-            
+
             {/* Close Sidebar Button (Mobile) */}
             <button
               className="mobile-sidebar-close"
@@ -694,6 +694,13 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
         </nav>
 
         <div className="sidebar-footer">
+          <button
+            className="sidebar-item command-hub-back"
+            onClick={() => window.location.href = '/command-hub'}
+          >
+            <span className="sidebar-icon">🏠</span>
+            <span className="sidebar-label">Command Hub</span>
+          </button>
           <button className="sidebar-item">
             <span className="sidebar-icon">🆕</span>
             <span className="sidebar-label">What's New</span>
@@ -720,9 +727,9 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
             <h2 className="section-title" style={{ marginBottom: '30px' }}>
               <span className="title-highlight">My</span> Library
             </h2>
-            <div className="library-grid" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+            <div className="library-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
               gap: '20px',
               padding: '20px 0'
             }}>
@@ -881,7 +888,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   renderItem: (bp, i) => (
                     <div className="relative aspect-[2/3] rounded-xl overflow-hidden group cursor-pointer border border-white/10">
                       {bp.type === 'video' ? (
-                        <video src={bp.image} muted loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => {e.currentTarget.pause(); e.currentTarget.currentTime = 0;}} />
+                        <video src={bp.image} muted loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }} />
                       ) : (
                         <img src={bp.image} alt={bp.title} className="w-full h-full object-cover" />
                       )}
@@ -898,15 +905,15 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   {imageBlueprints.map((bp, i) => (
                     <div className="horizontal-card" key={`orig-${i}`}>
                       {bp.type === 'video' ? (
-                        <video 
-                          src={bp.image} 
-                          muted 
-                          loop 
-                          playsInline 
+                        <video
+                          src={bp.image}
+                          muted
+                          loop
+                          playsInline
                           onMouseOver={e => {
                             e.currentTarget.muted = false;
                             e.currentTarget.play().catch(err => console.error("Video play failed:", err));
-                          }} 
+                          }}
                           onMouseOut={e => {
                             e.currentTarget.pause();
                             e.currentTarget.currentTime = 0;
@@ -925,15 +932,15 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   {imageBlueprints.map((bp, i) => (
                     <div className="horizontal-card" key={`dup-${i}`}>
                       {bp.type === 'video' ? (
-                        <video 
-                          src={bp.image} 
-                          muted 
-                          loop 
-                          playsInline 
+                        <video
+                          src={bp.image}
+                          muted
+                          loop
+                          playsInline
                           onMouseOver={e => {
                             e.currentTarget.muted = false;
                             e.currentTarget.play().catch(err => console.error("Video play failed:", err));
-                          }} 
+                          }}
                           onMouseOut={e => {
                             e.currentTarget.pause();
                             e.currentTarget.currentTime = 0;
@@ -1091,7 +1098,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   items: featuredVideos,
                   renderItem: (vid, i) => (
                     <div className="relative aspect-video rounded-xl overflow-hidden group cursor-pointer border border-white/10">
-                      <video src={vid.image} loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => {e.currentTarget.pause(); e.currentTarget.currentTime = 0;}} />
+                      <video src={vid.image} loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }} />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-xl">▶</div>
                       </div>
@@ -1107,14 +1114,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   {/* Original Items */}
                   {featuredVideos.map((vid, i) => (
                     <div className="horizontal-card" key={`orig-${i}`}>
-                      <video 
-                        src={vid.image} 
-                        loop 
-                        playsInline 
+                      <video
+                        src={vid.image}
+                        loop
+                        playsInline
                         onMouseOver={e => {
                           e.currentTarget.muted = false;
                           e.currentTarget.play().catch(err => console.error("Video play failed:", err));
-                        }} 
+                        }}
                         onMouseOut={e => {
                           e.currentTarget.pause();
                           e.currentTarget.currentTime = 0;
@@ -1130,14 +1137,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   {/* Duplicated Items for Loop */}
                   {featuredVideos.map((vid, i) => (
                     <div className="horizontal-card" key={`dup-${i}`}>
-                      <video 
-                        src={vid.image} 
-                        loop 
-                        playsInline 
+                      <video
+                        src={vid.image}
+                        loop
+                        playsInline
                         onMouseOver={e => {
                           e.currentTarget.muted = false;
                           e.currentTarget.play().catch(err => console.error("Video play failed:", err));
-                        }} 
+                        }}
                         onMouseOut={e => {
                           e.currentTarget.pause();
                           e.currentTarget.currentTime = 0;
@@ -1471,8 +1478,8 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                       position: 'relative',
                       overflow: 'hidden'
                     }}
-                    whileHover={{ 
-                      scale: 1.02, 
+                    whileHover={{
+                      scale: 1.02,
                       backgroundColor: 'rgba(255, 255, 255, 0.06)',
                       borderColor: 'rgba(168, 85, 247, 0.4)'
                     }}
@@ -1518,10 +1525,10 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                       transition: 'opacity 0.3s ease'
                     }} />
 
-                    <div style={{ 
-                      width: '60px', 
-                      height: '60px', 
-                      borderRadius: '50%', 
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      borderRadius: '50%',
                       background: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
                       display: 'flex',
                       alignItems: 'center',
@@ -1541,23 +1548,23 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                         animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite'
                       }} />
                     </div>
-                    
+
                     <div style={{ flex: 1, zIndex: 1 }}>
-                      <h3 style={{ 
-                        color: 'white', 
-                        marginBottom: '6px', 
-                        fontSize: '1.1rem', 
+                      <h3 style={{
+                        color: 'white',
+                        marginBottom: '6px',
+                        fontSize: '1.1rem',
                         fontWeight: '600',
                         letterSpacing: '-0.01em'
                       }}>
                         {track.title}
                       </h3>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ 
-                          fontSize: '0.75rem', 
-                          color: '#e9d5ff', 
-                          background: 'rgba(168, 85, 247, 0.15)', 
-                          padding: '2px 8px', 
+                        <span style={{
+                          fontSize: '0.75rem',
+                          color: '#e9d5ff',
+                          background: 'rgba(168, 85, 247, 0.15)',
+                          padding: '2px 8px',
                           borderRadius: '12px',
                           border: '1px solid rgba(168, 85, 247, 0.2)'
                         }}>
@@ -1567,14 +1574,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                       </div>
                     </div>
 
-                    <button style={{ 
-                      width: '44px', 
-                      height: '44px', 
-                      borderRadius: '50%', 
-                      background: 'rgba(255, 255, 255, 0.1)', 
-                      border: '1px solid rgba(255, 255, 255, 0.1)', 
-                      color: 'white', 
-                      fontSize: '1rem', 
+                    <button style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      color: 'white',
+                      fontSize: '1rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -1582,18 +1589,18 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                       transition: 'all 0.2s ease',
                       zIndex: 1
                     }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #a855f7, #ec4899)';
-                      e.currentTarget.style.border = 'none';
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                      e.currentTarget.style.boxShadow = '0 0 15px rgba(168, 85, 247, 0.5)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                      e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #a855f7, #ec4899)';
+                        e.currentTarget.style.border = 'none';
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                        e.currentTarget.style.boxShadow = '0 0 15px rgba(168, 85, 247, 0.5)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
                       ▶
                     </button>
@@ -1604,16 +1611,16 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
 
             {/* MusicFX DJ Section */}
             <div className="musicfx-section" style={{ padding: '0 40px 60px' }}>
-               <div className="section-header-row" style={{ marginBottom: '20px' }}>
+              <div className="section-header-row" style={{ marginBottom: '20px' }}>
                 <h2 className="section-title">
-                  <span className="title-highlight" style={{ 
+                  <span className="title-highlight" style={{
                     background: 'linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent'
                   }}>MusicFX DJ</span> powered by Google
                 </h2>
               </div>
-              
+
               {!showMusicFX ? (
                 <div style={{
                   background: 'rgba(255, 255, 255, 0.05)',
@@ -1631,10 +1638,10 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                     Experience the future of music creation
                   </h3>
                   <p style={{ color: 'rgba(255, 255, 255, 0.7)', maxWidth: '600px', marginBottom: '30px' }}>
-                    Create your own DJ sets in real-time using Google's advanced MusicFX AI. 
+                    Create your own DJ sets in real-time using Google's advanced MusicFX AI.
                     Mix genres, instruments, and styles seamlessly.
                   </p>
-                  
+
                   <button
                     onClick={() => setShowMusicFX(true)}
                     style={{
@@ -1662,7 +1669,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                     }}
                   >
-                    <span style={{ 
+                    <span style={{
                       background: 'linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -1680,7 +1687,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   position: 'relative',
                   background: '#000'
                 }}>
-                  <button 
+                  <button
                     onClick={() => setShowMusicFX(false)}
                     style={{
                       position: 'absolute',
@@ -1702,7 +1709,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   >
                     ✕
                   </button>
-                  <iframe 
+                  <iframe
                     src="https://labs.google/fx/tools/music-fx-dj"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="MusicFX DJ"
@@ -1889,14 +1896,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                   title: 'Featured Assistant Templates',
                   items: featuredAssistants,
                   renderItem: (assistant, i) => (
-                    <div 
+                    <div
                       className="rounded-2xl p-6 hover:scale-[1.02] transition-transform cursor-pointer border border-white/10"
                       style={{ background: `linear-gradient(135deg, ${assistant.color}15, ${assistant.color}25)`, borderColor: `${assistant.color}50` }}
                     >
                       <div className="text-4xl mb-4">{assistant.icon}</div>
                       <h3 className="text-white text-lg font-semibold mb-2">{assistant.title}</h3>
                       <p className="text-white/60 text-sm mb-6">{assistant.description}</p>
-                      <button 
+                      <button
                         className="w-full py-2.5 rounded-lg text-white text-sm font-medium transition-colors"
                         style={{ background: assistant.color }}
                       >
@@ -1973,15 +1980,15 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                 <p className="banner-subtitle">
                   Discover 50+ ready-made workflows for effortless AI creation. All Blueprints 75% off for a limited time!
                 </p>
-                
+
                 <div className="hero-actions" style={{ display: 'flex', gap: '20px', marginTop: '30px', justifyContent: 'center' }}>
-                  <button 
+                  <button
                     className="hero-glass-btn"
                     onClick={() => setActiveTool('Image')}
                   >
                     Create <ShinyText text="Image" speed={10} className="media-studio-shiny-text" />
                   </button>
-                  <button 
+                  <button
                     className="hero-glass-btn"
                     onClick={() => setActiveTool('Video')}
                   >
@@ -2028,7 +2035,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                 <h2 className="section-title">
                   <span style={{ color: 'white' }}>Community</span> <ShinyText text="Creations" speed={6} className="premium-gradient-text" />
                 </h2>
-                <button 
+                <button
                   className="view-more-btn"
                   onClick={() => setViewAllModal({
                     isOpen: true,
@@ -2037,7 +2044,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                     renderItem: (item, i) => (
                       <div className="relative aspect-square rounded-xl overflow-hidden group cursor-pointer border border-white/10">
                         {item.type === 'video' ? (
-                          <video src={item.src} muted loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => {e.currentTarget.pause(); e.currentTarget.currentTime = 0;}} />
+                          <video src={item.src} muted loop playsInline className="w-full h-full object-cover" onMouseOver={e => e.currentTarget.play()} onMouseOut={e => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }} />
                         ) : item.type === 'audio' ? (
                           <div className="w-full h-full bg-gradient-to-br from-green-500/20 to-blue-500/20 flex flex-col items-center justify-center gap-3">
                             <span className="text-4xl">🎵</span>
@@ -2245,14 +2252,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                 <h2 className="section-title">
                   <span style={{ color: 'white' }}>Spotlighted</span> <ShinyText text="Models & Partners" speed={6} className="premium-gradient-text" />
                 </h2>
-                <button 
+                <button
                   className="view-more-btn"
                   onClick={() => setViewAllModal({
                     isOpen: true,
                     title: 'Spotlighted Models & Partners',
                     items: spotlightItems,
                     renderItem: (item, i) => (
-                      <div 
+                      <div
                         className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors cursor-pointer flex flex-col gap-4"
                         onClick={() => window.open(item.url, '_blank')}
                       >
@@ -2311,14 +2318,14 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                 <h2 className="section-title">
                   <span style={{ color: 'white' }}>AI</span> <ShinyText text="Models" speed={6} className="premium-gradient-text" />
                 </h2>
-                <button 
+                <button
                   className="view-more-btn"
                   onClick={() => setViewAllModal({
                     isOpen: true,
                     title: 'AI Models',
                     items: aiModelsItems,
                     renderItem: (model, i) => (
-                      <div 
+                      <div
                         className="bg-transparent border rounded-2xl p-6 cursor-pointer hover:scale-[1.02] transition-transform"
                         style={{ borderColor: model.color }}
                         onClick={() => {
@@ -2342,7 +2349,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                               <span className="text-xs px-2 py-0.5 rounded border" style={{ borderColor: `${model.color}60`, color: model.color }}>
                                 {model.speed}
                               </span>
-                              <span className="text-xs px-2 py-0.5 rounded border" style={{ 
+                              <span className="text-xs px-2 py-0.5 rounded border" style={{
                                 borderColor: model.type === 'video' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(59, 130, 246, 0.6)',
                                 color: model.type === 'video' ? '#a855f7' : '#3b82f6'
                               }}>
@@ -2455,7 +2462,7 @@ const ViewAllModal = ({ isOpen, onClose, title, items, renderItem }: ViewAllModa
                 <h2 className="section-title">
                   <span style={{ color: 'white' }}>Upcoming</span> <ShinyText text="Events" speed={6} className="premium-gradient-text" />
                 </h2>
-                <button 
+                <button
                   className="view-more-btn"
                   onClick={() => router.push('/calendar')}
                 >

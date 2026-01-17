@@ -44,7 +44,7 @@ export default function NewsTicker() {
     ];
 
     const lastInitials = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    
+
     const techSuffixes = [
       'Dev', 'Design', 'Code', 'AI', 'Tech', 'Studio', 'Labs', 'Systems', 'Web', 'App',
       'Soft', 'Net', 'Data', 'Cloud', 'Cyber', 'Pixel', 'Vector', 'Logic', 'Flow', 'Stack'
@@ -52,12 +52,12 @@ export default function NewsTicker() {
 
     const actions = [
       'just trained a Custom Omi',
-      'is chatting with Omi Chat',
-      'just generated a 4K image in Media Studio',
+      'is chatting with AI Chat',
+      'just generated a 4K image in Omi Studio',
       'just Upgraded to the Pro Plan!',
       'just created a new AI Workflow',
       'just generated a stunning video with Veo',
-      'just completed a deep web search',
+      'just completed a deep AI Search',
       'just customized their AI assistant',
       'just exported media from the gallery',
       'just discovered a new feature',
@@ -135,7 +135,7 @@ export default function NewsTicker() {
 
       const randomAction = actions[Math.floor(Math.random() * actions.length)];
       const randomMinutesAgo = Math.floor(Math.random() * 60) + 1;
-      
+
       generatedActivities.push({
         username: randomUsername,
         action: randomAction,

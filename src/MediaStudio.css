@@ -323,7 +323,8 @@
 
 .sidebar-item.active::before {
   transform: scaleY(1);
-  background: linear-gradient(180deg, #a855f7 0%, #d946ef 100%); /* Keep accent here */
+  background: linear-gradient(180deg, #a855f7 0%, #d946ef 100%);
+  /* Keep accent here */
 }
 
 .sidebar-icon {
@@ -351,6 +352,23 @@
   padding: 16px 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: none;
+}
+
+.sidebar-item.command-hub-back {
+  background: rgba(138, 43, 226, 0.08);
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  margin-bottom: 8px;
+}
+
+.sidebar-item.command-hub-back:hover {
+  background: rgba(138, 43, 226, 0.15);
+  border-color: rgba(138, 43, 226, 0.4);
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+}
+
+.sidebar-item.command-hub-back::before {
+  background: linear-gradient(180deg, #a855f7 0%, #d946ef 100%);
+  transform: scaleY(1);
 }
 
 .mobile-menu-btn {
@@ -1243,7 +1261,7 @@
   gap: 16px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Hide Scrollbar */
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1379,125 +1397,127 @@
 
 /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
- .media-studio-page {
- flex-direction: column;
- }
+  .media-studio-page {
+    flex-direction: column;
+  }
 
- .media-sidebar {
- position: fixed;
- top: 0;
- left: 0;
- height: 100%;
- z-index: 2000;
- transform: translateX(-100%);
- transition: transform 0.3s ease;
- width: 280px;
- }
+  .media-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 280px;
+  }
 
- .media-sidebar.open {
- transform: translateX(0);
- }
+  .media-sidebar.open {
+    transform: translateX(0);
+  }
 
- .sidebar-overlay {
- display: block;
- position: fixed;
- inset: 0;
- background: rgba(0, 0, 0, 0.6);
- backdrop-filter: blur(4px);
- z-index: 1900;
- opacity: 0;
- pointer-events: none;
- transition: opacity 0.3s ease;
- }
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
 
- .media-sidebar.open + .media-main-content .sidebar-overlay,
- .sidebar-overlay:has(+ .media-sidebar.open) { /* This selector might not work as intended depending on DOM order, but the JS handles the overlay rendering usually */
- /* Actually, the overlay is rendered conditionally in React, so we just need basic styles */
- }
- 
- /* Since the overlay is conditionally rendered in React, we just need to style it when it exists */
- .sidebar-overlay {
- opacity: 1;
- pointer-events: auto;
- }
+  .media-sidebar.open+.media-main-content .sidebar-overlay,
+  .sidebar-overlay:has(+ .media-sidebar.open) {
+    /* This selector might not work as intended depending on DOM order, but the JS handles the overlay rendering usually */
+    /* Actually, the overlay is rendered conditionally in React, so we just need basic styles */
+  }
 
- .mobile-menu-btn {
- display: flex;
- align-items: center;
- justify-content: center;
- position: fixed;
- top: 16px;
- left: 16px;
- width: 40px;
- height: 40px;
- background: rgba(20, 10, 35, 0.6);
- backdrop-filter: blur(10px);
- border: 1px solid rgba(168, 85, 247, 0.3);
- border-radius: 10px;
- color: white;
- font-size: 1.5rem;
- z-index: 100;
- cursor: pointer;
- }
+  /* Since the overlay is conditionally rendered in React, we just need to style it when it exists */
+  .sidebar-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
- .mobile-sidebar-close {
- display: block;
- position: absolute;
- top: 16px;
- right: 16px;
- background: transparent;
- border: none;
- color: rgba(255, 255, 255, 0.6);
- font-size: 1.2rem;
- cursor: pointer;
- }
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    background: rgba(20, 10, 35, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
+    color: white;
+    font-size: 1.5rem;
+    z-index: 100;
+    cursor: pointer;
+  }
 
- .media-main-content {
- padding: 60px 16px 80px; /* Top padding for menu btn, bottom for safe area */
- }
+  .mobile-sidebar-close {
+    display: block;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
 
- .close-btn {
- top: 16px;
- right: 16px;
- width: 40px;
- height: 40px;
- font-size: 1.1rem;
- }
+  .media-main-content {
+    padding: 60px 16px 80px;
+    /* Top padding for menu btn, bottom for safe area */
+  }
 
- .banner-content {
- padding: 40px 20px;
- }
+  .close-btn {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
 
- .banner-title {
- font-size: 2rem;
- }
+  .banner-content {
+    padding: 40px 20px;
+  }
 
- .banner-subtitle {
- font-size: 0.9rem;
- }
+  .banner-title {
+    font-size: 2rem;
+  }
 
- .hero-glass-btn {
- padding: 10px 24px;
- font-size: 1rem;
- }
+  .banner-subtitle {
+    font-size: 0.9rem;
+  }
 
- /* Grid Adjustments */
- .blueprints-grid,
- .community-grid,
- .models-grid {
- grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
- gap: 16px;
- }
- 
- /* Adjust specific grid classes if they exist, otherwise generic grid handling */
- [class*=-grid] {
- grid-template-columns: 1fr;
- }
+  .hero-glass-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
 
- .blueprint-card,
- .community-card {
- min-height: 200px;
- }
+  /* Grid Adjustments */
+  .blueprints-grid,
+  .community-grid,
+  .models-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    gap: 16px;
+  }
+
+  /* Adjust specific grid classes if they exist, otherwise generic grid handling */
+  [class*=-grid] {
+    grid-template-columns: 1fr;
+  }
+
+  .blueprint-card,
+  .community-card {
+    min-height: 200px;
+  }
 }
 
 
@@ -1519,10 +1539,12 @@
   padding: 0 40px 40px 40px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  
+
   /* Hide Scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
 }
 
 /* Hide Scrollbar for Webkit */
@@ -1562,58 +1584,87 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
 }
 
 /* Item Sizing & Snap */
-.spotlight-grid > div,
-.models-grid > div,
-.events-grid > div,
-.blueprints-grid-container > div,
-.blueprints-grid > div,
-.voice-presets-grid > div,
-.music-tracks-grid > div,
-.avatars-grid > div,
-.assistants-grid > div {
+.spotlight-grid>div,
+.models-grid>div,
+.events-grid>div,
+.blueprints-grid-container>div,
+.blueprints-grid>div,
+.voice-presets-grid>div,
+.music-tracks-grid>div,
+.avatars-grid>div,
+.assistants-grid>div {
   flex-shrink: 0;
   scroll-snap-align: start;
 }
 
-.spotlight-grid > div { min-width: 300px; }
-.models-grid > div { min-width: 280px; }
-.events-grid > div { min-width: 320px; }
-.blueprints-grid-container > div { min-width: 250px; }
-.blueprints-grid > div { min-width: 280px; }
-.voice-presets-grid > div { min-width: 250px; }
-.music-tracks-grid > div { min-width: 300px; }
-.avatars-grid > div { min-width: 220px; }
-.assistants-grid > div { min-width: 260px; }
+.spotlight-grid>div {
+  min-width: 300px;
+}
+
+.models-grid>div {
+  min-width: 280px;
+}
+
+.events-grid>div {
+  min-width: 320px;
+}
+
+.blueprints-grid-container>div {
+  min-width: 250px;
+}
+
+.blueprints-grid>div {
+  min-width: 280px;
+}
+
+.voice-presets-grid>div {
+  min-width: 250px;
+}
+
+.music-tracks-grid>div {
+  min-width: 300px;
+}
+
+.avatars-grid>div {
+  min-width: 220px;
+}
+
+.assistants-grid>div {
+  min-width: 260px;
+}
 
 /* Mobile Horizontal Scrolling */
 @media (max-width: 768px) {
- .spotlight-grid,
- .models-grid,
- .events-grid,
- .blueprints-grid-container {
- display: flex !important;
- overflow-x: auto !important;
- flex-wrap: nowrap !important;
- gap: 16px;
- padding-bottom: 20px;
- scroll-snap-type: x mandatory;
- -webkit-overflow-scrolling: touch;
- margin-right: -16px; /* Offset padding */
- padding-right: 16px;
+
+  .spotlight-grid,
+  .models-grid,
+  .events-grid,
+  .blueprints-grid-container {
+    display: flex !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    gap: 16px;
+    padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    margin-right: -16px;
+    /* Offset padding */
+    padding-right: 16px;
     margin-left: -16px;
     padding-left: 16px;
   }
 
-  .spotlight-grid > div,
-  .models-grid > div,
-  .events-grid > div,
-  .blueprints-grid-container > div {
+  .spotlight-grid>div,
+  .models-grid>div,
+  .events-grid>div,
+  .blueprints-grid-container>div {
     min-width: 280px;
     scroll-snap-align: start;
     flex-shrink: 0;
@@ -1629,7 +1680,7 @@
     padding-left: 16px;
     padding-right: 16px;
   }
-  
+
   /* Pause animation on touch to allow manual scrolling */
   .horizontal-cards-scroller-track:active,
   .horizontal-cards-scroller-track:focus {
@@ -1639,25 +1690,26 @@
 
 /* Live Indicator Animation */
 @keyframes livePulse {
- 0% {
- box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
- opacity: 1;
- }
- 70% {
- box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
- opacity: 1;
- }
- 100% {
- box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
- opacity: 1;
- }
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    opacity: 1;
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    opacity: 1;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    opacity: 1;
+  }
 }
 
 .live-dot {
- width: 8px;
- height: 8px;
- background-color: #ef4444;
- border-radius: 50%;
- animation: livePulse 2s infinite;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  animation: livePulse 2s infinite;
 }
-

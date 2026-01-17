@@ -289,6 +289,33 @@ html, body {
   font-size: 16px;
 }
 
+.command-hub-btn {
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffffff1a 0%, #ffffff0d 100%);
+  border: 1px solid #fff3;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  transition: all .2s;
+  display: flex;
+}
+
+.command-hub-btn:hover {
+  background: linear-gradient(135deg, #8a2be233 0%, #8a2be21a 100%);
+  border-color: #8a2be266;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px #8a2be24d;
+}
+
+.command-hub-btn .header-btn-icon {
+  font-size: 16px;
+}
+
 .music-btn {
   color: #fff;
   cursor: pointer;

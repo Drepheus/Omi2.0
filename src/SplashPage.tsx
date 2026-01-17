@@ -111,7 +111,7 @@ function SplashPage() {
 
   // Mobile Mode Menu State
   const [showMobileModeMenu, setShowMobileModeMenu] = useState(false);
-  
+
   // Mobile Header Menu State
   const [showMobileHeaderMenu, setShowMobileHeaderMenu] = useState(false);
 
@@ -139,7 +139,7 @@ function SplashPage() {
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
-    
+
     if (isMusicPlaying) {
       audioRef.current.pause();
       setIsMusicPlaying(false);
@@ -148,7 +148,7 @@ function SplashPage() {
       if ((!audioRef.current.src || audioRef.current.src === window.location.href) && playlist.length > 0) {
         audioRef.current.src = `/music/${playlist[currentTrackIndex]}`;
       }
-      
+
       if (playlist.length > 0) {
         audioRef.current.play().catch(e => console.error("Audio play failed:", e));
         setIsMusicPlaying(true);
@@ -212,14 +212,14 @@ function SplashPage() {
         // Activate Personas
         setSelectedFeature('Personas');
         setIsPersonasActive(true);
-        
+
         // Disable all other modes
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
         setIsInstantGenActive(false);
         setIsVideoGenActive(false);
         setIsCompareMode(false);
-        
+
         console.log('Personas clicked - ChromaGrid activated');
       }
     },
@@ -239,19 +239,19 @@ function SplashPage() {
 
         setSelectedFeature('Image Gen');
         setIsInstantGenActive(true);
-        
+
         // Disable all other modes
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
         setIsVideoGenActive(false);
         setIsCompareMode(false);
-          
+
         // Setup for Image Gen
         setMessages([]); // Clear chat messages
         setIsChatHidden(false); // Ensure chat is open
         setInput(''); // Clear input
-        
+
         console.log('Image Gen mode activated');
       }
     },
@@ -272,14 +272,14 @@ function SplashPage() {
 
         setSelectedFeature('Compare');
         setIsCompareMode(true);
-        
+
         // Disable all other modes
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
         setIsInstantGenActive(false);
         setIsVideoGenActive(false);
-        
+
         console.log('Compare Minds clicked');
       }
     },
@@ -299,19 +299,19 @@ function SplashPage() {
 
         setSelectedFeature('Video Gen');
         setIsVideoGenActive(true);
-        
+
         // Disable all other modes
         setIsPersonasActive(false);
         setIsSynthesizeActive(false);
         setIsPulseActive(false);
         setIsInstantGenActive(false);
         setIsCompareMode(false);
-          
+
         // Setup for Video Gen
         setMessages([]); // Clear chat messages
         setIsChatHidden(false); // Ensure chat is open
         setInput(''); // Clear input
-        
+
         console.log('Video Gen mode activated');
       }
     }
@@ -366,7 +366,7 @@ function SplashPage() {
     if (user) {
       // Check for last active conversation
       const lastActiveId = localStorage.getItem('lastActiveConversationId');
-      
+
       if (lastActiveId) {
         console.log('Restoring last active conversation:', lastActiveId);
         loadConversation(lastActiveId);
@@ -375,7 +375,7 @@ function SplashPage() {
         setMessages([]);
         setCurrentConversationId(null);
       }
-      
+
       // Just load the list
       loadConversationsOnly();
       // Fetch subscription tier
@@ -406,11 +406,11 @@ function SplashPage() {
   useEffect(() => {
     if (user && currentConversationId && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-      
+
       // Only save if it's a temporary ID (starts with user- or assistant-)
       // This prevents re-saving messages loaded from the database (which have UUIDs)
-      const isTempId = typeof lastMessage.id === 'string' && 
-                      (lastMessage.id.startsWith('user-') || lastMessage.id.startsWith('assistant-'));
+      const isTempId = typeof lastMessage.id === 'string' &&
+        (lastMessage.id.startsWith('user-') || lastMessage.id.startsWith('assistant-'));
 
       if (isTempId && (lastMessage.role === 'user' || lastMessage.role === 'assistant')) {
         const messageText = getMessageText(lastMessage);
@@ -441,7 +441,7 @@ function SplashPage() {
 
     // Deduplicate messages to fix visual bug from previous double-saving
     // We filter out messages that have the same content and role as an earlier message
-    const uniqueMessages = aiMessages.filter((msg, index, self) => 
+    const uniqueMessages = aiMessages.filter((msg, index, self) =>
       index === self.findIndex((t) => (
         t.content === msg.content && t.role === msg.role
       ))
@@ -523,9 +523,9 @@ function SplashPage() {
       // If historyOverride is present, it means we've already set the state to the truncated history, 
       // and the 'text' passed here is the user message that was already in history or a modified version.
       // Actually, for regeneration, we want to send the request but NOT duplicate the user message in the UI if it's already there.
-      
+
       let currentMessages = historyOverride || messages;
-      
+
       // If this is a normal send (no override), add the user message to state
       if (!historyOverride) {
         const userMessage: Message = {
@@ -590,38 +590,38 @@ function SplashPage() {
     // For Elaborate and Redo, we need to regenerate the response
     // We find the user message that triggered this assistant response
     // The assistant message is at 'index'. The user message should be at 'index - 1'.
-    
+
     if (index > 0) {
       const userMessageIndex = index - 1;
       const userMessage = messages[userMessageIndex];
-      
+
       // Truncate history to remove the assistant message and anything after it
       // We keep messages up to the user message (inclusive)
       const truncatedHistory = messages.slice(0, index);
-      
+
       // Update UI to remove the old response
       setMessages(truncatedHistory);
-      
+
       // Prepare the prompt for the API
       // We use the original user message content, but we can append a system instruction to the API call
       // to guide the regeneration without showing it in the UI.
       // Since our API takes the full message history, we can modify the last message in the payload.
-      
+
       const payloadMessages = [...truncatedHistory];
       const lastMsg = payloadMessages[payloadMessages.length - 1];
-      
+
       // Create a copy of the last message to modify it for the API call only
       const modifiedLastMsg = { ...lastMsg };
-      
+
       if (action === 'elaborate') {
         modifiedLastMsg.content += "\n\n[System Instruction: Please regenerate your response, but this time provide much more detail and elaboration.]";
       } else if (action === 'redo') {
         modifiedLastMsg.content += "\n\n[System Instruction: Please regenerate your response, but this time use a different style or format.]";
       }
-      
+
       // Replace the last message in the payload with the modified one
       payloadMessages[payloadMessages.length - 1] = modifiedLastMsg;
-      
+
       // Call sendChatMessage with the modified history payload
       // We pass the original text just for logging/logic, but the payload is what matters
       sendChatMessage(userMessage.content, payloadMessages);
@@ -884,9 +884,9 @@ function SplashPage() {
         {/* Top Right Action Buttons - Fixed to top-right corner */}
         {!isFullscreen && (
           <div className={`top-right-actions ${showMobileHeaderMenu ? 'mobile-expanded' : ''}`}>
-            
+
             {/* Mobile Toggle Button */}
-            <button 
+            <button
               className="mobile-header-toggle"
               onClick={() => setShowMobileHeaderMenu(!showMobileHeaderMenu)}
             >
@@ -894,7 +894,16 @@ function SplashPage() {
             </button>
 
             <div className="header-buttons-group">
-              {/* New Conversation Button - FIRST */}
+              {/* Command Hub Back Button */}
+              <button
+                className="header-action-btn command-hub-btn"
+                onClick={() => router.push('/command-hub')}
+                title="Back to Command Hub"
+              >
+                <span className="header-btn-icon">🏠</span>
+              </button>
+
+              {/* New Conversation Button */}
               <button
                 className="header-action-btn new-conversation-btn"
                 onClick={createNewConversation}
@@ -913,12 +922,12 @@ function SplashPage() {
                   {isMusicPlaying ? "🔊" : "🔇"}
                 </span>
               </button>
-              
+
               {/* Hidden Audio Element */}
-              <audio 
-                ref={audioRef} 
+              <audio
+                ref={audioRef}
                 onEnded={handleTrackEnded}
-                style={{ display: 'none' }} 
+                style={{ display: 'none' }}
               />
 
               {/* Upgrade Button (for free users) - No badge in header */}
@@ -975,7 +984,7 @@ function SplashPage() {
           <div className="chat-header">
             <div className="header-left">
               <h1 className="chat-title">Omi AI</h1>
-              <div 
+              <div
                 className="selected-model"
                 onClick={() => setShowAIModels(true)}
                 title="Change AI model"
@@ -989,7 +998,7 @@ function SplashPage() {
 
           {/* Mobile Mode Selector - Dropdown for mobile only */}
           <div className="mobile-mode-selector-container">
-            <button 
+            <button
               className={`mobile-mode-trigger ${selectedFeature ? 'active' : ''}`}
               onClick={() => setShowMobileModeMenu(!showMobileModeMenu)}
             >
@@ -1019,7 +1028,7 @@ function SplashPage() {
                 {featureButtons.map((button) => {
                   const isSelected = selectedFeature === button.name;
                   const isPro = button.name === 'Compare' || button.name === 'Video Gen';
-                  
+
                   return (
                     <button
                       key={button.name}
@@ -1052,7 +1061,7 @@ function SplashPage() {
               const isVideoGenButton = button.name === 'Video Gen';
               const isCompareButton = button.name === 'Compare';
               const isPro = isCompareButton || isVideoGenButton;
-              
+
               // Persona styling logic
               const isPersonaButton = button.name === 'Personas';
               const personaColor = isPersonaButton && selectedPersona ? personaColors[selectedPersona] : undefined;
@@ -1072,7 +1081,7 @@ function SplashPage() {
                   }}
                   style={{
                     animationDelay: `${index * 0.1}s`,
-                    ...(personaColor ? { 
+                    ...(personaColor ? {
                       borderColor: personaColor,
                       boxShadow: `0 0 15px ${personaColor}40, inset 0 0 10px ${personaColor}20`,
                       background: `linear-gradient(135deg, ${personaColor}20 0%, rgba(255,255,255,0.05) 100%)`
@@ -1450,7 +1459,7 @@ function SplashPage() {
                   <div className="placeholder-icon">⚡</div>
                   <p className="placeholder-text">
                     Media generation has now moved to the{' '}
-                    <span 
+                    <span
                       className="media-studio-link"
                       onClick={() => router.push('/media-studio')}
                       style={{
@@ -1464,7 +1473,7 @@ function SplashPage() {
                         animation: 'pulse 2s infinite'
                       }}
                     >
-                      Media Studio
+                      Omi Studio
                     </span>
                   </p>
                   <p className="placeholder-subtext">Describe what you want to see and press enter</p>
@@ -1531,7 +1540,7 @@ function SplashPage() {
                   <div className="placeholder-icon">🎬</div>
                   <p className="placeholder-text">
                     Media generation has now moved to the{' '}
-                    <span 
+                    <span
                       className="media-studio-link"
                       onClick={() => router.push('/media-studio')}
                       style={{
@@ -1545,7 +1554,7 @@ function SplashPage() {
                         animation: 'pulse 2s infinite'
                       }}
                     >
-                      Media Studio
+                      Omi Studio
                     </span>
                   </p>
                   <p className="placeholder-subtext">Describe the scene you want to create and press enter</p>

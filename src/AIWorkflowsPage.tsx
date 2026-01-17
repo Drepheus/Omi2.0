@@ -19,7 +19,7 @@ const componentCategories = [
   {
     name: 'Base',
     components: [
-      { id: 'web-search', name: 'Web Search', icon: '🔍' },
+      { id: 'web-search', name: 'AI Search', icon: '🔍' },
       { id: 'web-scrape', name: 'Web Scrape', icon: '🌐' },
       { id: 'text-input', name: 'Text Input', icon: '📝' },
       { id: 'number-input', name: 'Number Input', icon: '🔢' }

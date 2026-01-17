@@ -85,6 +85,43 @@
   box-shadow: 0 4px 12px #8a2be233;
 }
 
+.websearch-back-hub {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fffc;
+  cursor: pointer;
+  z-index: 100;
+  background: #ffffff0d;
+  border: 1px solid #ffffff1a;
+  border-radius: 12px;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  font-size: .875rem;
+  font-weight: 500;
+  transition: all .3s;
+  display: flex;
+  position: fixed;
+  top: 24px;
+  left: 80px;
+}
+
+.websearch-back-hub:hover {
+  color: #fff;
+  background: #8a2be226;
+  border-color: #8a2be24d;
+  transform: translateX(-2px);
+  box-shadow: 0 4px 12px #8a2be233;
+}
+
+.websearch-back-hub svg {
+  transition: transform .2s;
+}
+
+.websearch-back-hub:hover svg {
+  transform: translateX(-2px);
+}
+
 .websearch-header {
   text-align: center;
   max-width: 800px;

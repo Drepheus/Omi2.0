@@ -18,7 +18,7 @@ const cardData = [
   {
     color: '#0a0a0a',
     icon: '💬',
-    title: 'Omi Chat',
+    title: 'AI Chat',
     description: 'Conversational AI with advanced reasoning',
     label: 'Intelligence',
     action: 'chat' // Add action identifier
@@ -26,7 +26,7 @@ const cardData = [
   {
     color: '#0a0a0a',
     icon: '🌐',
-    title: 'Web Search',
+    title: 'AI Search',
     description: 'Search that thinks. Navigate the web like intelligence, not keywords.',
     label: 'Discovery',
     action: 'websearch' // Add action identifier
@@ -39,19 +39,7 @@ const cardData = [
     label: 'Production',
     action: 'mediastudio'
   },
-  {
-    color: '#0a0a0a',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M25 20 L85 50 L25 80 V20 Z" fill="currentColor" />
-        <text x="32" y="54" fontSize="11" fill="#000" fontWeight="900" style={{ fontFamily: 'sans-serif' }}>VIZUAL</text>
-      </svg>
-    ),
-    title: 'Vizual',
-    description: 'Advanced video production and visual storytelling studio',
-    label: 'Video',
-    action: 'vizual'
-  },
+
   {
     color: '#0a0a0a',
     icon: '⚡',
@@ -593,7 +581,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   const shouldDisableAnimations = disableAnimations || isMobile;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
-  
+
   const { user } = useAuth();
   const { isGuestMode } = useGuestMode();
   const [subscriptionTier, setSubscriptionTier] = useState<'free' | 'pro'>('free');
@@ -604,20 +592,20 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         setSubscriptionTier('free');
         return;
       }
-      
+
       if (user) {
         const { data, error } = await supabase
           .from('users')
           .select('subscription_tier')
           .eq('id', user.id)
           .single();
-          
+
         if (data && !error) {
           setSubscriptionTier(data.subscription_tier as 'free' | 'pro');
         }
       }
     };
-    
+
     fetchSubscription();
   }, [user, isGuestMode]);
 
@@ -654,9 +642,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       case 'apistudio':
         router.push('/api-studio');
         break;
-      case 'vizual':
-        router.push('/vizual');
-        break;
+
       case 'settings':
         setIsSettingsOpen(true);
         break;
@@ -667,10 +653,10 @@ const MagicBento: React.FC<MagicBentoProps> = ({
 
   return (
     <>
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
-        user={user} 
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        user={user}
       />
       <PaywallModal
         isOpen={isPaywallOpen}
@@ -693,7 +679,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         {cardData.map((card, index) => {
           const baseClassName = `card ${textAutoHide ? 'card--text-autohide' : ''} ${enableBorderGlow ? 'card--border-glow' : ''}`;
           const isLocked = ['aiworkflows', 'customomis', 'apistudio'].includes(card.action) && subscriptionTier !== 'pro';
-          
+
           const cardProps = {
             className: baseClassName,
             style: {
@@ -747,7 +733,15 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 enableTilt={enableTilt}
                 clickEffect={clickEffect} // Enable click effect even if locked, as it opens modal
                 enableMagnetism={enableMagnetism}
-                onClick={() => isLocked ? setIsPaywallOpen(true) : handleCardClick(card)}
+                onClick={() => {
+                  if (!user && !isGuestMode) {
+                    router.push('/login');
+                  } else if (isLocked) {
+                    setIsPaywallOpen(true);
+                  } else {
+                    handleCardClick(card);
+                  }
+                }}
                 style={{
                   ...cardProps.style,
                   cursor: card.action ? 'pointer' : 'default'
@@ -767,10 +761,18 @@ const MagicBento: React.FC<MagicBentoProps> = ({
           }
 
           return (
-            <div 
-              key={index} 
+            <div
+              key={index}
               {...cardProps}
-              onClick={() => isLocked ? setIsPaywallOpen(true) : handleCardClick(card)}
+              onClick={() => {
+                if (!user && !isGuestMode) {
+                  router.push('/login');
+                } else if (isLocked) {
+                  setIsPaywallOpen(true);
+                } else {
+                  handleCardClick(card);
+                }
+              }}
               style={{
                 ...cardProps.style,
                 cursor: card.action ? 'pointer' : 'default',
