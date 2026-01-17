@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import './MetallicPaint.css';
 
 type ShaderParams = {
   patternScale: number;
@@ -12,12 +13,12 @@ type ShaderParams = {
 };
 
 const defaultParams: ShaderParams = {
-  patternScale: 1,
-  refraction: 0.07,
-  edge: 0,
-  patternBlur: 0,
-  liquid: 0.75,
-  speed: 0.39
+  patternScale: 2,
+  refraction: 0.015,
+  edge: 0.2,
+  patternBlur: 0.005,
+  liquid: 0.05,
+  speed: 0.3
 };
 
 export function parseLogoImage(file: File): Prvizualse<{ imageData: ImageData; pngBlob: Blob }> {
@@ -306,60 +307,57 @@ void main() {
     vec4 img = texture(u_image_texture, img_uv);
     vec3 color = vec3(0.);
     float opacity = 1.;
-    vec3 color1 = vec3(.98, 0.98, 1.);
-    vec3 color2 = vec3(.1, .1, .1 + .1 * smoothstep(.7, 1.3, uv.x + uv.y));
+    
+    // FORCE PURE GRAYSCALE - Black and Silver/Chrome
+    vec3 color1 = vec3(1.0, 1.0, 1.0);     // Pure White (Chrome)
+    vec3 color2 = vec3(0.0, 0.0, 0.0);     // Pure Black
+    
     float edge = img.r;
-    vec2 grad_uv = uv;
-    grad_uv -= .5;
-    float dist = length(grad_uv + vec2(0., .2 * diagonal));
-    grad_uv = rotate(grad_uv, (.25 - .2 * diagonal) * PI);
-    float bulge = pow(1.8 * dist, 1.2);
-    bulge = 1. - bulge;
-    bulge *= pow(uv.y, .3);
+    
+    // Remove radial bulge/vignette - make effect uniform across the text
+    float bulge = 1.0; 
+    
     float cycle_width = u_patternScale;
-    float thin_strip_1_ratio = .12 / cycle_width * (1. - .4 * bulge);
-    float thin_strip_2_ratio = .07 / cycle_width * (1. + .4 * bulge);
+    float thin_strip_1_ratio = .12 / cycle_width;
+    float thin_strip_2_ratio = .07 / cycle_width;
     float wide_strip_ratio = (1. - thin_strip_1_ratio - thin_strip_2_ratio);
     float thin_strip_1_width = cycle_width * thin_strip_1_ratio;
     float thin_strip_2_width = cycle_width * thin_strip_2_ratio;
+    
     opacity = 1. - smoothstep(.9 - .5 * u_edge, 1. - .5 * u_edge, edge);
-    opacity *= get_img_frame_alpha(img_uv, 0.01);
-    float noise = snoise(uv - t);
+    
+    float noise = snoise(uv * 1.5 - t); 
     edge += (1. - edge) * u_liquid * noise;
-    float refr = 0.;
-    refr += (1. - bulge);
-    refr = clamp(refr, 0., 1.);
-    float dir = grad_uv.x;
-    dir += diagonal;
-    dir -= 2. * noise * diagonal * (smoothstep(0., 1., edge) * smoothstep(1., 0., edge));
-    bulge *= clamp(pow(uv.y, .1), .3, 1.);
-    dir *= (.1 + (1.1 - edge) * bulge);
-    dir *= smoothstep(1., .7, edge);
-    dir += .18 * (smoothstep(.1, .2, uv.y) * smoothstep(.4, .2, uv.y));
-    dir += .03 * (smoothstep(.1, .2, 1. - uv.y) * smoothstep(.4, .2, 1. - uv.y));
-    dir *= (.5 + .5 * pow(uv.y, 2.));
-    dir *= cycle_width;
+    
+    float refr = 0.5; 
+    
+    // Diagonal flow direction
+    float dir = uv.x + uv.y;
+    
+    // Add liquid distortion
+    dir += noise * 0.2;
+    
+    // Animate
     dir -= t;
-    float refr_r = refr;
-    refr_r += .03 * bulge * noise;
-    float refr_b = 1.3 * refr;
-    refr_r += 5. * (smoothstep(-.1, .2, uv.y) * smoothstep(.5, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(1., .4, bulge));
-    refr_r -= diagonal;
-    refr_b += (smoothstep(0., .4, uv.y) * smoothstep(.8, .1, uv.y)) * (smoothstep(.4, .6, bulge) * smoothstep(.8, .4, bulge));
-    refr_b -= .2 * edge;
-    refr_r *= u_refraction;
-    refr_b *= u_refraction;
+    
+    // No chromatic aberration
+    float refr_val = refr * u_refraction;
+    
     vec3 w = vec3(thin_strip_1_width, thin_strip_2_width, wide_strip_ratio);
-    w[1] -= .02 * smoothstep(.0, 1., edge + bulge);
-    float stripe_r = mod(dir + refr_r, 1.);
-    float r = get_color_channel(color1.r, color2.r, stripe_r, w, 0.02 + .03 * u_refraction * bulge, bulge);
-    float stripe_g = mod(dir, 1.);
-    float g = get_color_channel(color1.g, color2.g, stripe_g, w, 0.01 / (1. - diagonal), bulge);
-    float stripe_b = mod(dir - refr_b, 1.);
-    float b = get_color_channel(color1.b, color2.b, stripe_b, w, .01, bulge);
-    color = vec3(r, g, b);
+    
+    float stripe = mod(dir + refr_val, 1.);
+    
+    // Calculate single channel intensity
+    float c = get_color_channel(color1.r, color2.r, stripe, w, 0.02, 1.0);
+    
+    // Force result to be strictly grayscale
+    color = vec3(c, c, c);
+    
+    // Boost brightness/contrast
+    color = pow(color, vec3(0.8)); 
+    
     color *= opacity;
-    fragColor = vec4(color, opacity);
+    fragColor = vec4(color.r, color.g, color.b, opacity);
 }
 `;
 
@@ -502,10 +500,17 @@ export default function MetallicPaint({
       gl.uniform1f(uniforms.u_img_ratio, imgRatio);
 
       const side = 1000;
-      canvasEl.width = side * devicePixelRatio;
-      canvasEl.height = side * devicePixelRatio;
-      gl.viewport(0, 0, canvasEl.height, canvasEl.height);
-      gl.uniform1f(uniforms.u_ratio, 1);
+      // Adapt canvas size to image aspect ratio to prevent letterboxing
+      if (imgRatio > 1) {
+        canvasEl.width = side * devicePixelRatio;
+        canvasEl.height = (side / imgRatio) * devicePixelRatio;
+      } else {
+        canvasEl.width = (side * imgRatio) * devicePixelRatio;
+        canvasEl.height = side * devicePixelRatio;
+      }
+      
+      gl.viewport(0, 0, canvasEl.width, canvasEl.height);
+      gl.uniform1f(uniforms.u_ratio, imgRatio);
       gl.uniform1f(uniforms.u_img_ratio, imgRatio);
     }
 
