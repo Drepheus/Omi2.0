@@ -1,5 +1,7 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/ai-code/page": "app/ai-code/page.js",
+  "/ai-workflows/page": "app/ai-workflows/page.js",
   "/api/music/route": "app/api/music/route.js",
   "/calendar/page": "app/calendar/page.js",
   "/chat/page": "app/chat/page.js",

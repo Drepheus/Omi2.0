@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import CustomVizuals from "@/src/CustomVizuals";
+import CustomVizuals from "@/src/CustomOmis";
 
 export default function CustomVizualsPage() {
   const router = useRouter();

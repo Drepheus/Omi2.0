@@ -98,7 +98,7 @@ const CustomVizuals: React.FC<CustomVizualsProps> = ({ onClose }) => {
     setIsLoading(true);
     try {
       const docs = await ragService.loadDocuments(selectedBot || undefined);
-      setDocuments(docs.map(doc => ({
+      setDocuments(docs.map((doc: any) => ({
         id: doc.id,
         name: doc.name,
         type: doc.type,
@@ -296,30 +296,30 @@ const CustomVizuals: React.FC<CustomVizualsProps> = ({ onClose }) => {
       <header className="custom-vizuals-header">
         <div className="header-left">
           <div className="logo">
-            <span className="logo-icon">🤖</span>
-            <span className="logo-text">Custom Vizual Training</span>
+            <span className="logo-icon">💻</span>
+            <span className="logo-text">AI Code Studio</span>
           </div>
           <nav className="header-tabs">
             <button
               className={'header-tab' + (activeTab === 'bots' ? ' active' : '')}
               onClick={() => setActiveTab('bots')}
             >
-              <span className="tab-icon">🤖</span>
-              My Bots
+              <span className="tab-icon">💻</span>
+              Projects
             </button>
             <button
               className={'header-tab' + (activeTab === 'documents' ? ' active' : '')}
               onClick={() => setActiveTab('documents')}
             >
-              <span className="tab-icon">📄</span>
-              Knowledge Base
+              <span className="tab-icon">📁</span>
+              Codebase & Docs
             </button>
             <button
               className={'header-tab' + (activeTab === 'training' ? ' active' : '')}
               onClick={() => setActiveTab('training')}
             >
               <span className="tab-icon">⚡</span>
-              Training Dashboard
+              Index Status
             </button>
           </nav>
         </div>
@@ -332,12 +332,12 @@ const CustomVizuals: React.FC<CustomVizualsProps> = ({ onClose }) => {
           <div className="bots-tab">
             <div className="tab-header">
               <div>
-                <h2 className="tab-title">Your Custom Vizual Bots</h2>
-                <p className="tab-subtitle">Create and manage specialized AI assistants trained on your data</p>
+                <h2 className="tab-title">Your Dev Projects</h2>
+                <p className="tab-subtitle">Manage AI coding assistants trained on your repositories and documentation</p>
               </div>
               <button className="create-bot-btn" onClick={() => setShowCreateModal(true)}>
                 <span className="btn-icon">+</span>
-                Create New Bot
+                New Project
               </button>
             </div>
             <div className="bots-grid">
@@ -350,13 +350,13 @@ const CustomVizuals: React.FC<CustomVizualsProps> = ({ onClose }) => {
                   borderRadius: '16px',
                   border: '1px solid rgba(192,192,192,0.15)'
                 }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>💻</div>
                   <h3 style={{ color: 'rgba(255,255,255,0.9)', marginBottom: '12px', fontSize: '20px', fontWeight: '400' }}>
-                    Create Your First Custom Vizual Bot
+                    Create Your First AI Code Project
                   </h3>
                   <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '24px', maxWidth: '500px', margin: '0 auto 24px' }}>
-                    Custom Vizual bots are AI assistants trained on your own documents using RAG (Retrieval-Augmented Generation).
-                    They can answer questions based on your uploaded knowledge base.
+                    AI Code Projects are workspace assistants trained on your code and docs.
+                    They help you generate code, refactor, and understand complex logic.
                   </p>
                   <button
                     className="create-bot-btn"
@@ -399,7 +399,7 @@ const CustomVizuals: React.FC<CustomVizualsProps> = ({ onClose }) => {
                           handleTestBot(bot);
                         }}
                       >
-                        <span>💬</span> Test Bot
+                        <span>💬</span> Vibecode
                       </button>
                       <button
                         className="bot-action-btn delete"

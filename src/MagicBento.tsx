@@ -9,6 +9,18 @@ import { supabase } from './supabaseClient';
 import { useAuth } from '@/context/auth-context';
 import { useGuestMode } from '@/context/guest-mode-context';
 
+import {
+  MessageSquareText,
+  Globe,
+  Workflow,
+  Palette,
+  Terminal,
+  Sparkles,
+  CalendarDays,
+  PlugZap,
+  Settings
+} from 'lucide-react';
+
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
 const DEFAULT_GLOW_COLOR = '192, 192, 192'; // Silver/Chrome
@@ -17,35 +29,31 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/ai-chat-icon.png',
+    icon: <MessageSquareText size={48} strokeWidth={1} />,
     title: 'AI Chat',
     description: 'Conversational AI with advanced reasoning',
     label: 'Intelligence',
-    action: 'chat' // Add action identifier
+    action: 'chat'
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/ai-search-icon.png',
+    icon: <Globe size={48} strokeWidth={1} />,
     title: 'AI Search',
     description: 'Search that thinks. Navigate the web like intelligence, not keywords.',
     label: 'Discovery',
-    action: 'websearch' // Add action identifier
+    action: 'websearch'
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/ai-workflows-icon.png',
+    icon: <Workflow size={48} strokeWidth={1} />,
     title: 'AI Workflows',
     description: 'Automate complex tasks or multi-step reasoning with agentic systems',
-    label: 'Character',
+    label: 'Agentic',
     action: 'aiworkflows'
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/ai-media-icon.png',
+    icon: <Palette size={48} strokeWidth={1} />,
     title: 'AI Media Studio',
     description: 'Generate stunning AI images, videos, and avatars with advanced models',
     label: 'Production',
@@ -53,17 +61,15 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/custom-omis-icon.png',
-    title: 'Custom Omi\'s',
-    description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
-    label: 'Creative',
-    action: 'customomis'
+    icon: <Terminal size={48} strokeWidth={1} />,
+    title: 'AI Code',
+    description: 'Vibecoding & AI Developer Tools. Build faster with intelligence.',
+    label: 'Dev',
+    action: 'aicode'
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/google-ai-icon.png',
+    icon: <Sparkles size={48} strokeWidth={1} />,
     title: 'Google AI Studio',
     description: 'Powered by Gemini - Google\'s most capable AI model for multimodal reasoning',
     label: 'Advanced',
@@ -71,17 +77,7 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/api-studio-icon.png',
-    title: 'API Studio',
-    description: 'Explore and run thousands of AI models - from image generation to language models',
-    label: 'Models',
-    action: 'apistudio'
-  },
-  {
-    color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/calendar-icon.png',
+    icon: <CalendarDays size={48} strokeWidth={1} />,
     title: 'Events & Calendar',
     description: 'View upcoming AI challenges, workshops, and product launches',
     label: 'Schedule',
@@ -89,14 +85,23 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '',
-    iconImage: '/images/icons/settings-icon.png',
+    icon: <PlugZap size={48} strokeWidth={1} />,
+    title: 'API Studio',
+    description: 'Explore and run thousands of AI models - from image generation to language models',
+    label: 'Models',
+    action: 'apistudio'
+  },
+  {
+    color: '#0a0a0a',
+    icon: <Settings size={48} strokeWidth={1} />,
     title: 'Account and API Settings',
     description: 'Configure API\'s and Account',
     label: 'Settings',
     action: 'settings'
   }
 ];
+
+
 
 const createParticleElement = (x: number, y: number, color = DEFAULT_GLOW_COLOR) => {
   const el = document.createElement('div');
@@ -635,8 +640,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       case 'mediastudio':
         router.push('/media-studio');
         break;
-      case 'customomis':
-        router.push('/custom-omis');
+      case 'aicode':
+        router.push('/ai-code');
         break;
       case 'aiworkflows':
         router.push('/ai-workflows');
@@ -686,7 +691,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       <BentoCardGrid gridRef={gridRef}>
         {cardData.map((card, index) => {
           const baseClassName = `card ${textAutoHide ? 'card--text-autohide' : ''} ${enableBorderGlow ? 'card--border-glow' : ''}`;
-          const isLocked = ['aiworkflows', 'customomis', 'apistudio'].includes(card.action) && subscriptionTier !== 'pro';
+          const isLocked = ['apistudio'].includes(card.action) && subscriptionTier !== 'pro';
 
           const cardProps = {
             className: baseClassName,
@@ -761,11 +766,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 </div>
                 <div className="card__content">
                   <div className="card__icon">
-                    {card.iconImage ? (
-                      <img src={card.iconImage} alt={card.title} className="card__icon-image" />
-                    ) : (
-                      card.icon
-                    )}
+                    {card.icon}
                   </div>
                   <h2 className="card__title">{card.title}</h2>
                   <p className="card__description">{card.description}</p>
@@ -799,11 +800,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
               </div>
               <div className="card__content">
                 <div className="card__icon">
-                  {card.iconImage ? (
-                    <img src={card.iconImage} alt={card.title} className="card__icon-image" />
-                  ) : (
-                    card.icon
-                  )}
+                  {card.icon}
                 </div>
                 <h2 className="card__title">{card.title}</h2>
                 <p className="card__description">{card.description}</p>

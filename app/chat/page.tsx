@@ -10,6 +10,7 @@ import ChatExpandableCards from '@/src/ChatExpandableCards';
 import ChatToolsSection from '@/src/ChatToolsSection';
 import { AnimatedSectionTitle } from '@/components/ui/animated-section-title';
 import { StickyHeader } from '@/components/ui/sticky-header';
+import ExploreAppsSection from '@/src/ExploreAppsSection';
 
 interface LLMModel {
   id: string;
@@ -215,7 +216,7 @@ export default function OmiChatPage() {
 
   // Show the chat interface when user clicks Start Chat
   if (showChatInterface) {
-    return <SplashPage />;
+    return <SplashPage onClose={() => setShowChatInterface(false)} />;
   }
 
   return (
@@ -261,6 +262,11 @@ export default function OmiChatPage() {
         {/* Expandable Cards Section */}
         <section className="expandable-cards-section">
           <ChatExpandableCards />
+        </section>
+
+        {/* Explore Apps Section */}
+        <section className="explore-apps-section px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <ExploreAppsSection />
         </section>
 
         {/* Tools Section */}

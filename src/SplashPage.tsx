@@ -50,7 +50,11 @@ const personaColors: Record<string, string> = {
   'The Friend': '#06B6D4'
 };
 
-function SplashPage() {
+interface SplashPageProps {
+  onClose?: () => void;
+}
+
+function SplashPage({ onClose }: SplashPageProps) {
   // Authentication
   const { user } = useAuth();
   const router = useRouter();
@@ -433,7 +437,7 @@ function SplashPage() {
     const dbMessages = await db.getConversationMessages(conversationId);
 
     // Convert database messages to simple Message format
-    const aiMessages: Message[] = dbMessages.map(msg => ({
+    const aiMessages: Message[] = dbMessages.map((msg: any) => ({
       id: msg.id || `msg-${Date.now()}-${Math.random()}`,
       role: msg.role as 'user' | 'assistant',
       content: msg.content,
@@ -870,49 +874,67 @@ function SplashPage() {
       )}
 
       <div className="splash-page">
-        {/* Hamburger Menu - Fixed to top-left corner */}
-        {user && !isFullscreen && (
-          <button
-            className="conversations-btn"
-            onClick={() => setShowConversations(true)}
-            title="Conversations"
-          >
-            ≡
-          </button>
+        {/* Top Left Group */}
+        {!isFullscreen && (
+          <div style={{ position: 'fixed', top: '1rem', left: '1rem', zIndex: 100, display: 'flex', gap: '0.5rem' }}>
+            <button
+              className="header-action-btn"
+              onClick={() => router.push('/command-hub')}
+              title="Back to Command Hub"
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '8px 16px',
+                borderRadius: '20px',
+                color: 'white',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <span className="header-btn-icon">🏠</span>
+              Command Hub
+            </button>
+
+            {user && (
+              <button
+                className="conversations-btn"
+                onClick={() => setShowConversations(true)}
+                title="Conversations"
+                style={{ position: 'relative', top: 'auto', left: 'auto', margin: 0 }}
+              >
+                ≡
+              </button>
+            )}
+          </div>
         )}
 
         {/* Top Right Action Buttons - Fixed to top-right corner */}
-        {!isFullscreen && (
-          <div className={`top-right-actions ${showMobileHeaderMenu ? 'mobile-expanded' : ''}`}>
+        <div className={`top-right-actions ${showMobileHeaderMenu ? 'mobile-expanded' : ''}`}>
 
-            {/* Mobile Toggle Button */}
+          {/* Mobile Toggle Button */}
+          <button
+            className="mobile-header-toggle"
+            onClick={() => setShowMobileHeaderMenu(!showMobileHeaderMenu)}
+          >
+            <span className="header-btn-icon">⋮</span>
+          </button>
+
+          <div className="header-buttons-group">
+
+            {/* New Conversation Button */}
             <button
-              className="mobile-header-toggle"
-              onClick={() => setShowMobileHeaderMenu(!showMobileHeaderMenu)}
+              className="header-action-btn new-conversation-btn"
+              onClick={createNewConversation}
+              title="Start new conversation"
             >
-              <span className="header-btn-icon">⋮</span>
+              <span className="header-btn-icon">＋</span>
             </button>
 
-            <div className="header-buttons-group">
-              {/* Command Hub Back Button */}
-              <button
-                className="header-action-btn command-hub-btn"
-                onClick={() => router.push('/command-hub')}
-                title="Back to Command Hub"
-              >
-                <span className="header-btn-icon">🏠</span>
-              </button>
-
-              {/* New Conversation Button */}
-              <button
-                className="header-action-btn new-conversation-btn"
-                onClick={createNewConversation}
-                title="Start new conversation"
-              >
-                <span className="header-btn-icon">＋</span>
-              </button>
-
-              {/* Music Player Button */}
+            {/* Music Player Button - Only visible in Focus Mode */}
+            {isFullscreen && (
               <button
                 className="header-action-btn music-btn"
                 onClick={toggleMusic}
@@ -922,55 +944,57 @@ function SplashPage() {
                   {isMusicPlaying ? "🔊" : "🔇"}
                 </span>
               </button>
+            )}
 
-              {/* Hidden Audio Element */}
-              <audio
-                ref={audioRef}
-                onEnded={handleTrackEnded}
-                style={{ display: 'none' }}
-              />
+            {/* Hidden Audio Element */}
+            <audio
+              ref={audioRef}
+              onEnded={handleTrackEnded}
+              style={{ display: 'none' }}
+            />
 
-              {/* Upgrade Button (for free users) - No badge in header */}
-              {user && subscriptionTier === 'free' && (
-                <button
-                  className="header-action-btn upgrade-btn"
-                  onClick={() => setShowPaywall(true)}
-                  title="Upgrade to Pro"
-                >
-                  <span className="header-btn-icon">◈</span>
-                  <span className="header-btn-text">Upgrade</span>
-                </button>
-              )}
+            {/* Upgrade Button (for free users) - No badge in header */}
+            {user && subscriptionTier === 'free' && (
+              <button
+                className="header-action-btn upgrade-btn"
+                onClick={() => setShowPaywall(true)}
+                title="Upgrade to Pro"
+              >
+                <span className="header-btn-icon">◈</span>
+                <span className="header-btn-text">Upgrade</span>
+              </button>
+            )}
 
-              {/* Account Tier Indicator (for pro users only) */}
-              {user && subscriptionTier === 'pro' && (
-                <div className="account-tier-badge pro-badge">
-                  <span className="tier-icon">◆</span>
-                  <span className="tier-text">Pro Account</span>
-                </div>
-              )}
+            {/* Account Tier Indicator (for pro users only) */}
+            {user && subscriptionTier === 'pro' && (
+              <div className="account-tier-badge pro-badge">
+                <span className="tier-icon">◆</span>
+                <span className="tier-text">Pro Account</span>
+              </div>
+            )}
 
-              {/* Account Button */}
-              {user ? (
-                <button
-                  className="header-action-btn account-btn"
-                  onClick={() => setShowSettings(true)}
-                  title="Account settings"
-                >
-                  <span className="header-btn-icon">◉</span>
-                </button>
-              ) : (
-                <button
-                  className="header-action-btn guest-mode-btn"
-                  onClick={() => window.location.href = '/login'}
-                  title="Sign in to save your conversations"
-                >
-                  <span className="header-btn-icon">👤</span>
-                </button>
-              )}
-            </div>
+            {/* Account Button */}
+            {user && (
+              <button
+                className="header-action-btn account-btn"
+                onClick={() => setShowSettings(true)}
+                title="Account settings"
+              >
+                <span className="header-btn-icon">◉</span>
+              </button>
+            )}
+
+            {/* Close Button */}
+            <button
+              className="header-action-btn close-btn"
+              onClick={onClose}
+              title="Close Chat"
+            >
+              <span className="header-btn-icon">✕</span>
+            </button>
           </div>
-        )}
+        </div>
+
 
         {/* Free Account Badge - Bottom Left Corner */}
         {user && subscriptionTier === 'free' && !isFullscreen && (
@@ -1589,114 +1613,120 @@ function SplashPage() {
       </div>
 
       {/* ChromaGrid Overlay Animation for Personas */}
-      {isPersonasActive && (
-        <ChromaGrid
-          items={undefined} // Uses demo data
-          ease="power2.out"
-          damping={0.75}
-          fadeOut={0.5}
-          onClose={() => setIsPersonasActive(false)}
-          selectedPersona={selectedPersona}
-          onPersonaSelect={(persona) => {
-            console.log('Persona selected in SplashPage:', persona.title);
-            // Toggle persona selection - deselect if clicking the same persona
-            if (selectedPersona === persona.title) {
-              setSelectedPersona(null);
-              console.log('Persona deselected:', persona.title);
-            } else {
-              setSelectedPersona(persona.title);
-              console.log('Persona selected:', persona.title);
-            }
-          }}
-        />
-      )}
+      {
+        isPersonasActive && (
+          <ChromaGrid
+            items={undefined} // Uses demo data
+            ease="power2.out"
+            damping={0.75}
+            fadeOut={0.5}
+            onClose={() => setIsPersonasActive(false)}
+            selectedPersona={selectedPersona}
+            onPersonaSelect={(persona) => {
+              console.log('Persona selected in SplashPage:', persona.title);
+              // Toggle persona selection - deselect if clicking the same persona
+              if (selectedPersona === persona.title) {
+                setSelectedPersona(null);
+                console.log('Persona deselected:', persona.title);
+              } else {
+                setSelectedPersona(persona.title);
+                console.log('Persona selected:', persona.title);
+              }
+            }}
+          />
+        )
+      }
 
       {/* CircularGallery Overlay Animation for Pulse */}
-      {isPulseActive && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#000' }}>
-          <button
-            onClick={() => {
-              setIsPulseActive(false);
-              setSelectedFeature(null);
-            }}
-            style={{
-              position: 'absolute',
-              top: '2rem',
-              right: '2rem',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '50%',
-              width: '48px',
-              height: '48px',
-              color: 'white',
-              fontSize: '1.5rem',
-              cursor: 'pointer',
-              zIndex: 9001,
-            }}
-          >
-            ✕
-          </button>
-          <CircularGallery
-            bend={3}
-            textColor="#ffffff"
-            borderRadius={0.05}
-            scrollEase={0.02}
-            items={[
-              {
-                link: '#',
-                text: 'Currently Trending',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png'
-              },
-              {
-                link: '#',
-                text: 'AI News',
-                image: 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg'
-              },
-              {
-                link: '#',
-                text: 'LLM Updates',
-                image: 'https://companieslogo.com/img/orig/MSFT-a203b22d.png'
-              },
-              {
-                link: '#',
-                text: 'AI Content',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png'
-              },
-              {
-                link: '#',
-                text: 'Grok AI',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.png/1200px-X_logo_2023_%28white%29.png'
-              },
-              {
-                link: '#',
-                text: 'Claude AI',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/ChatGPT-Logo.png/1200px-ChatGPT-Logo.png'
-              },
-              {
-                link: '#',
-                text: 'Midjourney',
-                image: 'https://seeklogo.com/images/M/midjourney-logo-156382BA01-seeklogo.com.png'
-              },
-              {
-                link: '#',
-                text: 'Perplexity AI',
-                image: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/perplexity-ai-icon.png'
-              }
-            ]}
-          />
-        </div>
-      )}
+      {
+        isPulseActive && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#000' }}>
+            <button
+              onClick={() => {
+                setIsPulseActive(false);
+                setSelectedFeature(null);
+              }}
+              style={{
+                position: 'absolute',
+                top: '2rem',
+                right: '2rem',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '48px',
+                height: '48px',
+                color: 'white',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                zIndex: 9001,
+              }}
+            >
+              ✕
+            </button>
+            <CircularGallery
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              scrollEase={0.02}
+              items={[
+                {
+                  link: '#',
+                  text: 'Currently Trending',
+                  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/1024px-ChatGPT_logo.svg.png'
+                },
+                {
+                  link: '#',
+                  text: 'AI News',
+                  image: 'https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg'
+                },
+                {
+                  link: '#',
+                  text: 'LLM Updates',
+                  image: 'https://companieslogo.com/img/orig/MSFT-a203b22d.png'
+                },
+                {
+                  link: '#',
+                  text: 'AI Content',
+                  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/1024px-Google_Gemini_logo.svg.png'
+                },
+                {
+                  link: '#',
+                  text: 'Grok AI',
+                  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/X_logo_2023_%28white%29.png/1200px-X_logo_2023_%28white%29.png'
+                },
+                {
+                  link: '#',
+                  text: 'Claude AI',
+                  image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/ChatGPT-Logo.png/1200px-ChatGPT-Logo.png'
+                },
+                {
+                  link: '#',
+                  text: 'Midjourney',
+                  image: 'https://seeklogo.com/images/M/midjourney-logo-156382BA01-seeklogo.com.png'
+                },
+                {
+                  link: '#',
+                  text: 'Perplexity AI',
+                  image: 'https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/perplexity-ai-icon.png'
+                }
+              ]}
+            />
+          </div>
+        )
+      }
 
       {/* Show Chat Button - Visible when chat is hidden */}
-      {isChatHidden && (
-        <button
-          className="show-chat-btn"
-          onClick={() => setIsChatHidden(false)}
-          title="Show Chat"
-        >
-          💬 Show Chat
-        </button>
-      )}
+      {
+        isChatHidden && (
+          <button
+            className="show-chat-btn"
+            onClick={() => setIsChatHidden(false)}
+            title="Show Chat"
+          >
+            💬 Show Chat
+          </button>
+        )
+      }
 
       {/* Infinite Menu Overlay */}
       <InfiniteMenu

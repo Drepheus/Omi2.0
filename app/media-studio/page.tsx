@@ -6,7 +6,7 @@ import { useAuth } from '@/context/auth-context';
 import { useGuestMode } from '@/context/guest-mode-context';
 import MediaStudio from '@/src/MediaStudio';
 import MediaModelsCarousel from '@/src/MediaModelsCarousel';
-import MediaExpandableCards from '@/src/MediaExpandableCards';
+import { ThreeDMarqueeDemo } from '@/components/demos/three-d-marquee-demo';
 import MediaToolsSection from '@/src/MediaToolsSection';
 import { AnimatedSectionTitle } from '@/components/ui/animated-section-title';
 import { StickyHeader } from '@/components/ui/sticky-header';
@@ -392,9 +392,12 @@ export default function AIMediaStudioPage() {
           <MediaModelsCarousel />
         </section>
 
-        {/* Expandable Cards Section */}
+        {/* Creative Models Section */}
         <section className="expandable-cards-section">
-          <MediaExpandableCards />
+          <div className="section-header">
+            <AnimatedSectionTitle title="Creative Models" icon="🎨" />
+          </div>
+          <ThreeDMarqueeDemo />
         </section>
 
         {/* Tools Section */}
