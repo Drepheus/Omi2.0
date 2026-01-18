@@ -20,9 +20,9 @@ const SAMPLE_EVENTS: Event[] = [
     title: 'AI Art Challenge: Cyberpunk',
     date: new Date(new Date().getFullYear(), new Date().getMonth(), 15),
     type: 'challenge',
-    description: 'Create the most stunning cyberpunk cityscape using Vizual Media Studio. Top 3 winners get 1000 credits.',
+    description: 'Create the most stunning cyberpunk cityscape using Omi Media Studio. Top 3 winners get 1000 credits.',
     time: '10:00 AM - 11:59 PM PST',
-    location: 'Vizual Community Discord'
+    location: 'Omi Community Discord'
   },
   {
     id: '2',
@@ -35,7 +35,7 @@ const SAMPLE_EVENTS: Event[] = [
   },
   {
     id: '3',
-    title: 'Vizual v2.5 Feature Launch',
+    title: 'Omi v2.5 Feature Launch',
     date: new Date(new Date().getFullYear(), new Date().getMonth(), 28),
     type: 'launch',
     description: 'Unveiling the new video generation capabilities and enhanced voice models. Don\'t miss the keynote.',
@@ -65,19 +65,19 @@ const EventsCalendar: React.FC = () => {
     const month = date.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
-    
+
     const days = [];
-    
+
     // Previous month padding
     for (let i = 0; i < firstDayOfMonth; i++) {
       days.push({ day: 0, currentMonth: false });
     }
-    
+
     // Current month days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({ day: i, currentMonth: true });
     }
-    
+
     return days;
   };
 
@@ -95,15 +95,15 @@ const EventsCalendar: React.FC = () => {
   };
 
   const getEventsForDay = (day: number) => {
-    return SAMPLE_EVENTS.filter(e => 
-      e.date.getDate() === day && 
+    return SAMPLE_EVENTS.filter(e =>
+      e.date.getDate() === day &&
       e.date.getMonth() === currentDate.getMonth() &&
       e.date.getFullYear() === currentDate.getFullYear()
     );
   };
 
   const getTypeColor = (type: string) => {
-    switch(type) {
+    switch (type) {
       case 'challenge': return '#f59e0b';
       case 'workshop': return '#3b82f6';
       case 'launch': return '#8b5cf6';
@@ -140,22 +140,22 @@ const EventsCalendar: React.FC = () => {
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
             <div key={day} className="calendar-day-header">{day}</div>
           ))}
-          
+
           {days.map((dayObj, index) => {
             if (!dayObj.currentMonth) {
               return <div key={`prev-${index}`} className="calendar-day other-month" />;
             }
 
-            const isToday = 
-              dayObj.day === new Date().getDate() && 
-              currentDate.getMonth() === new Date().getMonth() && 
+            const isToday =
+              dayObj.day === new Date().getDate() &&
+              currentDate.getMonth() === new Date().getMonth() &&
               currentDate.getFullYear() === new Date().getFullYear();
 
             const dayEvents = getEventsForDay(dayObj.day);
 
             return (
-              <div 
-                key={dayObj.day} 
+              <div
+                key={dayObj.day}
                 className={`calendar-day ${isToday ? 'today' : ''}`}
                 onMouseEnter={(e) => {
                   setHoveredDay(dayObj.day);
@@ -167,8 +167,8 @@ const EventsCalendar: React.FC = () => {
                 <div className="day-number">{dayObj.day}</div>
                 <div className="day-events">
                   {dayEvents.map(event => (
-                    <div 
-                      key={event.id} 
+                    <div
+                      key={event.id}
                       className={`event-pill ${event.type}`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -234,11 +234,11 @@ const EventsCalendar: React.FC = () => {
             <button className="event-modal-close" onClick={() => setSelectedEvent(null)}>
               <X size={24} />
             </button>
-            
-            <span 
+
+            <span
               className="event-modal-tag"
-              style={{ 
-                background: `${getTypeColor(selectedEvent.type)}20`, 
+              style={{
+                background: `${getTypeColor(selectedEvent.type)}20`,
                 color: getTypeColor(selectedEvent.type),
                 border: `1px solid ${getTypeColor(selectedEvent.type)}40`
               }}
@@ -247,7 +247,7 @@ const EventsCalendar: React.FC = () => {
             </span>
 
             <h2>{selectedEvent.title}</h2>
-            
+
             <div className="event-modal-time">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <CalendarIcon size={16} />
@@ -268,9 +268,9 @@ const EventsCalendar: React.FC = () => {
               {selectedEvent.location}
             </div>
 
-            <button 
+            <button
               className="event-modal-btn"
-              style={{ 
+              style={{
                 background: getTypeColor(selectedEvent.type),
                 color: '#fff'
               }}

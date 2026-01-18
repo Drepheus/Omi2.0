@@ -13,12 +13,12 @@ const config: Config = {
 	],
 	theme: {
 		screens: {
-			'xs': '475px',
-			'sm': '640px',
-			'md': '768px',
-			'lg': '1024px',
-			'xl': '1280px',
-			'2xl': '1536px',
+			xs: '475px',
+			sm: '640px',
+			md: '768px',
+			lg: '1024px',
+			xl: '1280px',
+			'2xl': '1536px'
 		},
 		extend: {
 			borderRadius: {
@@ -67,6 +67,20 @@ const config: Config = {
 					'4': 'hsl(var(--chart-4))',
 					'5': 'hsl(var(--chart-5))'
 				}
+			},
+			backgroundImage: {
+				'grid-pattern': 'linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px)',
+				'grid-pattern-light': 'linear-gradient(to right, rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px)'
+			},
+			animation: {
+				scroll: 'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite',
+			},
+			keyframes: {
+				scroll: {
+					to: {
+						transform: 'translate(calc(-50% - 0.5rem))',
+					},
+				},
 			}
 		}
 	},

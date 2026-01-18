@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { useGuestMode } from '@/context/guest-mode-context';
 import SplashPage from '@/src/SplashPage';
+import TrendingModelsCarousel from '@/src/TrendingModelsCarousel';
+import ChatExpandableCards from '@/src/ChatExpandableCards';
+import ChatToolsSection from '@/src/ChatToolsSection';
+import { AnimatedSectionTitle } from '@/components/ui/animated-section-title';
+import { StickyHeader } from '@/components/ui/sticky-header';
 
 interface LLMModel {
   id: string;
@@ -223,124 +228,52 @@ export default function OmiChatPage() {
       </div>
 
       {/* Header */}
-      <header className="ai-chat-header">
-        <button className="back-button" onClick={() => router.push('/command-hub')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          <span>Command Hub</span>
-        </button>
-        <div className="header-brand">
-          <span className="brand-icon">💬</span>
-          <h1 className="brand-title">AI Chat</h1>
-        </div>
-        <div className="header-actions">
-          <button className="start-chat-btn" onClick={handleStartChat}>
-            Try AI Chat →
-          </button>
-        </div>
-      </header>
+      {/* Header */}
+      <StickyHeader
+        title="AI Chat"
+        icon="💬"
+        actionLabel="Try AI Chat →"
+        onAction={handleStartChat}
+      />
 
       {/* Main Content */}
       <main className="ai-chat-main">
         {/* Hero Section */}
         <section className="chat-hero">
           <h2 className="hero-title">
-            <span className="hero-gradient">Choose Your Intelligence</span>
+            <span className="hero-gradient">Conversational Intelligence</span>
           </h2>
           <p className="hero-subtitle">
             Access the world's most powerful language models. Select a model below to start a conversation.
           </p>
         </section>
 
-        {/* Models Grid */}
+        {/* Trending Models Carousel */}
         <section className="models-section">
           <div className="section-header">
-            <h3 className="section-title">
-              <span className="title-icon">🔥</span>
-              Trending Models
-            </h3>
-            <span className="section-badge">{trendingModels.filter(m => m.trending).length} Hot</span>
+            <AnimatedSectionTitle title="Trending Models" icon="🔥" />
+            <span className="section-badge">3 Hot</span>
           </div>
 
-          <div className="models-scroll-container">
-            {canScrollLeft && (
-              <button
-                className="scroll-arrow scroll-arrow-left"
-                onClick={() => scrollModels('left')}
-                aria-label="Scroll left"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-            )}
-
-            <div
-              className="models-grid"
-              ref={modelsGridRef}
-            >
-              {trendingModels.map((model) => (
-                <div
-                  key={model.id}
-                  className={`model-card ${selectedModel === model.id ? 'selected' : ''}`}
-                  onClick={() => handleModelSelect(model.id)}
-                  style={{ '--model-color': model.color } as React.CSSProperties}
-                >
-                  <div className="model-card-glow" />
-                  <div className="model-card-content">
-                    <div className="model-header">
-                      <div className="model-icon" style={{ color: model.color }}>
-                        {model.icon}
-                      </div>
-                      <div className="model-badges">
-                        {model.new && <span className="badge badge-new">NEW</span>}
-                        {model.trending && <span className="badge badge-trending">🔥</span>}
-                      </div>
-                    </div>
-                    <h4 className="model-name">{model.name}</h4>
-                    <p className="model-provider">{model.provider}</p>
-                    <p className="model-description">{model.description}</p>
-                    <div className="model-capabilities">
-                      {model.capabilities.map((cap, idx) => (
-                        <span key={idx} className="capability-tag">{cap}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="model-select-indicator">
-                    {selectedModel === model.id ? (
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                      </svg>
-                    ) : (
-                      <span className="select-text">Select</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {canScrollRight && (
-              <button
-                className="scroll-arrow scroll-arrow-right"
-                onClick={() => scrollModels('right')}
-                aria-label="Scroll right"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            )}
-          </div>
+          <TrendingModelsCarousel />
         </section>
+
+        {/* Expandable Cards Section */}
+        <section className="expandable-cards-section">
+          <ChatExpandableCards />
+        </section>
+
+        {/* Tools Section */}
+        <section className="tools-section">
+          <ChatToolsSection />
+        </section>
+
+
 
         {/* News Section */}
         <section className="news-section">
           <div className="section-header">
-            <h3 className="section-title">
-              <span className="title-icon">📰</span>
-              Latest AI News
-            </h3>
+            <AnimatedSectionTitle title="Latest AI News" icon="📰" />
             <span className="section-badge live">
               <span className="live-indicator" />
               Live

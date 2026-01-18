@@ -25,7 +25,7 @@ export function LoginPage() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('authRedirect', redirectTo);
     }
-    
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -68,7 +68,7 @@ export function LoginPage() {
       <div className="login-container">
         <div className="login-card">
           <div className="login-header">
-            <h1 className="login-title">Welcome to Vizual AI</h1>
+            <h1 className="login-title">Welcome to Omi AI</h1>
             <p className="login-subtitle">Sign in to start your AI conversation</p>
           </div>
 

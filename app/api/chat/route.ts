@@ -6,17 +6,17 @@ import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 // Force Node.js runtime
-export const runtime = "nodejs"; 
+export const runtime = "nodejs";
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-const SYSTEM_INSTRUCTION = `You are Vizual, a highly advanced AI assistant created by Drepheus. Your primary directive is to provide intelligent, precise, and helpful responses.
+const SYSTEM_INSTRUCTION = `You are Omi, a highly advanced AI assistant created by Drepheus. Your primary directive is to provide intelligent, precise, and helpful responses.
 
 # Core Identity
-- Name: Vizual
+- Name: Omi AI
 - Creator: Drepheus
 - Purpose: Assist users with clarity, intelligence, and empathy
 - Personality: Calm, precise, and intelligent. You communicate with confidence but remain approachable
@@ -69,11 +69,11 @@ export async function POST(req: Request) {
   try {
     // 1. Safe Auth Check
     try {
-      const cookieStore = cookies(); 
+      const cookieStore = cookies();
       // In Next.js 15+, cookies() is async. We await it if it's a prvizualse, or use it directly.
       // @ts-ignore - Handling potential Prvizualse return from cookies()
       const resolvedCookies = typeof cookieStore.then === 'function' ? await cookieStore : cookieStore;
-      
+
       const supabase = createRouteHandlerClient({ cookies: () => resolvedCookies });
       const { data: { session } } = await supabase.auth.getSession();
       user = session?.user;
@@ -149,11 +149,11 @@ export async function POST(req: Request) {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      
+
       // Try Gemini 3 first, fallback to 2.0 Flash Exp if it fails
       try {
         console.log('Attempting to use gemini-3-flash-preview...');
-        const geminiModel = genAI.getGenerativeModel({ 
+        const geminiModel = genAI.getGenerativeModel({
           model: 'gemini-3-flash-preview',
           systemInstruction: SYSTEM_INSTRUCTION
         });
@@ -170,8 +170,8 @@ export async function POST(req: Request) {
         responseText = response.text();
       } catch (geminiError) {
         console.warn('Gemini 3 failed, falling back to gemini-2.0-flash-exp:', geminiError);
-        
-        const geminiModel = genAI.getGenerativeModel({ 
+
+        const geminiModel = genAI.getGenerativeModel({
           model: 'gemini-2.0-flash-exp',
           systemInstruction: SYSTEM_INSTRUCTION
         });
@@ -188,7 +188,7 @@ export async function POST(req: Request) {
         responseText = response.text();
       }
     }
-    
+
     console.log('Response received from', model);
 
     // 4. Track Usage (Fire and Forget)
@@ -211,7 +211,7 @@ export async function POST(req: Request) {
       })();
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: responseText,
       role: 'assistant'
     });
@@ -219,7 +219,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('=== CHAT API CRITICAL ERROR ===');
     console.error('Error details:', error);
-    
+
     // Log error
     if (user) {
       logApiCall({
@@ -232,7 +232,7 @@ export async function POST(req: Request) {
       }).catch(err => console.error('API logging error:', err));
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Failed to process chat request',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });

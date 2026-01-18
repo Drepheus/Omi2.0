@@ -6,8 +6,8 @@ import "./globals.css";
 import GlowingDotsNav from "@/src/GlowingDotsNav";
 
 export const metadata: Metadata = {
-  title: "Vizual AI",
-  description: "Multimodal AI workbench powered by Supabase + Next.js",
+  title: "Omi AI",
+  description: "Modern AI workbench - Chat, create, and generate with Omi AI",
 };
 
 export default function RootLayout({

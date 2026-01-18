@@ -17,7 +17,8 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   {
     color: '#0a0a0a',
-    icon: '💬',
+    icon: '',
+    iconImage: '/images/icons/ai-chat-icon.png',
     title: 'AI Chat',
     description: 'Conversational AI with advanced reasoning',
     label: 'Intelligence',
@@ -25,7 +26,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '🌐',
+    icon: '',
+    iconImage: '/images/icons/ai-search-icon.png',
     title: 'AI Search',
     description: 'Search that thinks. Navigate the web like intelligence, not keywords.',
     label: 'Discovery',
@@ -33,16 +35,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '🎨',
-    title: 'AI Media Studio',
-    description: 'Generate stunning AI images, videos, and avatars with advanced models',
-    label: 'Production',
-    action: 'mediastudio'
-  },
-
-  {
-    color: '#0a0a0a',
-    icon: '⚡',
+    icon: '',
+    iconImage: '/images/icons/ai-workflows-icon.png',
     title: 'AI Workflows',
     description: 'Automate complex tasks or multi-step reasoning with agentic systems',
     label: 'Character',
@@ -50,7 +44,17 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '🧪',
+    icon: '',
+    iconImage: '/images/icons/ai-media-icon.png',
+    title: 'AI Media Studio',
+    description: 'Generate stunning AI images, videos, and avatars with advanced models',
+    label: 'Production',
+    action: 'mediastudio'
+  },
+  {
+    color: '#0a0a0a',
+    icon: '',
+    iconImage: '/images/icons/custom-omis-icon.png',
     title: 'Custom Omi\'s',
     description: 'Design personalized AI assistants that adapt to your style, tone, and workflow',
     label: 'Creative',
@@ -58,7 +62,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '✦',
+    icon: '',
+    iconImage: '/images/icons/google-ai-icon.png',
     title: 'Google AI Studio',
     description: 'Powered by Gemini - Google\'s most capable AI model for multimodal reasoning',
     label: 'Advanced',
@@ -66,7 +71,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '🔮',
+    icon: '',
+    iconImage: '/images/icons/api-studio-icon.png',
     title: 'API Studio',
     description: 'Explore and run thousands of AI models - from image generation to language models',
     label: 'Models',
@@ -74,7 +80,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '📅',
+    icon: '',
+    iconImage: '/images/icons/calendar-icon.png',
     title: 'Events & Calendar',
     description: 'View upcoming AI challenges, workshops, and product launches',
     label: 'Schedule',
@@ -82,7 +89,8 @@ const cardData = [
   },
   {
     color: '#0a0a0a',
-    icon: '⚙️',
+    icon: '',
+    iconImage: '/images/icons/settings-icon.png',
     title: 'Account and API Settings',
     description: 'Configure API\'s and Account',
     label: 'Settings',
@@ -752,7 +760,13 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                   <div className="card__label">{card.label}</div>
                 </div>
                 <div className="card__content">
-                  <div className="card__icon">{card.icon}</div>
+                  <div className="card__icon">
+                    {card.iconImage ? (
+                      <img src={card.iconImage} alt={card.title} className="card__icon-image" />
+                    ) : (
+                      card.icon
+                    )}
+                  </div>
                   <h2 className="card__title">{card.title}</h2>
                   <p className="card__description">{card.description}</p>
                 </div>
@@ -784,7 +798,13 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 <div className="card__label">{card.label}</div>
               </div>
               <div className="card__content">
-                <div className="card__icon">{card.icon}</div>
+                <div className="card__icon">
+                  {card.iconImage ? (
+                    <img src={card.iconImage} alt={card.title} className="card__icon-image" />
+                  ) : (
+                    card.icon
+                  )}
+                </div>
                 <h2 className="card__title">{card.title}</h2>
                 <p className="card__description">{card.description}</p>
               </div>

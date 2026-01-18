@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { useGuestMode } from '@/context/guest-mode-context';
 import MediaStudio from '@/src/MediaStudio';
+import MediaModelsCarousel from '@/src/MediaModelsCarousel';
+import MediaExpandableCards from '@/src/MediaExpandableCards';
+import MediaToolsSection from '@/src/MediaToolsSection';
+import { AnimatedSectionTitle } from '@/components/ui/animated-section-title';
+import { StickyHeader } from '@/components/ui/sticky-header';
 
 interface AIModel {
   id: string;
@@ -309,24 +314,13 @@ export default function AIMediaStudioPage() {
       </div>
 
       {/* Header */}
-      <header className="ai-media-header">
-        <button className="back-button" onClick={() => router.push('/command-hub')}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          <span>Command Hub</span>
-        </button>
-        <div className="header-brand">
-          <span className="brand-icon animated-icon">🎨</span>
-          <h1 className="brand-title gradient-text">AI Media Studio</h1>
-        </div>
-        <div className="header-actions">
-          <button className="start-studio-btn" onClick={handleStartStudio}>
-            <span className="btn-glow"></span>
-            <span className="btn-text">Try Omi Studio →</span>
-          </button>
-        </div>
-      </header>
+      {/* Header */}
+      <StickyHeader
+        title="AI Media Studio"
+        icon="🎨"
+        actionLabel="Try Omi Studio →"
+        onAction={handleStartStudio}
+      />
 
       {/* Main Content */}
       <main className="ai-media-main">
@@ -391,101 +385,27 @@ export default function AIMediaStudioPage() {
         {/* Models Grid */}
         <section className="models-section">
           <div className="section-header">
-            <h3 className="section-title">
-              <span className="title-icon">🔥</span>
-              {selectedCategory === 'all' ? 'All AI Models' : `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Models`}
-            </h3>
-            <span className="section-badge">{filteredModels.filter(m => m.trending).length} Trending</span>
+            <AnimatedSectionTitle title="Trending Models" icon="🔥" />
+            <span className="section-badge">3 Trending</span>
           </div>
 
-          <div className="models-scroll-container">
-            {canScrollLeft && (
-              <button
-                className="scroll-arrow scroll-arrow-left"
-                onClick={() => scrollModels('left')}
-                aria-label="Scroll left"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-            )}
+          <MediaModelsCarousel />
+        </section>
 
-            <div className="models-grid" ref={modelsGridRef}>
-              {filteredModels.map((model) => (
-                <div
-                  key={model.id}
-                  className={`media-model-card ${selectedModel === model.id ? 'selected' : ''} ${hoveredModel === model.id ? 'hovered' : ''}`}
-                  onClick={() => handleModelSelect(model.id)}
-                  onMouseEnter={() => setHoveredModel(model.id)}
-                  onMouseLeave={() => setHoveredModel(null)}
-                  style={{
-                    '--model-color': model.color,
-                    '--model-gradient': model.gradient
-                  } as React.CSSProperties}
-                >
-                  {/* Card Glow Effect */}
-                  <div className="card-glow-effect"></div>
+        {/* Expandable Cards Section */}
+        <section className="expandable-cards-section">
+          <MediaExpandableCards />
+        </section>
 
-                  {/* Gradient Border */}
-                  <div className="gradient-border"></div>
-
-                  {/* Card Content */}
-                  <div className="card-content">
-                    <div className="card-header">
-                      <div className="model-icon-wrapper">
-                        <span className="model-icon">{model.icon}</span>
-                        <div className="icon-ring"></div>
-                      </div>
-                      <div className="model-badges">
-                        <span className="type-badge">{getTypeIcon(model.type)}</span>
-                        {model.new && <span className="badge badge-new">NEW</span>}
-                        {model.trending && <span className="badge badge-trending">🔥</span>}
-                      </div>
-                    </div>
-
-                    <h4 className="model-name">{model.name}</h4>
-                    <p className="model-provider">{model.provider}</p>
-                    <p className="model-description">{model.description}</p>
-
-                    <div className="model-features">
-                      {model.features.map((feature, idx) => (
-                        <span key={idx} className="feature-tag">{feature}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Hover Overlay */}
-                  <div className="card-overlay">
-                    <button className="try-model-btn">
-                      Try {model.name} →
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {canScrollRight && (
-              <button
-                className="scroll-arrow scroll-arrow-right"
-                onClick={() => scrollModels('right')}
-                aria-label="Scroll right"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            )}
-          </div>
+        {/* Tools Section */}
+        <section className="tools-section">
+          <MediaToolsSection />
         </section>
 
         {/* News Section */}
         <section className="news-section">
           <div className="section-header">
-            <h3 className="section-title">
-              <span className="title-icon">📰</span>
-              AI Media News
-            </h3>
+            <AnimatedSectionTitle title="AI Media News" icon="📰" />
             <span className="section-badge live">
               <span className="live-indicator" />
               Live

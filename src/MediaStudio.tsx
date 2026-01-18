@@ -634,7 +634,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
             </div>
             <div className="user-info-group">
               <div className="user-name-row">
-                <span className="user-name">Vizual.AI</span>
+                <span className="user-name">Omi.AI</span>
                 <span className="dropdown-icon">▼</span>
               </div>
               <span className="user-plan-text">Free Plan</span>
@@ -1192,7 +1192,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               </AnimatePresence>
               <div className="banner-content">
                 <h1 className="banner-title">
-                  Create with Vizual <ShinyText text="Studio" speed={8} className="media-studio-shiny-text" />
+                  Create with Omi <ShinyText text="Studio" speed={8} className="media-studio-shiny-text" />
                 </h1>
               </div>
             </motion.div>
@@ -1257,7 +1257,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                     <div className="card-content">
                       <h3 className="card-title">{bp.title}</h3>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
-                        <span>By Vizual Team</span>
+                        <span>By Omi Team</span>
                         <span>❤️ {Math.floor(Math.random() * 1000) + 100}</span>
                       </div>
                     </div>
@@ -1975,7 +1975,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
               </AnimatePresence>
               <div className="banner-content">
                 <h1 className="banner-title">
-                  Create with Vizual <ShinyText text="Studio" speed={8} className="media-studio-shiny-text" />
+                  Create with Omi <ShinyText text="Studio" speed={8} className="media-studio-shiny-text" />
                 </h1>
                 <p className="banner-subtitle">
                   Discover 50+ ready-made workflows for effortless AI creation. All Blueprints 75% off for a limited time!
@@ -2099,7 +2099,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
                       { type: 'image', src: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=400&h=400&fit=crop', title: 'Neon City', creator: 'CyberPunk' },
                       { type: 'video', src: '/videos/matrixcode.mp4', title: 'Matrix Effect', creator: 'CodeArt' },
                       { type: 'image', src: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop', title: 'Ocean Depths', creator: 'DeepDive' },
-                      { type: 'video', src: '/videos/klingmodel.mp4', title: 'Model Showcase', creator: 'Vizual Team' },
+                      { type: 'video', src: '/videos/klingmodel.mp4', title: 'Model Showcase', creator: 'Omi Team' },
                       { type: 'image', src: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=400&fit=crop', title: 'Urban Lights', creator: 'CityScape' },
                       { type: 'video', src: '/videos/veo2.mp4', title: 'Veo Magic', creator: 'AI Studio' },
                       { type: 'image', src: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=400&fit=crop', title: 'Aurora Night', creator: 'NightSky' },
@@ -2460,7 +2460,7 @@ export default function MediaStudio({ onClose }: MediaStudioProps) {
             <section id="events-section" className="events-section" style={{ padding: '60px 40px', marginBottom: '40px' }}>
               <div className="section-header">
                 <h2 className="section-title">
-                  <span style={{ color: 'white' }}>Upcvizualng</span> <ShinyText text="Events" speed={6} className="premium-gradient-text" />
+                  <span style={{ color: 'white' }}>Upcoming</span> <ShinyText text="Events" speed={6} className="premium-gradient-text" />
                 </h2>
                 <button
                   className="view-more-btn"
