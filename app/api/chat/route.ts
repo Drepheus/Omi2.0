@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 // Force Node.js runtime
@@ -67,21 +65,8 @@ export async function POST(req: Request) {
   let user = null;
 
   try {
-    // 1. Safe Auth Check
-    try {
-      const cookieStore = cookies();
-      // In Next.js 15+, cookies() is async. We await it if it's a prvizualse, or use it directly.
-      // @ts-ignore - Handling potential Prvizualse return from cookies()
-      const resolvedCookies = typeof cookieStore.then === 'function' ? await cookieStore : cookieStore;
-
-      const supabase = createRouteHandlerClient({ cookies: () => resolvedCookies });
-      const { data: { session } } = await supabase.auth.getSession();
-      user = session?.user;
-      if (user) console.log('User authenticated:', user.id);
-      else console.log('Guest user');
-    } catch (authError) {
-      console.warn('Auth check failed (continuing as guest):', authError);
-    }
+    // 1. Guest Mode - Auth disabled for deployment
+    console.log('Running in guest mode (auth disabled)');
 
     // 2. Parse Request
     let body;

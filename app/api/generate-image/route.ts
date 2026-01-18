@@ -1,8 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Replicate from 'replicate';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 // Initialize Replicate client
@@ -14,11 +12,9 @@ export const runtime = 'edge'; // Optional: Use edge runtime if supported/prefer
 
 export async function POST(req: NextRequest) {
     const startTime = Date.now();
-    
-    // Get user session
-    const supabase = createRouteHandlerClient({ cookies });
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
+
+    // Guest mode - auth disabled for deployment
+    const user = null;
 
     try {
         const { prompt, aspectRatio = '3:2' } = await req.json();
@@ -73,7 +69,7 @@ export async function POST(req: NextRequest) {
         // Track usage and log API call
         if (user) {
             trackUsage(user.id, 'image_gen').catch(err => console.error('Usage tracking error:', err));
-            
+
             logApiCall({
                 user_id: user.id,
                 email: user.email,
@@ -89,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error('Image generation error:', error);
-        
+
         // Log error
         if (user) {
             logApiCall({

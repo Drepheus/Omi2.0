@@ -1,7 +1,5 @@
 import { VertexAI } from '@google-cloud/vertexai';
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { trackUsage, logApiCall } from '@/lib/usage-tracking';
 
 const project = process.env.GOOGLE_CLOUD_PROJECT_ID;
@@ -12,11 +10,9 @@ export const runtime = 'nodejs'; // Vertex SDK requires Node.js runtime
 
 export async function POST(req: NextRequest) {
     const startTime = Date.now();
-    
-    // Get user session
-    const supabase = createRouteHandlerClient({ cookies });
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
+
+    // Guest mode - auth disabled for deployment
+    const user = null;
 
     try {
         if (!project || !dataStoreId) {
@@ -80,7 +76,7 @@ export async function POST(req: NextRequest) {
         // Track usage and log API call
         if (user) {
             trackUsage(user.id, 'chat').catch(err => console.error('Usage tracking error:', err));
-            
+
             logApiCall({
                 user_id: user.id,
                 email: user.email,
@@ -100,22 +96,22 @@ export async function POST(req: NextRequest) {
         });
     } catch (error: any) {
         console.error('RAG Chat Error:', error);
-        
+
         // Log error
         // Note: user variable is available in scope
         // We need to check if user is defined, but TS might complain if it's not in try block scope?
         // Actually user is defined outside try block in my previous edit?
         // Let's check. Yes, user is defined at top of function.
-        
+
         // But wait, I need to make sure 'user' is accessible here.
         // It is defined in the function scope.
-        
+
         // Log error
         // We can't easily access 'user' if TS thinks it might be uninitialized?
         // No, it's const user = ...
-        
+
         // However, I'll just add the logging logic.
-        
+
         return NextResponse.json(
             { error: error.message || 'Internal server error' },
             { status: 500 }
