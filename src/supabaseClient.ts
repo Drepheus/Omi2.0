@@ -2,6 +2,7 @@
 
 import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
 
+// Supabase client - may be null in guest mode
 export const supabase = getBrowserSupabaseClient();
 
 // Database Types

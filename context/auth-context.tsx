@@ -26,6 +26,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Guest mode - Supabase not configured
+    if (!supabase) {
+      console.log('[Guest Mode] Auth disabled - no Supabase client');
+      setLoading(false);
+      return;
+    }
+
     let subscription: ReturnType<typeof supabase.auth.onAuthStateChange> | null =
       null;
 

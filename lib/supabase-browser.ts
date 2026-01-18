@@ -1,37 +1,37 @@
 "use client";
 
-import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | null = null;
+let initAttempted = false;
 
-export function getBrowserSupabaseClient(): SupabaseClient {
-  if (!browserClient) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export function getBrowserSupabaseClient(): SupabaseClient | null {
+  if (initAttempted) {
+    return browserClient;
+  }
 
-    // During build time, env vars may not be available
-    // Return a placeholder that will be properly initialized at runtime
-    if (!url || !anonKey) {
-      // Check if we're in build/SSG mode vs actual runtime
-      if (typeof window === 'undefined') {
-        // Server-side during build - return a mock that won't be used
-        // The real client will be created on the client side
-        console.warn('Supabase environment variables not found during build. Client will initialize at runtime.');
-        return null as unknown as SupabaseClient;
-      }
-      throw new Error(
-        "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
-      );
-    }
+  initAttempted = true;
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Guest mode - Supabase not configured
+  if (!url || !anonKey) {
+    console.log('[Guest Mode] Supabase not configured - running without auth');
+    return null;
+  }
+
+  // Only import and create client if env vars exist
+  import("@supabase/supabase-js").then(({ createClient }) => {
     browserClient = createClient(url, anonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
       },
     });
-  }
+  }).catch(err => {
+    console.error('Failed to initialize Supabase:', err);
+  });
 
-  return browserClient!;
+  return browserClient;
 }
