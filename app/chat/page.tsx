@@ -11,6 +11,7 @@ import ChatToolsSection from '@/src/ChatToolsSection';
 import { AnimatedSectionTitle } from '@/components/ui/animated-section-title';
 import { StickyHeader } from '@/components/ui/sticky-header';
 import ExploreAppsSection from '@/src/ExploreAppsSection';
+import { NewsTicker } from '@/src/NewsTicker';
 
 interface LLMModel {
   id: string;
@@ -232,7 +233,6 @@ export default function OmiChatPage() {
       {/* Header */}
       <StickyHeader
         title="AI Chat"
-        icon="💬"
         actionLabel="Try AI Chat →"
         onAction={handleStartChat}
       />
@@ -252,7 +252,7 @@ export default function OmiChatPage() {
         {/* Trending Models Carousel */}
         <section className="models-section">
           <div className="section-header">
-            <AnimatedSectionTitle title="Trending Models" icon="🔥" />
+            <AnimatedSectionTitle title="Trending Models" />
             <span className="section-badge">3 Hot</span>
           </div>
 
@@ -279,28 +279,14 @@ export default function OmiChatPage() {
         {/* News Section */}
         <section className="news-section">
           <div className="section-header">
-            <AnimatedSectionTitle title="Latest AI News" icon="📰" />
+            <AnimatedSectionTitle title="Latest AI News" />
             <span className="section-badge live">
               <span className="live-indicator" />
               Live
             </span>
           </div>
 
-          <div className="news-ticker-container">
-            <div className="news-list">
-              {latestNews.map((news) => (
-                <a key={news.id} href={news.url} className="news-item">
-                  <span className="news-category">{news.category}</span>
-                  <span className="news-title">{news.title}</span>
-                  <span className="news-meta">
-                    <span className="news-source">{news.source}</span>
-                    <span className="news-divider">•</span>
-                    <span className="news-date">{news.date}</span>
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
+          <NewsTicker news={latestNews} />
         </section>
 
         {/* Quick Stats */}
@@ -323,6 +309,6 @@ export default function OmiChatPage() {
           </div>
         </section>
       </main>
-    </div>
+    </div >
   );
 }

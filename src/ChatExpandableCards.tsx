@@ -26,7 +26,7 @@ const chatCards: ExpandableCardItem[] = [
     {
         description: "Meta",
         title: "Llama 3.1 405B",
-        src: "https://images.unsplash.com/photo-1639322537228-ad506d132903?q=80&w=3270&auto=format&fit=crop",
+        src: "https://avatars.githubusercontent.com/u/160999081?s=200&v=4", // Meta Llama logo (or Meta AI)
         ctaText: "Try Llama",
         ctaLink: "#",
         content: () => {
@@ -44,7 +44,7 @@ const chatCards: ExpandableCardItem[] = [
     {
         description: "Mistral AI",
         title: "Mistral Large 2",
-        src: "https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=3173&auto=format&fit=crop",
+        src: "https://avatars.githubusercontent.com/u/132338950?s=200&v=4", // Mistral AI logo
         ctaText: "Try Mistral",
         ctaLink: "#",
         content: () => {
@@ -62,7 +62,7 @@ const chatCards: ExpandableCardItem[] = [
     {
         description: "DeepSeek",
         title: "DeepSeek V2.5",
-        src: "https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=3270&auto=format&fit=crop",
+        src: "https://avatars.githubusercontent.com/u/154460057?s=200&v=4", // DeepSeek logo
         ctaText: "Try DeepSeek",
         ctaLink: "#",
         content: () => {
@@ -82,7 +82,7 @@ const chatCards: ExpandableCardItem[] = [
 export function ChatExpandableCards() {
     return (
         <div className="w-full py-12">
-            <AnimatedSectionTitle title="Best Alternatives" icon="🔄" />
+            <AnimatedSectionTitle title="Best Alternatives" />
             <ExpandableCards cards={chatCards} />
         </div>
     );
