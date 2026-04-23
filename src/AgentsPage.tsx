@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DotGrid from './DotGrid';
 
-interface AIWorkflowsPageProps {
+import './AgentsPage.css';
+
+interface AgentsPageProps {
   onClose?: () => void;
 }
 
@@ -17,56 +19,26 @@ interface Component {
 
 const componentCategories = [
   {
-    name: 'Base',
+    name: 'Autonomous Agents',
     components: [
-      { id: 'web-search', name: 'AI Search', icon: '🔍' },
-      { id: 'web-scrape', name: 'Web Scrape', icon: '🌐' },
-      { id: 'text-input', name: 'Text Input', icon: '📝' },
-      { id: 'number-input', name: 'Number Input', icon: '🔢' }
+      { id: 'openclaw', name: 'OpenClaw', icon: '🦅' },
+      { id: 'hermes', name: 'Hermes', icon: '⚡' },
+      { id: 'agentzero', name: 'AgentZero', icon: '🤖' }
     ]
   },
   {
-    name: 'Advanced',
+    name: 'Specialized Agents',
     components: [
-      { id: 'llm', name: 'LLM', icon: '🤖' },
-      { id: 'content-cleanup', name: 'Content Cleanup', icon: '✨' },
-      { id: 'summarize', name: 'Comprehensive Summary', icon: '📄' },
-      { id: 'seo-article', name: 'SEO Article Outline', icon: '📰' }
-    ]
-  },
-  {
-    name: 'Tools',
-    components: [
-      { id: 'json-parser', name: 'JSON Parser', icon: '{ }' },
-      { id: 'text-splitter', name: 'Text Splitter', icon: '✂️' },
-      { id: 'data-merge', name: 'Data Merge', icon: '🔗' }
-    ]
-  },
-  {
-    name: 'Logic',
-    components: [
-      { id: 'if-else', name: 'If/Else', icon: '🔀' },
-      { id: 'loop', name: 'Loop', icon: '🔄' },
-      { id: 'filter', name: 'Filter', icon: '🔍' }
-    ]
-  },
-  {
-    name: 'OpenAPI',
-    components: []
-  },
-  {
-    name: 'RAG Data',
-    components: [
-      { id: 'vector-store', name: 'Vector Store', icon: '📊' },
-      { id: 'embeddings', name: 'Embeddings', icon: '🧮' }
+      { id: 'researcher', name: 'Deep Researcher', icon: '🔍' },
+      { id: 'coder', name: 'DevAgent', icon: '💻' }
     ]
   }
 ];
 
-export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
+export default function AgentsPage({ onClose }: AgentsPageProps) {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState('Base');
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Base', 'Advanced']);
+  const [selectedCategory, setSelectedCategory] = useState('Autonomous Agents');
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Autonomous Agents']);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleClose = () => {
@@ -91,8 +63,8 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
       <aside className="workflow-sidebar">
         <div className="workflow-sidebar-header">
           <div className="workflow-logo">
-            <span className="workflow-logo-icon">⚡</span>
-            <span className="workflow-logo-text">Components</span>
+            <span className="workflow-logo-icon">🤖</span>
+            <span className="workflow-logo-text">Agents</span>
           </div>
         </div>
 
@@ -100,7 +72,7 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
           <input
             type="text"
             className="workflow-search"
-            placeholder="Search components"
+            placeholder="Search agents"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -171,8 +143,8 @@ export default function AIWorkflowsPage({ onClose }: AIWorkflowsPageProps) {
         <div className="workflow-canvas-content drag-drop-area">
           <div className="workflow-overlay">
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none">
-              <h2 className="workflow-overlay-title">Build Your Workflow</h2>
-              <p className="workflow-overlay-desc">Drag and drop modules here to create your custom AI workflow. You can also start from a template.</p>
+              <h2 className="workflow-overlay-title">Deploy Agents</h2>
+              <p className="workflow-overlay-desc">Drag and drop agents here to configure and deploy autonomous AI agents.</p>
               <div className="workflow-overlay-actions pointer-events-auto">
                 <button className="workflow-overlay-btn primary">Get Started</button>
                 <button className="workflow-overlay-btn">Choose Template</button>

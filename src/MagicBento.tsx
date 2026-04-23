@@ -46,10 +46,10 @@ const cardData = [
   {
     color: '#0a0a0a',
     icon: <Workflow size={48} strokeWidth={1} />,
-    title: 'AI Workflows',
-    description: 'Automate complex tasks or multi-step reasoning with agentic systems',
+    title: 'Agents',
+    description: 'Deploy autonomous agents like OpenClaw, Hermes, and AgentZero',
     label: 'Agentic',
-    action: 'aiworkflows'
+    action: 'agents'
   },
   {
     color: '#0a0a0a',
@@ -643,8 +643,8 @@ const MagicBento: React.FC<MagicBentoProps> = ({
       case 'aicode':
         router.push('/ai-code');
         break;
-      case 'aiworkflows':
-        router.push('/ai-workflows');
+      case 'agents':
+        router.push('/agents');
         break;
       case 'googleaistudio':
         router.push('/google-ai-studio');

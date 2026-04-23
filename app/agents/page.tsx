@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import AIWorkflowsPage from "@/src/AIWorkflowsPage";
+import AgentsPage from "@/src/AgentsPage";
 
-export default function WorkflowsRoute() {
+export default function AgentsRoute() {
   const router = useRouter();
 
   return (
     <div className="page-transition fade-in">
-      <AIWorkflowsPage onClose={() => router.push('/command-hub')} />
+      <AgentsPage onClose={() => router.push('/command-hub')} />
     </div>
   );
 }
