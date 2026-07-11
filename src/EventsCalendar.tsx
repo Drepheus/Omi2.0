@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AINewsFeed from './AINewsFeed';
 import './EventsCalendar.css';
 
 interface Event {
@@ -117,6 +118,8 @@ const EventsCalendar: React.FC = () => {
       <button onClick={() => router.push('/command-hub')} className="calendar-back-btn">
         ← Command Hub
       </button>
+
+      <AINewsFeed />
 
       <div className="calendar-container">
         <div className="calendar-header">
