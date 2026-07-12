@@ -1,7 +1,5 @@
-'use client';
-
-import React, { useState } from 'react';
-import { Newspaper, Cpu, Code2, Globe, Calendar, ExternalLink, Zap, Flame } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Newspaper, Cpu, Code2, Globe, Calendar, ExternalLink, Zap, Flame, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface NewsFeedItem {
@@ -98,10 +96,29 @@ const SAMPLE_NEWS: NewsFeedItem[] = [
 
 export default function AINewsFeed() {
   const [activeCategory, setActiveCategory] = useState<'All' | 'AI News' | 'AI Models' | 'AI OpenSource'>('All');
+  const [news, setNews] = useState<NewsFeedItem[]>(SAMPLE_NEWS);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchNews() {
+      try {
+        const response = await fetch('/api/ai-news');
+        const data = await response.json();
+        if (data && data.news && data.news.length > 0) {
+          setNews(data.news);
+        }
+      } catch (err) {
+        console.error('Failed to fetch live AI news:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchNews();
+  }, []);
 
   const filteredNews = activeCategory === 'All' 
-    ? SAMPLE_NEWS 
-    : SAMPLE_NEWS.filter(item => item.category === activeCategory);
+    ? news 
+    : news.filter(item => item.category === activeCategory);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -127,10 +144,18 @@ export default function AINewsFeed() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-500"></span>
+              {loading ? (
+                <Loader2 className="w-2.5 h-2.5 text-purple-400 animate-spin" />
+              ) : (
+                <>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </>
+              )}
             </span>
-            <span className="text-xs uppercase tracking-wider font-semibold text-purple-400">Realtime Daily Updates</span>
+            <span className="text-xs uppercase tracking-wider font-semibold text-neutral-400">
+              {loading ? 'Syncing updates...' : 'Live Feed Connected'}
+            </span>
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-neutral-200 to-neutral-400 bg-clip-text text-transparent">
             AI Releases of the Day
