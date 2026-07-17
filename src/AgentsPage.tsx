@@ -26,7 +26,14 @@ import {
   Send,
   Loader2,
   RefreshCw,
-  Coins
+  Coins,
+  Bot,
+  Search,
+  Code,
+  MessageSquare,
+  Layers,
+  Settings2,
+  X
 } from 'lucide-react';
 
 import './AgentsPage.css';
@@ -34,7 +41,7 @@ import './AgentsPage.css';
 interface Agent {
   id: string;
   name: string;
-  icon: string;
+  icon: string; // 'openclaw', 'hermes', 'agentzero', 'researcher', 'coder'
   description: string;
   type: string;
   status: 'idle' | 'running' | 'stopped' | 'error';
@@ -44,6 +51,7 @@ interface Agent {
 
 interface Deployment {
   id: string;
+  agentId: string;
   agentName: string;
   agentIcon: string;
   status: 'provisioning' | 'running' | 'stopped' | 'error';
@@ -55,11 +63,18 @@ interface Deployment {
   deployedAt: string;
 }
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  reasoning?: string;
+  isStreaming?: boolean;
+}
+
 const agentCatalog: Agent[] = [
   {
     id: 'openclaw',
     name: 'OpenClaw',
-    icon: '🦅',
+    icon: 'openclaw',
     description: 'Autonomous web scraper and data extraction agent with advanced parsing',
     type: 'Autonomous',
     status: 'idle',
@@ -69,7 +84,7 @@ const agentCatalog: Agent[] = [
   {
     id: 'hermes',
     name: 'Hermes',
-    icon: '⚡',
+    icon: 'hermes',
     description: 'Stateless messaging and context synchronization agent for multi-tenant SaaS loops',
     type: 'Autonomous',
     status: 'idle',
@@ -79,7 +94,7 @@ const agentCatalog: Agent[] = [
   {
     id: 'agentzero',
     name: 'AgentZero',
-    icon: '🤖',
+    icon: 'agentzero',
     description: 'General purpose autonomous agent with tool-use and reasoning capabilities',
     type: 'Autonomous',
     status: 'idle',
@@ -89,7 +104,7 @@ const agentCatalog: Agent[] = [
   {
     id: 'researcher',
     name: 'Deep Researcher',
-    icon: '🔍',
+    icon: 'researcher',
     description: 'Autonomous research agent that performs deep web research and synthesis',
     type: 'Specialized',
     status: 'idle',
@@ -99,7 +114,7 @@ const agentCatalog: Agent[] = [
   {
     id: 'coder',
     name: 'DevAgent',
-    icon: '💻',
+    icon: 'coder',
     description: 'AI coding agent for automated code generation, review, and refactoring',
     type: 'Specialized',
     status: 'idle',
@@ -111,8 +126,9 @@ const agentCatalog: Agent[] = [
 const initialDeployments: Deployment[] = [
   {
     id: 'dep-1',
+    agentId: 'openclaw',
     agentName: 'OpenClaw',
-    agentIcon: '🦅',
+    agentIcon: 'openclaw',
     status: 'running',
     vmName: 'omivm-us-east-1',
     ipAddress: '104.28.45.12',
@@ -123,8 +139,25 @@ const initialDeployments: Deployment[] = [
   }
 ];
 
+const renderAgentIcon = (id: string, className = "w-5 h-5") => {
+  switch (id) {
+    case 'openclaw':
+      return <Globe className={className} />;
+    case 'hermes':
+      return <Zap className={className} />;
+    case 'agentzero':
+      return <Bot className={className} />;
+    case 'researcher':
+      return <Search className={className} />;
+    case 'coder':
+      return <Code className={className} />;
+    default:
+      return <Cpu className={className} />;
+  }
+};
+
 const categoryMeta: Record<string, { icon: string; color: string }> = {
-  autonomous: { icon: '🤖', color: '#a78bfa' },
+  autonomous: { icon: '🤖', color: '#818cf8' },
   specialized: { icon: '⚙️', color: '#60a5fa' },
   premium: { icon: '⭐', color: '#fbbf24' }
 };
@@ -154,12 +187,18 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [credits, setCredits] = useState<number>(0);
   const [isSimulatingStripe, setIsSimulatingStripe] = useState(false);
 
-  // Console Overlay State
-  const [showConsole, setShowConsole] = useState(false);
+  // Playground Overlay State
+  const [showPlayground, setShowPlayground] = useState(false);
+  const [playgroundDeployment, setPlaygroundDeployment] = useState<Deployment | null>(null);
+  const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
+  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'logs'>('chat');
   const [consoleLogs, setConsoleLogs] = useState<string>('Hermes Terminal initialized. Awaiting commands...');
   const [consoleInput, setConsoleInput] = useState('');
   const [isConsoleExecuting, setIsConsoleExecuting] = useState(false);
+  const [expandedReasoningIndex, setExpandedReasoningIndex] = useState<number | null>(null);
+  
   const logsEndRef = useRef<HTMLDivElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Load configuration and mock user credits on mount
   useEffect(() => {
@@ -167,12 +206,18 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     fetchUserCredits();
   }, []);
 
-  // Scroll logs to bottom
+  // Scroll to bottom on new logs or new messages
   useEffect(() => {
-    if (logsEndRef.current) {
+    if (logsEndRef.current && playgroundTab === 'logs') {
       logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [consoleLogs]);
+  }, [consoleLogs, playgroundTab]);
+
+  useEffect(() => {
+    if (chatEndRef.current && playgroundTab === 'chat') {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [playgroundMessages, playgroundTab]);
 
   const fetchAgentConfig = async () => {
     try {
@@ -191,22 +236,35 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   const fetchUserCredits = async () => {
-    // Simply fetch database session or create user to show credits
     try {
-      // Direct call to API which creates user record on route access
       const res = await fetch('/api/agents/config');
       if (res.ok) {
-        // Trigger chat config fetch or simple api call to see balance
-        // We'll simulate fetching credits from user record
-        const userRes = await fetch('/api/agents/config'); // triggers fallback insert
-        if (userRes.ok) {
-          // Let's set initial credits
-          setCredits(prev => prev === 0 ? 10 : prev);
-        }
+        // Fallback user check
+        setCredits(prev => prev === 0 ? 10 : prev);
       }
     } catch (err) {
       console.error('Failed to fetch user credits:', err);
     }
+  };
+
+  const parseLogsForChat = (logs: string) => {
+    const hermesMatch = logs.match(/💬 \[(?:Hermes|Hermes \(Simulated\))\]:\s*([\s\S]*)/i);
+    let content = '';
+    let reasoning = '';
+    
+    if (hermesMatch) {
+      content = hermesMatch[1].trim();
+      // clean up trailing logs
+      content = content.replace(/📝 \[Memory Update\][\s\S]*/, '').trim();
+      content = content.replace(/💾 \[Database Syncing\][\s\S]*/, '').trim();
+      content = content.replace(/\[Hermes: Task executed successfully[\s\S]*/, '').trim();
+      
+      reasoning = logs.substring(0, hermesMatch.index).trim();
+    } else {
+      reasoning = logs.trim();
+    }
+    
+    return { content, reasoning };
   };
 
   const handleDeployAgent = async () => {
@@ -221,7 +279,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            apiKey: apiKey || 'dummy-test-key-simulated', // Allow fallback for testing
+            apiKey: apiKey || 'dummy-test-key-simulated',
             memoryMd,
             userMd,
           }),
@@ -242,10 +300,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     // Add agent to active deployments
     const newDeployment: Deployment = {
       id: `dep-${Date.now()}`,
+      agentId: selectedAgent.id,
       agentName: selectedAgent.name,
       agentIcon: selectedAgent.icon,
       status: 'running',
-      vmName: `hermes-railway-node-${Math.floor(Math.random() * 900) + 100}`,
+      vmName: `${selectedAgent.id}-railway-node-${Math.floor(Math.random() * 900) + 100}`,
       ipAddress: '142.250.190.46',
       uptime: '0s',
       cpu: 5,
@@ -259,6 +318,10 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
   const handleStopDeployment = (id: string) => {
     setDeployments(prev => prev.filter(d => d.id !== id));
+    if (playgroundDeployment?.id === id) {
+      setShowPlayground(false);
+      setPlaygroundDeployment(null);
+    }
   };
 
   const handleRunAgentTurn = async () => {
@@ -267,7 +330,22 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     const userPrompt = consoleInput;
     setConsoleInput('');
     setIsConsoleExecuting(true);
-    setConsoleLogs(prev => prev + `\n\n> User: ${userPrompt}\n`);
+    setConsoleLogs(`⚡ [Hermes Initializing] Starting celery execution...`);
+
+    // Append user message and streaming assistant placeholder
+    const newMessages: Message[] = [
+      ...playgroundMessages,
+      { role: 'user', content: userPrompt }
+    ];
+    setPlaygroundMessages(newMessages);
+    
+    // Add streaming assistant msg
+    const assistantIndex = newMessages.length;
+    setPlaygroundMessages(prev => [
+      ...prev,
+      { role: 'assistant', content: '', reasoning: '⚡ Booting reasoning core...', isStreaming: true }
+    ]);
+    setExpandedReasoningIndex(assistantIndex);
 
     try {
       const res = await fetch('/api/chat', {
@@ -281,41 +359,75 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       });
 
       if (!res.ok) {
+        let errMsg = 'Failed to execute turn';
         if (res.status === 402) {
-          setConsoleLogs(prev => prev + `\n⚠️ Error: Payment Required. You have 0 credits. Please purchase more credits to run the agent.\n`);
+          errMsg = 'Payment Required. Please top up credits.';
         } else {
-          const errData = await res.json();
-          setConsoleLogs(prev => prev + `\n⚠️ Error executing turn: ${errData.error || res.statusText}\n`);
+          try {
+            const errData = await res.json();
+            errMsg = errData.error || errMsg;
+          } catch {}
         }
+        
+        setPlaygroundMessages(prev => {
+          const updated = [...prev];
+          updated[assistantIndex] = {
+            role: 'assistant',
+            content: `⚠️ Error executing turn: ${errMsg}`,
+            reasoning: 'System: Execution aborted due to server error.',
+            isStreaming: false
+          };
+          return updated;
+        });
         setIsConsoleExecuting(false);
         return;
       }
 
-      // Stream the output
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
       if (reader) {
         let isDone = false;
+        let accumulatedLogs = '';
+
         while (!isDone) {
           const { value, done } = await reader.read();
           isDone = done;
           if (value) {
             const chunk = decoder.decode(value);
-            setConsoleLogs(prev => prev + chunk);
+            accumulatedLogs += chunk;
+            setConsoleLogs(accumulatedLogs);
+
+            const { content, reasoning } = parseLogsForChat(accumulatedLogs);
+            setPlaygroundMessages(prev => {
+              const updated = [...prev];
+              updated[assistantIndex] = {
+                role: 'assistant',
+                content: content || 'Reasoning loop in progress...',
+                reasoning: reasoning,
+                isStreaming: !isDone
+              };
+              return updated;
+            });
           }
         }
       }
 
-      // Deduct credit in UI
       setCredits(prev => Math.max(0, prev - 1));
-      
-      // Refresh memory contexts since Hermes synced them back to Supabase!
       await fetchAgentConfig();
 
     } catch (err: any) {
       console.error(err);
-      setConsoleLogs(prev => prev + `\n⚠️ System Error: ${err.message}\n`);
+      setPlaygroundMessages(prev => {
+        const updated = [...prev];
+        updated[assistantIndex] = {
+          role: 'assistant',
+          content: `⚠️ System Error: ${err.message}`,
+          reasoning: 'System: Connection failure.',
+          isStreaming: false
+        };
+        return updated;
+      });
     } finally {
       setIsConsoleExecuting(false);
     }
@@ -326,7 +438,6 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     setIsSimulatingStripe(true);
     setConsoleLogs(prev => prev + `\n💳 [Stripe Portal] Initializing Checkout Session...`);
 
-    // Simulate checkout session completion webhook trigger on our Next.js API
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -342,8 +453,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           data: {
             object: {
               id: 'cs_test_simulated_session_id',
-              client_reference_id: 'usr_guest', // target guest user
-              amount_total: 1000, // $10.00
+              client_reference_id: 'usr_guest',
+              amount_total: 1000,
               customer_details: {
                 name: 'Simulated Developer',
                 email: 'dev@hermes.io',
@@ -369,6 +480,21 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }
   };
 
+  const openPlayground = (dep: Deployment) => {
+    setPlaygroundDeployment(dep);
+    setPlaygroundMessages([
+      {
+        role: 'assistant',
+        content: `Connection established with ${dep.agentName}. Active Celery worker is linked to Supabase memory blocks. Submit a prompt below to launch an execution loop.`,
+        reasoning: 'System: Connected to omivm node.\nSupabase memory syncer is active.'
+      }
+    ]);
+    setExpandedReasoningIndex(0);
+    setConsoleLogs('Connected. Waiting for command...');
+    setShowPlayground(true);
+    setPlaygroundTab('chat');
+  };
+
   const filteredAgents = agentCatalog.filter(agent => {
     const matchesCategory = selectedCategory === 'all' || agent.category === selectedCategory;
     const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -389,13 +515,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       <aside className="agent-sidebar">
         <div className="agent-sidebar-header">
           <div className="agent-logo" onClick={onClose}>
-            <span className="agent-logo-icon">🤖</span>
+            <span className="agent-logo-lucide"><Bot size={22} className="text-violet-400" /></span>
             <span className="agent-logo-text">Hermes Hub</span>
           </div>
         </div>
 
         <div className="agent-search-container">
-          <span className="agent-search-icon">🔍</span>
+          <span className="agent-search-icon"><Search size={14} /></span>
           <input
             type="text"
             className="agent-search"
@@ -437,18 +563,18 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
         <div className="agent-quick-stats">
           <div className="agent-quick-stat">
-            <Play size={14} className="text-green-400" />
+            <Play size={14} style={{ color: '#10b981' }} />
             <span>{runningCount} Running</span>
           </div>
           <div className="agent-quick-stat">
-            <Square size={14} className="text-gray-500" />
+            <Square size={14} style={{ color: '#6b7280' }} />
             <span>{stoppedCount} Stopped</span>
           </div>
         </div>
 
         <div className="agent-credits-panel">
           <div className="credits-title-row">
-            <Coins size={16} className="text-violet-400" />
+            <Coins size={16} className="text-amber-400" />
             <span>SaaS Credits</span>
           </div>
           <div className="credits-val">{credits}</div>
@@ -467,10 +593,6 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             <p className="agent-topbar-subtitle">Deploy stateful Hermes and OpenClaw loops to Serverless Backends</p>
           </div>
           <div className="agent-topbar-right">
-            <button className="agent-btn agent-btn-secondary" onClick={() => setShowConsole(true)}>
-              <Terminal size={16} />
-              <span>Console</span>
-            </button>
             <button className="agent-btn agent-btn-primary" onClick={() => {
               setSelectedAgent(agentCatalog.find(a => a.id === 'hermes') || agentCatalog[0]);
               setShowDeployModal(true);
@@ -484,7 +606,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         {/* Stats Row */}
         <section className="agent-stats">
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(220, 220, 220, 0.05)', color: '#dcdcdc' }}>
               <Server size={20} />
             </div>
             <div className="agent-stat-info">
@@ -492,12 +614,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <span className="agent-stat-label">Total Deployments</span>
             </div>
             <span className="agent-stat-trend up">
-              <ArrowUpRight size={14} />
+              <Activity size={12} className="animate-pulse" />
               Active
             </span>
           </div>
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(52, 211, 153, 0.15)', color: '#34d399' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.05)', color: '#10b981' }}>
               <Zap size={20} />
             </div>
             <div className="agent-stat-info">
@@ -506,7 +628,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.05)', color: '#f59e0b' }}>
               <Cpu size={20} />
             </div>
             <div className="agent-stat-info">
@@ -515,7 +637,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(167, 139, 250, 0.15)', color: '#a78bfa' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.05)', color: '#818cf8' }}>
               <BarChart3 size={20} />
             </div>
             <div className="agent-stat-info">
@@ -537,7 +659,9 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 <div key={dep.id} className="agent-deployment-card">
                   <div className="agent-deployment-top">
                     <div className="agent-deployment-agent">
-                      <span className="agent-deployment-icon">{dep.agentIcon}</span>
+                      <span className="agent-deployment-icon-wrapper">
+                        {renderAgentIcon(dep.agentId, "w-6 h-6 text-gray-200")}
+                      </span>
                       <div>
                         <span className="agent-deployment-name">{dep.agentName}</span>
                         <span className="agent-deployment-vm">{dep.vmName}</span>
@@ -581,8 +705,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     </div>
                   </div>
                   <div className="agent-deployment-actions">
-                    <button className="agent-deployment-action-btn" onClick={() => setShowConsole(true)}>
-                      <Terminal size={14} /> Console
+                    <button className="agent-deployment-action-btn" onClick={() => openPlayground(dep)}>
+                      <MessageSquare size={14} /> Chat & Workspace
                     </button>
                     <button className="agent-deployment-action-btn danger" onClick={() => handleStopDeployment(dep.id)}>
                       <Square size={14} /> Stop
@@ -614,7 +738,9 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 onClick={() => setSelectedAgent(agent)}
               >
                 <div className="agent-catalog-card-header">
-                  <span className="agent-catalog-icon">{agent.icon}</span>
+                  <span className="agent-catalog-icon-wrapper">
+                    {renderAgentIcon(agent.id, "w-8 h-8 text-gray-100")}
+                  </span>
                   <span className={`agent-status-indicator running`} />
                 </div>
                 <h3 className="agent-catalog-name">{agent.name}</h3>
@@ -634,7 +760,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       setShowDeployModal(true);
                     }}
                   >
-                    <Play size={14} />
+                    <Play size={12} />
                     Deploy
                   </button>
                 </div>
@@ -650,7 +776,9 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           <div className="agent-modal" onClick={e => e.stopPropagation()}>
             <button className="agent-modal-close" onClick={() => setShowDeployModal(false)}>✕</button>
             <div className="agent-modal-header">
-              <span className="agent-modal-icon">{selectedAgent.icon}</span>
+              <span className="agent-modal-icon-wrapper">
+                {renderAgentIcon(selectedAgent.id, "w-10 h-10 text-gray-200")}
+              </span>
               <h2>Deploy {selectedAgent.name}</h2>
               <p>{selectedAgent.description}</p>
             </div>
@@ -736,83 +864,227 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         </div>
       )}
 
-      {/* Interactive Terminal / Console Overlay */}
-      {showConsole && (
-        <div className="console-overlay" onClick={() => setShowConsole(false)}>
-          <div className="console-window" onClick={e => e.stopPropagation()}>
-            <div className="console-header">
-              <div className="console-title">
-                <Terminal size={18} className="text-violet-400" />
-                <span>Hermes Execution Console</span>
-                <span className="console-status-active">● Active</span>
-              </div>
-              <div className="console-credits-display">
-                <Coins size={14} className="text-violet-400" />
-                <span>Credits: {credits}</span>
-                <button
-                  className="console-credit-add"
-                  onClick={handleSimulateStripeCheckout}
-                  disabled={isSimulatingStripe}
-                >
-                  {isSimulatingStripe ? "Processing..." : "Add Credits"}
-                </button>
-              </div>
-              <button className="console-close" onClick={() => setShowConsole(false)}>✕</button>
-            </div>
-
-            <div className="console-content">
-              {/* Left pane: streaming logs & input */}
-              <div className="console-logs-pane">
-                <div className="logs-scroller">
-                  <pre className="logs-text">{consoleLogs}</pre>
-                  <div ref={logsEndRef} />
+      {/* Stateful Agent Chat Playground Workspace */}
+      {showPlayground && playgroundDeployment && (
+        <div className="playground-overlay" onClick={() => setShowPlayground(false)}>
+          <div className="playground-window" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="playground-header">
+              <div className="playground-header-info">
+                <span className="playground-header-icon">
+                  {renderAgentIcon(playgroundDeployment.agentId, "w-5 h-5 text-violet-400")}
+                </span>
+                <div>
+                  <div className="playground-header-title">
+                    {playgroundDeployment.agentName} Workspace
+                    <span className="playground-header-badge">
+                      <span className="pulsing-dot" />
+                      Active VM
+                    </span>
+                  </div>
+                  <div className="playground-header-subtitle">
+                    {playgroundDeployment.ipAddress} • Celery Node: {playgroundDeployment.vmName}
+                  </div>
                 </div>
+              </div>
 
-                <div className="console-input-row">
-                  <input
-                    type="text"
-                    className="console-input"
-                    placeholder="Enter prompt for Hermes Agent..."
-                    value={consoleInput}
-                    onChange={(e) => setConsoleInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleRunAgentTurn()}
-                    disabled={isConsoleExecuting}
-                  />
+              <div className="playground-header-actions">
+                <div className="playground-header-credits">
+                  <Coins size={14} className="text-amber-400" />
+                  <span>Credits: {credits}</span>
                   <button
-                    className="console-send-btn"
-                    onClick={handleRunAgentTurn}
-                    disabled={isConsoleExecuting || !consoleInput.trim()}
+                    className="playground-buy-btn"
+                    onClick={handleSimulateStripeCheckout}
+                    disabled={isSimulatingStripe}
                   >
-                    {isConsoleExecuting ? (
-                      <Loader2 className="animate-spin" size={16} />
-                    ) : (
-                      <Send size={16} />
-                    )}
+                    {isSimulatingStripe ? "Processing..." : "Add Credits"}
                   </button>
                 </div>
+                <button className="playground-close" onClick={() => setShowPlayground(false)}>
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Split Body */}
+            <div className="playground-body">
+              {/* Left Pane (70%): Chat & Logs Workspace */}
+              <div className="playground-workspace-pane">
+                {/* Navigation Tabs */}
+                <div className="playground-tabs">
+                  <button
+                    className={`playground-tab-btn ${playgroundTab === 'chat' ? 'active' : ''}`}
+                    onClick={() => setPlaygroundTab('chat')}
+                  >
+                    <MessageSquare size={14} />
+                    <span>Agent Playground</span>
+                  </button>
+                  <button
+                    className={`playground-tab-btn ${playgroundTab === 'logs' ? 'active' : ''}`}
+                    onClick={() => setPlaygroundTab('logs')}
+                  >
+                    <Terminal size={14} />
+                    <span>Live Telemetry Logs</span>
+                  </button>
+                </div>
+
+                {/* Tab content */}
+                <div className="playground-tab-content">
+                  {playgroundTab === 'chat' ? (
+                    <div className="chat-interface-wrapper">
+                      {/* Message Thread */}
+                      <div className="chat-thread">
+                        {playgroundMessages.map((msg, index) => (
+                          <div key={index} className={`chat-message-row ${msg.role}`}>
+                            <div className="message-avatar">
+                              {msg.role === 'user' ? (
+                                <div className="user-avatar-placeholder">U</div>
+                              ) : (
+                                <div className="agent-avatar-placeholder">
+                                  {renderAgentIcon(playgroundDeployment.agentId, "w-4 h-4 text-violet-400")}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="message-balloon-wrapper">
+                              {msg.role === 'assistant' && msg.reasoning && (
+                                <div className="message-reasoning-disclosure">
+                                  <button
+                                    className="reasoning-toggle-btn"
+                                    onClick={() => setExpandedReasoningIndex(prev => prev === index ? null : index)}
+                                  >
+                                    <Activity size={12} className={msg.isStreaming ? "animate-pulse text-violet-400" : ""} />
+                                    <span>
+                                      {msg.isStreaming 
+                                        ? "Agent Reasoning in Progress..." 
+                                        : "View Agent Reasoning Chain"}
+                                    </span>
+                                    <ChevronRight size={12} style={{ 
+                                      transform: expandedReasoningIndex === index ? 'rotate(90deg)' : 'none',
+                                      transition: 'transform 0.2s ease'
+                                    }} />
+                                  </button>
+                                  {expandedReasoningIndex === index && (
+                                    <pre className="reasoning-chain-box">
+                                      {msg.reasoning}
+                                      {msg.isStreaming && <span className="reasoning-cursor">▋</span>}
+                                    </pre>
+                                  )}
+                                </div>
+                              )}
+
+                              <div className="message-balloon">
+                                <p>{msg.content || (msg.isStreaming ? "Thinking..." : "")}</p>
+                                {msg.isStreaming && !msg.content && (
+                                  <div className="typing-loader">
+                                    <span />
+                                    <span />
+                                    <span />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <div ref={chatEndRef} />
+                      </div>
+
+                      {/* Chat Input */}
+                      <div className="chat-input-bar">
+                        <input
+                          type="text"
+                          className="chat-input-field"
+                          placeholder={`Message ${playgroundDeployment.agentName}...`}
+                          value={consoleInput}
+                          onChange={(e) => setConsoleInput(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleRunAgentTurn()}
+                          disabled={isConsoleExecuting}
+                        />
+                        <button
+                          className="chat-send-btn"
+                          onClick={handleRunAgentTurn}
+                          disabled={isConsoleExecuting || !consoleInput.trim()}
+                        >
+                          {isConsoleExecuting ? (
+                            <Loader2 className="animate-spin" size={16} />
+                          ) : (
+                            <Send size={16} />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="telemetry-logs-wrapper">
+                      <div className="logs-scroller">
+                        <pre className="logs-text">{consoleLogs}</pre>
+                        <div ref={logsEndRef} />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Right pane: Memory context visualizers */}
-              <div className="console-memory-pane">
-                <div className="memory-pane-header">
-                  <h3>Supabase Stateful Memory Syncer</h3>
-                  <p>Updates automatically when Hermes completes a Celery reasoning loop.</p>
+              {/* Right Pane (30%): State & Telemetry */}
+              <div className="playground-state-pane">
+                <div className="state-pane-section">
+                  <div className="state-section-header">
+                    <Database size={14} className="text-violet-400" />
+                    <h3>Supabase Memory Sync</h3>
+                    <span className="sync-status-badge">Synced</span>
+                  </div>
+                  <p className="state-section-desc">
+                    These memory contexts are loaded into the reasoning container at startup and saved on completion.
+                  </p>
+
+                  <div className="memory-file-box">
+                    <div className="memory-file-title">
+                      <FileText size={12} />
+                      <span>MEMORY.md</span>
+                    </div>
+                    <pre className="memory-file-body">{memoryMd}</pre>
+                  </div>
+
+                  <div className="memory-file-box">
+                    <div className="memory-file-title">
+                      <FileText size={12} />
+                      <span>USER.md</span>
+                    </div>
+                    <pre className="memory-file-body">{userMd}</pre>
+                  </div>
                 </div>
 
-                <div className="memory-box">
-                  <div className="memory-box-title">
-                    <FileText size={12} />
-                    <span>MEMORY.md</span>
-                  </div>
-                  <pre className="memory-box-content">{memoryMd}</pre>
-                </div>
+                <div className="state-pane-divider" />
 
-                <div className="memory-box">
-                  <div className="memory-box-title">
-                    <FileText size={12} />
-                    <span>USER.md</span>
+                <div className="state-pane-section">
+                  <div className="state-section-header">
+                    <Activity size={14} className="text-violet-400" />
+                    <h3>Telemetry & Stats</h3>
                   </div>
-                  <pre className="memory-box-content">{userMd}</pre>
+                  
+                  <div className="telemetry-stats-list">
+                    <div className="telemetry-stat-row">
+                      <span>Server Engine</span>
+                      <span className="text-violet-300 font-mono">Celery 5.4</span>
+                    </div>
+                    <div className="telemetry-stat-row">
+                      <span>Redis Queue</span>
+                      <span className="text-violet-300 font-mono">Upstash Serverless</span>
+                    </div>
+                    <div className="telemetry-stat-row">
+                      <span>VM CPU Usage</span>
+                      <div className="telemetry-stat-progress-wrapper">
+                        <div className="telemetry-stat-progress-bar" style={{ width: '8%' }} />
+                        <span className="font-mono">8%</span>
+                      </div>
+                    </div>
+                    <div className="telemetry-stat-row">
+                      <span>VM Memory Usage</span>
+                      <div className="telemetry-stat-progress-wrapper">
+                        <div className="telemetry-stat-progress-bar" style={{ width: '22%' }} />
+                        <span className="font-mono">22%</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
