@@ -33,7 +33,8 @@ import {
   MessageSquare,
   Layers,
   Settings2,
-  X
+  X,
+  Menu
 } from 'lucide-react';
 
 import './AgentsPage.css';
@@ -166,6 +167,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Dashboard & Deployments State
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
@@ -512,12 +514,15 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       <div className="agent-dashboard-bg" />
 
       {/* Sidebar */}
-      <aside className="agent-sidebar">
+      <aside className={`agent-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="agent-sidebar-header">
           <div className="agent-logo" onClick={onClose}>
             <span className="agent-logo-lucide"><Bot size={22} className="text-violet-400" /></span>
             <span className="agent-logo-text">Hermes Hub</span>
           </div>
+          <button className="agent-sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}>
+            <X size={18} />
+          </button>
         </div>
 
         <div className="agent-search-container">
@@ -589,8 +594,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         {/* Top Bar */}
         <header className="agent-topbar">
           <div className="agent-topbar-left">
-            <h1 className="agent-topbar-title">One-Click Deployments</h1>
-            <p className="agent-topbar-subtitle">Deploy stateful Hermes and OpenClaw loops to Serverless Backends</p>
+            <button className="agent-menu-toggle-btn" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={20} />
+            </button>
+            <div>
+              <h1 className="agent-topbar-title">One-Click Deployments</h1>
+              <p className="agent-topbar-subtitle">Deploy stateful Hermes and OpenClaw loops to Serverless Backends</p>
+            </div>
           </div>
           <div className="agent-topbar-right">
             <button className="agent-btn agent-btn-primary" onClick={() => {
