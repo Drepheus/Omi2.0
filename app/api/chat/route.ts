@@ -1,225 +1,199 @@
-import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import OpenAI from 'openai';
-import { trackUsage, logApiCall } from '@/lib/usage-tracking';
+import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { db } from '@/src/db';
+import { users, agentConfigs } from '@/src/db/schema';
+import { decrypt } from '@/lib/crypto';
+import { eq, sql } from 'drizzle-orm';
 
-// Force Node.js runtime
 export const runtime = "nodejs";
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-const SYSTEM_INSTRUCTION = `You are Omi, a highly advanced AI assistant created by Drepheus. Your primary directive is to provide intelligent, precise, and helpful responses.
-
-# Core Identity
-- Name: Omi AI
-- Creator: Drepheus
-- Purpose: Assist users with clarity, intelligence, and empathy
-- Personality: Calm, precise, and intelligent. You communicate with confidence but remain approachable
-
-# Communication Style
-- Be concise yet comprehensive
-- Use clear, direct language
-- Format responses using markdown when appropriate (bold, italic, code blocks, bullet points)
-- Include relevant hyperlinks when they add value
-- Avoid unnecessary pleasantries or filler words
-- Get straight to the point
-
-# Behavioral Guidelines
-- Always prioritize accuracy over speed
-- If uncertain, acknowledge limitations honestly
-- Provide context when necessary for understanding
-- Use examples to clarify complex concepts
-- Break down complicated topics into digestible parts
-- Adapt tone based on the user's query (technical for code, friendly for casual questions)
-
-# Formatting Standards
-- Use **bold** for emphasis on key terms
-- Use *italics* for subtle emphasis or terminology
-- Use \`code\` for inline technical terms, commands, or variables
-- Use code blocks with language tags for multi-line code
-- Use bullet points for lists
-- Use numbered lists for sequential steps
-- Include hyperlinks in markdown format: [text](url)
-
-# Ethics & Boundaries
-- Never generate harmful, hateful, or discriminatory content
-- Respect user privacy and data security
-- Decline requests that violate ethical guidelines politely
-- Be transparent about your AI nature when relevant
-- Admit when you don't know something rather than guessing
-
-# Response Strategy
-- For technical questions: Provide accurate, tested solutions with explanations
-- For creative requests: Balance creativity with practicality
-- For learning queries: Teach concepts, don't just give answers
-- For debugging: Explain the problem, the solution, and why it works
-
-Remember: You represent Drepheus's vision for helpful, intelligent AI. Maintain high standards in every interaction.`;
-
 export async function POST(req: Request) {
-  console.log('=== CHAT API ROUTE CALLED ===');
-  const startTime = Date.now();
-  let user = null;
-
   try {
-    // 1. Guest Mode - Auth disabled for deployment
-    console.log('Running in guest mode (auth disabled)');
+    // 1. Authenticate user via BetterAuth (with guest mode fallback)
+    let userId = 'usr_guest';
+    let email = 'guest@example.com';
+    let name = 'Guest User';
 
-    // 2. Parse Request
-    let body;
-    try {
-      body = await req.json();
-    } catch (e) {
-      console.error('Failed to parse JSON body:', e);
-      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-    }
-
-    const { messages, model = 'Gemini' } = body as { messages: Message[], model?: string };
-    console.log('Messages extracted:', messages?.length, 'messages');
-    console.log('Selected Model:', model);
-
-    if (!messages || !Array.isArray(messages)) {
-      return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
-    }
-
-    let responseText = '';
-
-    // 3. Model Selection & Execution
-    if (model === 'OpenAI') {
-      const apiKey = process.env.OPENAI_API_KEY;
-      if (!apiKey) {
-        console.error('Missing OPENAI_API_KEY');
-        throw new Error('OpenAI API key is not configured');
-      }
-
-      const openai = new OpenAI({ apiKey });
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION },
-          ...messages.map(m => ({ role: m.role, content: m.content }))
-        ],
-      });
-      responseText = completion.choices[0].message.content || '';
-
-    } else if (model === 'Groq') {
-      const apiKey = process.env.GROQ_API_KEY;
-      if (!apiKey) {
-        console.error('Missing GROQ_API_KEY');
-        throw new Error('Groq API key is not configured');
-      }
-
-      const groq = new OpenAI({
-        apiKey: apiKey,
-        baseURL: "https://api.groq.com/openai/v1",
-      });
-      const completion = await groq.chat.completions.create({
-        model: "llama3-70b-8192",
-        messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION },
-          ...messages.map(m => ({ role: m.role, content: m.content }))
-        ],
-      });
-      responseText = completion.choices[0].message.content || '';
-
-    } else {
-      // Default to Gemini
-      const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      if (!apiKey) {
-        console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY');
-        throw new Error('Gemini API key is not configured');
-      }
-
-      const genAI = new GoogleGenerativeAI(apiKey);
-
-      // Try Gemini 3 first, fallback to 2.0 Flash Exp if it fails
-      try {
-        console.log('Attempting to use gemini-3-flash-preview...');
-        const geminiModel = genAI.getGenerativeModel({
-          model: 'gemini-3-flash-preview',
-          systemInstruction: SYSTEM_INSTRUCTION
-        });
-
-        const history = messages.slice(0, -1).map(msg => ({
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: msg.content }],
-        }));
-
-        const latestMessage = messages[messages.length - 1];
-        const chat = geminiModel.startChat({ history });
-        const result = await chat.sendMessage(latestMessage.content);
-        const response = await result.response;
-        responseText = response.text();
-      } catch (geminiError) {
-        console.warn('Gemini 3 failed, falling back to gemini-2.0-flash-exp:', geminiError);
-
-        const geminiModel = genAI.getGenerativeModel({
-          model: 'gemini-2.0-flash-exp',
-          systemInstruction: SYSTEM_INSTRUCTION
-        });
-
-        const history = messages.slice(0, -1).map(msg => ({
-          role: msg.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: msg.content }],
-        }));
-
-        const latestMessage = messages[messages.length - 1];
-        const chat = geminiModel.startChat({ history });
-        const result = await chat.sendMessage(latestMessage.content);
-        const response = await result.response;
-        responseText = response.text();
-      }
-    }
-
-    console.log('Response received from', model);
-
-    // 4. Track Usage (Fire and Forget)
-    if (user) {
-      (async () => {
-        try {
-          await trackUsage(user.id, 'chat');
-          await logApiCall({
-            user_id: user.id,
-            email: user.email,
-            endpoint: '/api/chat',
-            status_code: 200,
-            duration_ms: Date.now() - startTime,
-            request_data: { message_count: messages.length, model },
-            response_data: { success: true }
-          });
-        } catch (trackingError) {
-          console.error('BACKGROUND TRACKING ERROR (Non-fatal):', trackingError);
-        }
-      })();
-    }
-
-    return NextResponse.json({
-      message: responseText,
-      role: 'assistant'
+    const session = await auth.api.getSession({
+      headers: await headers(),
     });
 
-  } catch (error) {
-    console.error('=== CHAT API CRITICAL ERROR ===');
-    console.error('Error details:', error);
-
-    // Log error
-    if (user) {
-      logApiCall({
-        user_id: user.id,
-        email: user.email,
-        endpoint: '/api/chat',
-        status_code: 500,
-        duration_ms: Date.now() - startTime,
-        request_data: { error: error instanceof Error ? error.message : 'Unknown' }
-      }).catch(err => console.error('API logging error:', err));
+    if (session) {
+      userId = session.user.id;
+      email = session.user.email;
+      name = session.user.name || 'User';
     }
 
-    return NextResponse.json({
-      error: 'Failed to process chat request',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    const body = await req.json();
+    const { messages } = body as { messages: any[] };
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
+    }
+
+    const latestMessage = messages[messages.length - 1];
+    const userPrompt = latestMessage.content;
+
+    // 2. Fetch user's credit balance
+    let userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    if (userRecord.length === 0) {
+      // Auto-insert user with 10 free trial credits if missing
+      await db.insert(users).values({
+        id: userId,
+        name,
+        email,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        creditBalance: 10,
+      });
+      userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    }
+
+    const creditBalance = userRecord[0].creditBalance;
+
+    // 3. Verify user has enough credits
+    if (creditBalance <= 0) {
+      return NextResponse.json({ error: 'Payment Required' }, { status: 402 });
+    }
+
+    // 4. Fetch agent configurations
+    const configRecord = await db.select().from(agentConfigs).where(eq(agentConfigs.userId, userId)).limit(1);
+
+    if (configRecord.length === 0 || !configRecord[0].encryptedApiKey) {
+      return NextResponse.json({ error: 'Agent not configured. Please set your API Key in the settings first.' }, { status: 400 });
+    }
+
+    const encryptedKey = configRecord[0].encryptedApiKey;
+    const memoryMd = configRecord[0].memoryMd || '# Core Memories\n- No initial memories recorded.';
+    const userMd = configRecord[0].userMd || '# User Profile\n- No user profile preferences recorded.';
+
+    // 5. Decrypt API Key
+    let apiKey = '';
+    try {
+      apiKey = decrypt(encryptedKey);
+    } catch (decryptErr) {
+      console.error('Failed to decrypt API key:', decryptErr);
+      return NextResponse.json({ error: 'Failed to decrypt API Key. Please re-save it.' }, { status: 400 });
+    }
+
+    // 6. Make POST request to Railway FastAPI endpoint
+    const fastapiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000';
+    const internalSecret = process.env.INTERNAL_API_SECRET;
+
+    if (!internalSecret) {
+      console.error('INTERNAL_API_SECRET is not configured on Next.js frontend');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    const response = await fetch(`${fastapiUrl}/execute`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${internalSecret}`,
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        session_id: `sess_${Date.now()}`,
+        user_prompt: userPrompt,
+        api_key: apiKey,
+        memory_context: {
+          memory_md: memoryMd,
+          user_md: userMd,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('FastAPI execute error:', errText);
+      return NextResponse.json({ error: 'FastAPI agent execution failed', details: errText }, { status: response.status });
+    }
+
+    const { task_id } = await response.json();
+
+    // 7. Polling loop and stream progress to user
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        let completed = false;
+        let lastLogLength = 0;
+        let attempts = 0;
+        const maxAttempts = 180; // 3 minutes timeout
+
+        while (!completed && attempts < maxAttempts) {
+          attempts++;
+          try {
+            const taskResponse = await fetch(`${fastapiUrl}/tasks/${task_id}`, {
+              headers: {
+                'Authorization': `Bearer ${internalSecret}`,
+              },
+            });
+
+            if (!taskResponse.ok) {
+              controller.enqueue(encoder.encode(`[System Error: Failed to poll task status: ${taskResponse.statusText}]\n`));
+              completed = true;
+              break;
+            }
+
+            const taskData = await taskResponse.json();
+            const logs = taskData.logs || '';
+
+            if (logs.length > lastLogLength) {
+              const newLogs = logs.slice(lastLogLength);
+              controller.enqueue(encoder.encode(newLogs));
+              lastLogLength = logs.length;
+            }
+
+            if (taskData.status === 'SUCCESS') {
+              completed = true;
+              
+              // Decrement the credit balance in the database by 1
+              try {
+                await db.update(users)
+                  .set({ creditBalance: sql`${users.creditBalance} - 1` })
+                  .where(eq(users.id, userId));
+              } catch (dbErr) {
+                console.error('Failed to decrement credit balance:', dbErr);
+              }
+
+              controller.enqueue(encoder.encode('\n\n[Hermes: Task executed successfully. 1 credit charged.]\n'));
+              break;
+            }
+
+            if (taskData.status === 'FAILURE') {
+              completed = true;
+              controller.enqueue(encoder.encode(`\n\n[Hermes: Task failed. Details: ${taskData.logs || 'Unknown error'}]\n`));
+              break;
+            }
+
+          } catch (pollErr: any) {
+            console.error('Polling error:', pollErr);
+            controller.enqueue(encoder.encode(`[System Error: Polling connection failed: ${pollErr.message}]\n`));
+          }
+
+          // Wait 1.5 seconds before polling again
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
+
+        if (attempts >= maxAttempts) {
+          controller.enqueue(encoder.encode('\n\n[System Timeout: The agent reasoning took too long. Please check your deployments console.]\n'));
+        }
+
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+
+  } catch (error: any) {
+    console.error('Error in chat route:', error);
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
   }
 }
