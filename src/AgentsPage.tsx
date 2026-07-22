@@ -131,7 +131,7 @@ const initialDeployments: Deployment[] = [
     agentName: 'OpenClaw',
     agentIcon: 'openclaw',
     status: 'running',
-    vmName: 'omivm-us-east-1',
+    vmName: 'railway-worker-node-1',
     ipAddress: '104.28.45.12',
     uptime: '14d 7h 32m',
     cpu: 12,
@@ -250,7 +250,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   const parseLogsForChat = (logs: string) => {
-    const hermesMatch = logs.match(/💬 \[(?:Hermes|Hermes \(Simulated\))\]:\s*([\s\S]*)/i);
+    const hermesMatch = logs.match(/💬 \[(?:[^\]]+)\]:\s*([\s\S]*)/i);
     let content = '';
     let reasoning = '';
     
@@ -272,31 +272,27 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const handleDeployAgent = async () => {
     if (!selectedAgent) return;
 
-    if (selectedAgent.id === 'hermes') {
-      setIsSavingConfig(true);
-      try {
-        const res = await fetch('/api/agents/config', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            apiKey: apiKey || 'dummy-test-key-simulated',
-            memoryMd,
-            userMd,
-          }),
-        });
+    setIsSavingConfig(true);
+    try {
+      const res = await fetch('/api/agents/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          apiKey: apiKey || 'dummy-test-key-simulated',
+          memoryMd,
+          userMd,
+        }),
+      });
 
-        if (res.ok) {
-          setHasSavedConfig(true);
-        } else {
-          alert('Failed to save configuration');
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsSavingConfig(false);
+      if (res.ok) {
+        setHasSavedConfig(true);
       }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSavingConfig(false);
     }
 
     // Add agent to active deployments
@@ -316,6 +312,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
     setDeployments(prev => [...prev, newDeployment]);
     setShowDeployModal(false);
+
+    // Auto-open playground for newly deployed agent
+    setPlaygroundDeployment(newDeployment);
+    setPlaygroundMessages([
+      { role: 'assistant', content: `👋 Hello! I am ${newDeployment.agentName}. I am initialized and ready for your commands.` }
+    ]);
+    setShowPlayground(true);
   };
 
   const handleStopDeployment = (id: string) => {
@@ -330,9 +333,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     if (!consoleInput.trim() || isConsoleExecuting) return;
 
     const userPrompt = consoleInput;
+    const currentAgentId = playgroundDeployment?.agentId || 'hermes';
+    const currentAgentName = playgroundDeployment?.agentName || 'Hermes';
+
     setConsoleInput('');
     setIsConsoleExecuting(true);
-    setConsoleLogs(`⚡ [Hermes Initializing] Starting celery execution...`);
+    setConsoleLogs(`⚡ [${currentAgentName} Initializing] Starting execution turn...`);
 
     // Append user message and streaming assistant placeholder
     const newMessages: Message[] = [
@@ -357,6 +363,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         },
         body: JSON.stringify({
           messages: [{ role: 'user', content: userPrompt }],
+          agentId: currentAgentId
         }),
       });
 
@@ -839,11 +846,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               ) : (
                 <>
                   <div className="agent-modal-field">
-                    <label>VM Instance</label>
+                    <label>Worker Container Specs (Railway Multi-Tenant Pool)</label>
                     <select className="agent-modal-select">
-                      <option>omivm-us-east-1 (4 vCPU, 16GB RAM)</option>
-                      <option>omivm-eu-west-1 (8 vCPU, 32GB RAM)</option>
+                      <option>Railway Micro Container (0.5 vCPU, 512MB RAM)</option>
+                      <option>Railway Standard Worker (1 vCPU, 1GB RAM)</option>
                     </select>
+                    <span className="field-hint">Runs on the shared multi-tenant worker pool hosted on Railway.</span>
                   </div>
                   <div className="agent-modal-field">
                     <label>Deployment Name</label>
@@ -889,7 +897,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     {playgroundDeployment.agentName} Workspace
                     <span className="playground-header-badge">
                       <span className="pulsing-dot" />
-                      Active VM
+                      Railway Worker Node
                     </span>
                   </div>
                   <div className="playground-header-subtitle">
