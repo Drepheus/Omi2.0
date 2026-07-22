@@ -1855,3 +1855,114 @@
   padding: 14px 18px;
 }
 
+/* Color Variants for Hero Stage */
+.orb-thinking-hero-stage.green {
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.16) 0%, rgba(15, 18, 30, 0.75) 80%);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.18), inset 0 0 20px rgba(16, 185, 129, 0.05);
+}
+
+.orb-thinking-hero-stage.purple {
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.16) 0%, rgba(15, 18, 30, 0.75) 80%);
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.18), inset 0 0 20px rgba(139, 92, 246, 0.05);
+}
+
+.orb-thinking-hero-stage.yellow {
+  background: radial-gradient(circle at center, rgba(245, 158, 11, 0.16) 0%, rgba(15, 18, 30, 0.75) 80%);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.18), inset 0 0 20px rgba(245, 158, 11, 0.05);
+}
+
+.orb-thinking-hero-stage.red {
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.16) 0%, rgba(15, 18, 30, 0.75) 80%);
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.18), inset 0 0 20px rgba(239, 68, 68, 0.05);
+}
+
+/* Color Variants for Status Pill */
+.orb-status-pill.green {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #a7f3d0;
+}
+.orb-status-pill.green .orb-pulse-dot {
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+}
+
+.orb-status-pill.purple {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.35);
+  color: #ddd6fe;
+}
+.orb-status-pill.purple .orb-pulse-dot {
+  background: #a78bfa;
+  box-shadow: 0 0 8px #a78bfa;
+}
+
+.orb-status-pill.yellow {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fde68a;
+}
+.orb-status-pill.yellow .orb-pulse-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 8px #fbbf24;
+}
+
+.orb-status-pill.red {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+.orb-status-pill.red .orb-pulse-dot {
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+/* Stop Execution Buttons */
+.orb-stop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.orb-stop-btn:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.chat-stop-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+}
+
+.chat-stop-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+

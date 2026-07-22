@@ -211,6 +211,14 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   
   const logsEndRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const getHeroStageColor = (isStreaming: boolean, content?: string, hasError?: boolean): 'green' | 'purple' | 'yellow' | 'red' => {
+    if (hasError || (content && content.startsWith('⚠️'))) return 'red';
+    if (content && (content.includes('cancelled') || content.includes('stopped') || content.includes('aborted'))) return 'yellow';
+    if (isStreaming) return 'green';
+    return 'purple';
+  };
 
   // Load configuration and mock user credits on mount
   useEffect(() => {
@@ -339,11 +347,46 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }
   };
 
+  const handleCancelAgentTurn = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsConsoleExecuting(false);
+    setPlaygroundMessages(prev => {
+      if (prev.length === 0) return prev;
+      const updated = [...prev];
+      const lastIndex = updated.length - 1;
+      if (updated[lastIndex].role === 'assistant' && updated[lastIndex].isStreaming) {
+        updated[lastIndex] = {
+          role: 'assistant',
+          content: '⏹️ Agent execution turn cancelled by user.',
+          reasoning: (updated[lastIndex].reasoning || '') + '\n⏹️ [User Abort] Execution stopped to save tokens.',
+          isStreaming: false
+        };
+      }
+      return updated;
+    });
+
+    setActivityTimeline(prev => [
+      {
+        id: `act_cancel_${Date.now()}`,
+        title: `Execution Turn Cancelled`,
+        desc: `User stopped processing to save credits & tokens.`,
+        time: new Date().toLocaleTimeString(),
+        type: 'error'
+      },
+      ...prev
+    ]);
+  };
+
   const openPlayground = (dep: Deployment) => {
     setPlaygroundDeployment(dep);
     setExecutionError(null);
     setShowPlayground(true);
     setPlaygroundTab('chat');
+    setConsoleLogs(`${dep.agentName} Terminal initialized. Awaiting commands...`);
+    setMemoryMd(`# ${dep.agentName} Memory Context\n- User values technical blueprints over summaries.\n- Deploying on multi-tenant ${dep.agentName} worker pool.`);
     fetchSessionHistory(dep.agentId);
 
     // Initial timeline event
@@ -463,12 +506,16 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     ]);
     setExpandedReasoningIndex(assistantIndex);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: controller.signal,
         body: JSON.stringify({
           messages: [{ role: 'user', content: userPrompt }],
           agentId: currentAgentId
@@ -581,6 +628,10 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       await fetchAgentConfig();
 
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Agent turn execution aborted by user.');
+        return;
+      }
       console.error(err);
       setExecutionError({
         title: 'Network / Connection Error',
@@ -598,6 +649,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         return updated;
       });
     } finally {
+      abortControllerRef.current = null;
       setIsConsoleExecuting(false);
     }
   };
@@ -1152,17 +1204,27 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                                 {msg.role === 'assistant' && msg.isStreaming ? (
                                   <div className="orb-thinking-hero-card">
                                     {/* Thinking Orb Hero Stage */}
-                                    <div className="orb-thinking-hero-stage">
-                                      <ThinkingOrb
-                                        state={getAgentOrbState(true, msg.reasoning, msg.content)}
-                                        size={64}
-                                        theme="dark"
-                                      />
-                                      <div className="orb-status-pill">
-                                        <span className="orb-pulse-dot" />
-                                        <span>{getAgentOrbLabel(getAgentOrbState(true, msg.reasoning, msg.content), playgroundDeployment.agentName)}</span>
-                                      </div>
-                                    </div>
+                                    {(() => {
+                                      const stageColor = getHeroStageColor(msg.isStreaming, msg.content, !!executionError);
+                                      const orbState = getAgentOrbState(true, msg.reasoning, msg.content);
+                                      return (
+                                        <div className={`orb-thinking-hero-stage ${stageColor}`}>
+                                          <ThinkingOrb
+                                            state={orbState}
+                                            size={64}
+                                            theme="dark"
+                                          />
+                                          <div className={`orb-status-pill ${stageColor}`}>
+                                            <span className="orb-pulse-dot" />
+                                            <span>{getAgentOrbLabel(orbState, playgroundDeployment.agentName)}</span>
+                                          </div>
+                                          <button className="orb-stop-btn" onClick={handleCancelAgentTurn}>
+                                            <Square size={12} fill="currentColor" />
+                                            <span>Stop Execution</span>
+                                          </button>
+                                        </div>
+                                      );
+                                    })()}
 
                                     {/* Streaming Message Content */}
                                     {msg.content && (
@@ -1291,17 +1353,24 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                           onKeyDown={(e) => e.key === 'Enter' && handleRunAgentTurn()}
                           disabled={isConsoleExecuting}
                         />
-                        <button
-                          className="chat-send-btn"
-                          onClick={handleRunAgentTurn}
-                          disabled={isConsoleExecuting || !consoleInput.trim()}
-                        >
-                          {isConsoleExecuting ? (
-                            <Loader2 className="animate-spin" size={16} />
-                          ) : (
+                        {isConsoleExecuting ? (
+                          <button
+                            className="chat-stop-btn"
+                            onClick={handleCancelAgentTurn}
+                            title="Stop agent execution"
+                          >
+                            <Square size={14} fill="currentColor" />
+                            <span>Stop</span>
+                          </button>
+                        ) : (
+                          <button
+                            className="chat-send-btn"
+                            onClick={handleRunAgentTurn}
+                            disabled={!consoleInput.trim()}
+                          >
                             <Send size={16} />
-                          )}
-                        </button>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ) : playgroundTab === 'activity' ? (
