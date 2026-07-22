@@ -41,6 +41,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { ThinkingOrb, OrbState } from 'thinking-orbs';
+
 import './AgentsPage.css';
 
 interface Agent {
@@ -275,6 +277,42 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }
     
     return { content, reasoning };
+  };
+
+  const getAgentOrbState = (isStreaming: boolean, reasoning?: string, content?: string): OrbState => {
+    if (!isStreaming) return 'listening';
+    const lowerLogs = (reasoning || '').toLowerCase();
+    if (lowerLogs.includes('[search]') || lowerLogs.includes('[scraper]') || lowerLogs.includes('scraping') || lowerLogs.includes('browser') || lowerLogs.includes('parsing') || lowerLogs.includes('http')) {
+      return 'searching';
+    }
+    if (lowerLogs.includes('[reasoning]') || lowerLogs.includes('[planning]') || lowerLogs.includes('thinking') || lowerLogs.includes('analyzing') || lowerLogs.includes('chain')) {
+      return 'solving';
+    }
+    if (lowerLogs.includes('[execution]') || lowerLogs.includes('executing') || lowerLogs.includes('running') || lowerLogs.includes('tool') || lowerLogs.includes('worker')) {
+      return 'working';
+    }
+    if (content && content.length > 20) {
+      return 'composing';
+    }
+    return 'solving';
+  };
+
+  const getAgentOrbLabel = (state: OrbState, agentName: string): string => {
+    switch (state) {
+      case 'searching':
+        return `${agentName} is scanning web context & searching sources...`;
+      case 'solving':
+        return `${agentName} is analyzing step-by-step reasoning logic...`;
+      case 'working':
+        return `${agentName} is executing multi-tenant worker operations...`;
+      case 'composing':
+        return `${agentName} is synthesizing final response output...`;
+      case 'shaping':
+        return `${agentName} is formatting memory & context structure...`;
+      case 'listening':
+      default:
+        return `${agentName} is online & ready for instructions`;
+    }
   };
 
 
@@ -1110,44 +1148,92 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                               )}
                             </div>
 
-                            <div className="message-balloon-wrapper">
-                              {msg.role === 'assistant' && msg.reasoning && (
-                                <div className="message-reasoning-disclosure">
-                                  <button
-                                    className="reasoning-toggle-btn"
-                                    onClick={() => setExpandedReasoningIndex(prev => prev === index ? null : index)}
-                                  >
-                                    <Activity size={12} className={msg.isStreaming ? "animate-pulse text-violet-400" : ""} />
-                                    <span>
-                                      {msg.isStreaming 
-                                        ? "Agent Reasoning in Progress..." 
-                                        : "View Agent Reasoning Chain"}
-                                    </span>
-                                    <ChevronRight size={12} style={{ 
-                                      transform: expandedReasoningIndex === index ? 'rotate(90deg)' : 'none',
-                                      transition: 'transform 0.2s ease'
-                                    }} />
-                                  </button>
-                                  {expandedReasoningIndex === index && (
-                                    <pre className="reasoning-chain-box">
-                                      {msg.reasoning}
-                                      {msg.isStreaming && <span className="reasoning-cursor">▋</span>}
-                                    </pre>
-                                  )}
-                                </div>
-                              )}
+                              <div className="message-balloon-wrapper">
+                                {msg.role === 'assistant' && msg.isStreaming ? (
+                                  <div className="orb-thinking-hero-card">
+                                    {/* Thinking Orb Hero Stage */}
+                                    <div className="orb-thinking-hero-stage">
+                                      <ThinkingOrb
+                                        state={getAgentOrbState(true, msg.reasoning, msg.content)}
+                                        size={64}
+                                        theme="dark"
+                                      />
+                                      <div className="orb-status-pill">
+                                        <span className="orb-pulse-dot" />
+                                        <span>{getAgentOrbLabel(getAgentOrbState(true, msg.reasoning, msg.content), playgroundDeployment.agentName)}</span>
+                                      </div>
+                                    </div>
 
-                              <div className="message-balloon">
-                                <p>{msg.content || (msg.isStreaming ? "Thinking..." : "")}</p>
-                                {msg.isStreaming && !msg.content && (
-                                  <div className="typing-loader">
-                                    <span />
-                                    <span />
-                                    <span />
+                                    {/* Streaming Message Content */}
+                                    {msg.content && (
+                                      <div className="message-balloon streaming-content">
+                                        <p>{msg.content}</p>
+                                      </div>
+                                    )}
+
+                                    {/* Collapsed System Logs Toggle */}
+                                    {msg.reasoning && (
+                                      <div className="message-reasoning-disclosure">
+                                        <button
+                                          className="reasoning-toggle-btn"
+                                          onClick={() => setExpandedReasoningIndex(prev => prev === index ? null : index)}
+                                        >
+                                          <Terminal size={13} className="text-violet-400" />
+                                          <span>
+                                            {expandedReasoningIndex === index
+                                              ? "Hide Terminal Logs & Reasoning Chain"
+                                              : "Expand Terminal Logs & Reasoning Chain"}
+                                          </span>
+                                          <ChevronRight
+                                            size={13}
+                                            style={{
+                                              transform: expandedReasoningIndex === index ? 'rotate(90deg)' : 'none',
+                                              transition: 'transform 0.2s ease'
+                                            }}
+                                          />
+                                        </button>
+                                        {expandedReasoningIndex === index && (
+                                          <pre className="reasoning-chain-box">
+                                            {msg.reasoning}
+                                            <span className="reasoning-cursor">▋</span>
+                                          </pre>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
+                                ) : (
+                                  <>
+                                    {msg.role === 'assistant' && msg.reasoning && (
+                                      <div className="message-reasoning-disclosure">
+                                        <button
+                                          className="reasoning-toggle-btn"
+                                          onClick={() => setExpandedReasoningIndex(prev => prev === index ? null : index)}
+                                        >
+                                          <Terminal size={13} className="text-violet-400" />
+                                          <span>
+                                            {expandedReasoningIndex === index 
+                                              ? "Hide System Logs & Reasoning Chain"
+                                              : "View System Logs & Reasoning Chain"}
+                                          </span>
+                                          <ChevronRight size={13} style={{ 
+                                            transform: expandedReasoningIndex === index ? 'rotate(90deg)' : 'none',
+                                            transition: 'transform 0.2s ease'
+                                          }} />
+                                        </button>
+                                        {expandedReasoningIndex === index && (
+                                          <pre className="reasoning-chain-box">
+                                            {msg.reasoning}
+                                          </pre>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    <div className="message-balloon">
+                                      <p>{msg.content}</p>
+                                    </div>
+                                  </>
                                 )}
                               </div>
-                            </div>
                           </div>
                         ))}
                         <div ref={chatEndRef} />

@@ -51,6 +51,7 @@
     "supabase": "^2.53.6",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "thinking-orbs": "^0.1.1",
     "three": "^0.180.0",
     "typescript": "^5.9.2",
     "zod": "^3.23.8"
