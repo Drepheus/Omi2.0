@@ -1631,3 +1631,158 @@
     height: 38px;
   }
 }
+
+/* Session History Sidebar inside Workspace */
+.session-history-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(15, 15, 25, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-x: auto;
+}
+
+.session-history-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #a0a0b0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.session-history-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.session-history-chip.active {
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.4);
+  color: #a5b4fc;
+}
+
+/* Activity Timeline Pane */
+.activity-timeline-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.activity-event-card {
+  display: flex;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  align-items: flex-start;
+}
+
+.activity-event-icon {
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(129, 140, 248, 0.1);
+  color: #818cf8;
+}
+
+.activity-event-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.activity-event-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e0e0f0;
+}
+
+.activity-event-desc {
+  font-size: 0.78rem;
+  color: #9090a0;
+  font-family: monospace;
+}
+
+.activity-event-time {
+  font-size: 0.7rem;
+  color: #606070;
+  align-self: flex-end;
+}
+
+/* Error Diagnostic Panel */
+.error-diagnostic-panel {
+  margin: 16px 20px 0;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+.error-diagnostic-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f87171;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.error-diagnostic-details {
+  font-size: 0.8rem;
+  color: #d1d5db;
+  line-height: 1.4;
+}
+
+.error-diagnostic-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.error-diagnostic-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.error-diagnostic-btn.primary {
+  background: #ef4444;
+  color: #fff;
+}
+
+.error-diagnostic-btn.primary:hover {
+  background: #dc2626;
+}
+
+.error-diagnostic-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+}
+
+.error-diagnostic-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+

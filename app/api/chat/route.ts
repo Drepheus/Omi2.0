@@ -56,7 +56,11 @@ export async function POST(req: Request) {
     }
 
     if (creditBalance <= 0) {
-      return NextResponse.json({ error: 'Payment Required. Please top up your credits.' }, { status: 402 });
+      return NextResponse.json({
+        error: 'Payment Required. Please top up your credits.',
+        code: 'INSUFFICIENT_CREDITS',
+        details: 'Your credit balance is 0. Top up $10 (1,000 credits) to continue agent execution turns.'
+      }, { status: 402 });
     }
 
     // 3. Fetch agent configurations (with fallback)
@@ -89,24 +93,33 @@ export async function POST(req: Request) {
     const fastapiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000';
     const internalSecret = process.env.INTERNAL_API_SECRET || 'dev_internal_secret_key_123';
 
-    const response = await fetch(`${fastapiUrl}/execute`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${internalSecret}`,
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        session_id: `sess_${Date.now()}`,
-        user_prompt: userPrompt,
-        api_key: apiKey,
-        agent_id: agentId || 'hermes',
-        memory_context: {
-          memory_md: memoryMd,
-          user_md: userMd,
+    let response: Response;
+    try {
+      response = await fetch(`${fastapiUrl}/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${internalSecret}`,
         },
-      }),
-    });
+        body: JSON.stringify({
+          user_id: userId,
+          session_id: `sess_${Date.now()}`,
+          user_prompt: userPrompt,
+          api_key: apiKey,
+          agent_id: agentId || 'hermes',
+          memory_context: {
+            memory_md: memoryMd,
+            user_md: userMd,
+          },
+        }),
+      });
+    } catch (fetchErr: any) {
+      return NextResponse.json({
+        error: 'Backend Connection Failed',
+        code: 'BACKEND_CONNECTION_FAILED',
+        details: `Could not connect to FastAPI server at ${fastapiUrl}. Please verify the Python backend is running.`
+      }, { status: 503 });
+    }
 
     if (!response.ok) {
       const errText = await response.text();

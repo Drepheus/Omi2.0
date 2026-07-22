@@ -34,3 +34,23 @@ export const agentConfigs = pgTable('agent_configs', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+export const agentSessions = pgTable('agent_sessions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  agentId: text('agent_id').notNull(),
+  title: text('title').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const agentMessages = pgTable('agent_messages', {
+  id: text('id').primaryKey(),
+  sessionId: text('session_id').notNull(),
+  role: text('role').notNull(), // 'user' | 'assistant' | 'system'
+  content: text('content').notNull(),
+  reasoning: text('reasoning'),
+  logs: text('logs'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+

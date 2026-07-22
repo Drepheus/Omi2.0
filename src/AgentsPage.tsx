@@ -34,7 +34,11 @@ import {
   Layers,
   Settings2,
   X,
-  Menu
+  Menu,
+  AlertTriangle,
+  History,
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react';
 
 import './AgentsPage.css';
@@ -193,7 +197,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [showPlayground, setShowPlayground] = useState(false);
   const [playgroundDeployment, setPlaygroundDeployment] = useState<Deployment | null>(null);
   const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
-  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'logs'>('chat');
+  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs'>('chat');
+  const [sessions, setSessions] = useState<Array<{ id: string; agentId: string; title: string; createdAt: string }>>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activityTimeline, setActivityTimeline] = useState<Array<{ id: string; title: string; desc: string; time: string; type: string }>>([]);
+  const [executionError, setExecutionError] = useState<{ title: string; code: string; details: string } | null>(null);
   const [consoleLogs, setConsoleLogs] = useState<string>('Hermes Terminal initialized. Awaiting commands...');
   const [consoleInput, setConsoleInput] = useState('');
   const [isConsoleExecuting, setIsConsoleExecuting] = useState(false);
@@ -269,6 +277,49 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     return { content, reasoning };
   };
 
+
+
+  const fetchSessionHistory = async (agentId: string) => {
+    try {
+      const res = await fetch(`/api/chat/history?agentId=${agentId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSessions(data.sessions || []);
+        if (data.activeSessionId) {
+          setActiveSessionId(data.activeSessionId);
+        }
+        if (data.messages && data.messages.length > 0) {
+          setPlaygroundMessages(data.messages.map((m: any) => ({
+            role: m.role,
+            content: m.content,
+            reasoning: m.reasoning || undefined
+          })));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch session history:', err);
+    }
+  };
+
+  const openPlayground = (dep: Deployment) => {
+    setPlaygroundDeployment(dep);
+    setExecutionError(null);
+    setShowPlayground(true);
+    setPlaygroundTab('chat');
+    fetchSessionHistory(dep.agentId);
+
+    // Initial timeline event
+    setActivityTimeline([
+      {
+        id: `act_${Date.now()}`,
+        title: `${dep.agentName} Session Initialized`,
+        desc: `Connected to worker node ${dep.vmName} (${dep.ipAddress})`,
+        time: new Date().toLocaleTimeString(),
+        type: 'system'
+      }
+    ]);
+  };
+
   const handleDeployAgent = async () => {
     if (!selectedAgent) return;
 
@@ -295,7 +346,6 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       setIsSavingConfig(false);
     }
 
-    // Add agent to active deployments
     const newDeployment: Deployment = {
       id: `dep-${Date.now()}`,
       agentId: selectedAgent.id,
@@ -312,13 +362,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
     setDeployments(prev => [...prev, newDeployment]);
     setShowDeployModal(false);
-
-    // Auto-open playground for newly deployed agent
-    setPlaygroundDeployment(newDeployment);
-    setPlaygroundMessages([
-      { role: 'assistant', content: `👋 Hello! I am ${newDeployment.agentName}. I am initialized and ready for your commands.` }
-    ]);
-    setShowPlayground(true);
+    openPlayground(newDeployment);
   };
 
   const handleStopDeployment = (id: string) => {
@@ -337,8 +381,21 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     const currentAgentName = playgroundDeployment?.agentName || 'Hermes';
 
     setConsoleInput('');
+    setExecutionError(null);
     setIsConsoleExecuting(true);
     setConsoleLogs(`⚡ [${currentAgentName} Initializing] Starting execution turn...`);
+
+    // Log Activity Event
+    setActivityTimeline(prev => [
+      {
+        id: `act_${Date.now()}`,
+        title: `Submitted Query to ${currentAgentName}`,
+        desc: `Prompt: "${userPrompt.slice(0, 40)}${userPrompt.length > 40 ? '...' : ''}"`,
+        time: new Date().toLocaleTimeString(),
+        type: 'user'
+      },
+      ...prev
+    ]);
 
     // Append user message and streaming assistant placeholder
     const newMessages: Message[] = [
@@ -347,7 +404,20 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     ];
     setPlaygroundMessages(newMessages);
     
-    // Add streaming assistant msg
+    // Save user turn to history
+    try {
+      fetch('/api/chat/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: activeSessionId,
+          agentId: currentAgentId,
+          role: 'user',
+          content: userPrompt
+        })
+      });
+    } catch {}
+
     const assistantIndex = newMessages.length;
     setPlaygroundMessages(prev => [
       ...prev,
@@ -368,26 +438,45 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       });
 
       if (!res.ok) {
-        let errMsg = 'Failed to execute turn';
-        if (res.status === 402) {
-          errMsg = 'Payment Required. Please top up credits.';
-        } else {
-          try {
-            const errData = await res.json();
-            errMsg = errData.error || errMsg;
-          } catch {}
-        }
-        
+        let errData: any = {};
+        try {
+          errData = await res.json();
+        } catch {}
+
+        const errCode = errData.code || (res.status === 402 ? 'INSUFFICIENT_CREDITS' : 'SERVER_ERROR');
+        const errTitle = res.status === 402 ? 'Payment Required (0 Credits)' : (errData.error || 'Execution Failed');
+        const errDetails = errData.details || (res.status === 402 
+          ? 'You have run out of SaaS credits. Top up $10 (1,000 credits) to continue agent turns.' 
+          : 'Failed to communicate with FastAPI execution backend.');
+
+        setExecutionError({
+          title: errTitle,
+          code: errCode,
+          details: errDetails
+        });
+
         setPlaygroundMessages(prev => {
           const updated = [...prev];
           updated[assistantIndex] = {
             role: 'assistant',
-            content: `⚠️ Error executing turn: ${errMsg}`,
-            reasoning: 'System: Execution aborted due to server error.',
+            content: `⚠️ ${errTitle}: ${errDetails}`,
+            reasoning: `System Diagnostic: [${errCode}] Turn aborted.`,
             isStreaming: false
           };
           return updated;
         });
+
+        setActivityTimeline(prev => [
+          {
+            id: `act_err_${Date.now()}`,
+            title: `Execution Error [${errCode}]`,
+            desc: errTitle,
+            time: new Date().toLocaleTimeString(),
+            type: 'error'
+          },
+          ...prev
+        ]);
+
         setIsConsoleExecuting(false);
         return;
       }
@@ -420,6 +509,34 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             });
           }
         }
+
+        // Save assistant turn to history
+        const finalParsed = parseLogsForChat(accumulatedLogs);
+        try {
+          fetch('/api/chat/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: activeSessionId,
+              agentId: currentAgentId,
+              role: 'assistant',
+              content: finalParsed.content || 'Reasoning turn complete.',
+              reasoning: finalParsed.reasoning
+            })
+          });
+        } catch {}
+
+        // Add Activity Log
+        setActivityTimeline(prev => [
+          {
+            id: `act_success_${Date.now()}`,
+            title: `${currentAgentName} Turn Completed`,
+            desc: finalParsed.content ? finalParsed.content.slice(0, 60) + '...' : 'Turn executed successfully.',
+            time: new Date().toLocaleTimeString(),
+            type: 'success'
+          },
+          ...prev
+        ]);
       }
 
       setCredits(prev => Math.max(0, prev - 1));
@@ -427,6 +544,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
     } catch (err: any) {
       console.error(err);
+      setExecutionError({
+        title: 'Network / Connection Error',
+        code: 'NETWORK_ERROR',
+        details: err.message || 'Failed to send prompt request to server.'
+      });
       setPlaygroundMessages(prev => {
         const updated = [...prev];
         updated[assistantIndex] = {
@@ -489,20 +611,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }
   };
 
-  const openPlayground = (dep: Deployment) => {
-    setPlaygroundDeployment(dep);
-    setPlaygroundMessages([
-      {
-        role: 'assistant',
-        content: `Connection established with ${dep.agentName}. Active Celery worker is linked to Supabase memory blocks. Submit a prompt below to launch an execution loop.`,
-        reasoning: 'System: Connected to omivm node.\nSupabase memory syncer is active.'
-      }
-    ]);
-    setExpandedReasoningIndex(0);
-    setConsoleLogs('Connected. Waiting for command...');
-    setShowPlayground(true);
-    setPlaygroundTab('chat');
-  };
+
 
   const filteredAgents = agentCatalog.filter(agent => {
     const matchesCategory = selectedCategory === 'all' || agent.category === selectedCategory;
@@ -938,6 +1047,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     <span>Agent Playground</span>
                   </button>
                   <button
+                    className={`playground-tab-btn ${playgroundTab === 'activity' ? 'active' : ''}`}
+                    onClick={() => setPlaygroundTab('activity')}
+                  >
+                    <Activity size={14} />
+                    <span>Activity Timeline</span>
+                  </button>
+                  <button
                     className={`playground-tab-btn ${playgroundTab === 'logs' ? 'active' : ''}`}
                     onClick={() => setPlaygroundTab('logs')}
                   >
@@ -950,6 +1066,36 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 <div className="playground-tab-content">
                   {playgroundTab === 'chat' ? (
                     <div className="chat-interface-wrapper">
+                      {/* Session History Bar */}
+                      {sessions.length > 0 && (
+                        <div className="session-history-bar">
+                          <History size={13} className="text-gray-400" />
+                          <span className="text-xs text-gray-400 font-medium mr-1">Previous Chats:</span>
+                          {sessions.map(s => (
+                            <div
+                              key={s.id}
+                              className={`session-history-chip ${activeSessionId === s.id ? 'active' : ''}`}
+                              onClick={() => {
+                                setActiveSessionId(s.id);
+                                fetch(`/api/chat/history?agentId=${playgroundDeployment.agentId}`)
+                                  .then(res => res.json())
+                                  .then(data => {
+                                    if (data.messages && data.messages.length > 0) {
+                                      setPlaygroundMessages(data.messages.map((m: any) => ({
+                                        role: m.role,
+                                        content: m.content,
+                                        reasoning: m.reasoning || undefined
+                                      })));
+                                    }
+                                  });
+                              }}
+                            >
+                              <span>{s.title}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Message Thread */}
                       <div className="chat-thread">
                         {playgroundMessages.map((msg, index) => (
@@ -1007,6 +1153,47 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                         <div ref={chatEndRef} />
                       </div>
 
+                      {/* Error Diagnostic Panel */}
+                      {executionError && (
+                        <div className="error-diagnostic-panel">
+                          <div className="error-diagnostic-header">
+                            <AlertTriangle size={18} />
+                            <span>Diagnostic Error: {executionError.title}</span>
+                          </div>
+                          <p className="error-diagnostic-details">{executionError.details}</p>
+                          <div className="error-diagnostic-actions">
+                            {executionError.code === 'INSUFFICIENT_CREDITS' && (
+                              <button
+                                className="error-diagnostic-btn primary"
+                                onClick={handleSimulateStripeCheckout}
+                                disabled={isSimulatingStripe}
+                              >
+                                <Coins size={14} />
+                                {isSimulatingStripe ? "Processing..." : "Add $10 (1,000 Credits)"}
+                              </button>
+                            )}
+                            {executionError.code === 'INVALID_API_KEY' && (
+                              <button
+                                className="error-diagnostic-btn primary"
+                                onClick={() => {
+                                  setSelectedAgent(agentCatalog.find(a => a.id === playgroundDeployment.agentId) || agentCatalog[0]);
+                                  setShowDeployModal(true);
+                                }}
+                              >
+                                <Key size={14} />
+                                Configure OpenAI API Key
+                              </button>
+                            )}
+                            <button
+                              className="error-diagnostic-btn secondary"
+                              onClick={() => setExecutionError(null)}
+                            >
+                              Dismiss Alert
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Chat Input */}
                       <div className="chat-input-bar">
                         <input
@@ -1030,6 +1217,35 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                           )}
                         </button>
                       </div>
+                    </div>
+                  ) : playgroundTab === 'activity' ? (
+                    <div className="activity-timeline-wrapper">
+                      {activityTimeline.length > 0 ? (
+                        activityTimeline.map((item) => (
+                          <div key={item.id} className="activity-event-card">
+                            <div className="activity-event-icon">
+                              {item.type === 'error' ? (
+                                <AlertTriangle size={16} className="text-red-400" />
+                              ) : item.type === 'success' ? (
+                                <CheckCircle2 size={16} className="text-emerald-400" />
+                              ) : item.type === 'user' ? (
+                                <Send size={16} className="text-violet-400" />
+                              ) : (
+                                <Activity size={16} className="text-indigo-400" />
+                              )}
+                            </div>
+                            <div className="activity-event-content">
+                              <span className="activity-event-title">{item.title}</span>
+                              <span className="activity-event-desc">{item.desc}</span>
+                              <span className="activity-event-time">{item.time}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center p-8 text-gray-400 text-sm">
+                          No recent agent activity events recorded. Submit a prompt to start monitoring.
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="telemetry-logs-wrapper">
