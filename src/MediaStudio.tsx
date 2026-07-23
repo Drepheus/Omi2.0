@@ -160,6 +160,25 @@ const communityFilters = [
   { name: 'Avatars', icon: '👤' },
 ];
 
+const communityItems = [
+  { type: 'video', src: '/videos/veo1.mp4', title: 'Veo Creation', creator: 'AI Studio' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=400&fit=crop', title: 'Cosmic Dreams', creator: 'StarGazer' },
+  { type: 'video', src: '/videos/rockbug.mp4', title: 'Nature Macro', creator: 'NatureLens' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&h=400&fit=crop', title: 'Abstract Art', creator: 'PixelArtist' },
+  { type: 'video', src: '/videos/dogclimb.mp4', title: 'Adventure Dog', creator: 'PetLovers' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=400&h=400&fit=crop', title: 'Neon City', creator: 'CyberPunk' },
+  { type: 'video', src: '/videos/matrixcode.mp4', title: 'Matrix Effect', creator: 'CodeArt' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=400&fit=crop', title: 'Ocean Depths', creator: 'DeepDive' },
+  { type: 'video', src: '/videos/klingmodel.mp4', title: 'Model Showcase', creator: 'Omi Team' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=400&fit=crop', title: 'Urban Lights', creator: 'CityScape' },
+  { type: 'video', src: '/videos/veo2.mp4', title: 'Veo Magic', creator: 'AI Studio' },
+  { type: 'image', src: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&h=400&fit=crop', title: 'Aurora Night', creator: 'NightSky' },
+  { type: 'audio', src: '', title: 'Ambient Waves', creator: 'SoundScape' },
+  { type: 'audio', src: '', title: 'Lo-Fi Dreams', creator: 'ChillBeats' },
+  { type: 'avatar', src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces', title: 'Pro Avatar', creator: 'AvatarPro' },
+  { type: 'avatar', src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces', title: 'Creative Avatar', creator: 'ArtStyle' },
+];
+
 export default function MediaStudio({ onClose }: MediaStudioProps) {
   const router = useRouter();
   /* Existing state */

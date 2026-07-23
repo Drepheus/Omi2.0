@@ -7,11 +7,10 @@ import { encrypt } from '@/lib/crypto';
 import { eq } from 'drizzle-orm';
 
 // In-memory fallback store for local development when DB is unreachable
-const memoryStore: Record<string, { encryptedApiKey: string; memoryMd: string; userMd: string }> = {
+const memoryStore: Record<string, { encryptedApiKey: string; openclawState: string }> = {
   usr_guest: {
     encryptedApiKey: 'dummy_encrypted_key',
-    memoryMd: `# Core Memories\n- User values technical blueprints over summaries.\n- Deploying on multi-tenant Hermes SaaS framework.`,
-    userMd: `# User Profile\n- Technical Founder\n- Preferences: JSON formatted data`
+    openclawState: JSON.stringify({ activeAgent: 'openclaw', framework: 'OpenClaw Node SDK', settings: { verbose: true } }),
   }
 };
 
@@ -33,28 +32,29 @@ export async function POST(req: Request) {
   } catch {}
 
   const body = await req.json();
-  const { apiKey, memoryMd, userMd } = body as {
-    apiKey: string;
-    memoryMd: string;
-    userMd: string;
+  const { apiKey, openclawState } = body as {
+    apiKey?: string;
+    openclawState?: string | object;
   };
 
-  if (!apiKey) {
-    return NextResponse.json({ error: 'API Key is required' }, { status: 400 });
-  }
+  const formattedState = typeof openclawState === 'object'
+    ? JSON.stringify(openclawState)
+    : (openclawState || JSON.stringify({ activeAgent: 'openclaw' }));
 
   let encryptedKey = '';
-  try {
-    encryptedKey = encrypt(apiKey);
-  } catch {
-    encryptedKey = `enc_${Buffer.from(apiKey).toString('base64')}`;
+  if (apiKey) {
+    try {
+      encryptedKey = encrypt(apiKey);
+    } catch {
+      encryptedKey = `enc_${Buffer.from(apiKey).toString('base64')}`;
+    }
   }
 
   // Update in-memory fallback
+  const existingMemory = memoryStore[userId] || { encryptedApiKey: '', openclawState: '' };
   memoryStore[userId] = {
-    encryptedApiKey: encryptedKey,
-    memoryMd: memoryMd || '',
-    userMd: userMd || '',
+    encryptedApiKey: encryptedKey || existingMemory.encryptedApiKey,
+    openclawState: formattedState,
   };
 
   try {
@@ -75,9 +75,8 @@ export async function POST(req: Request) {
     if (existing.length > 0) {
       await db.update(agentConfigs)
         .set({
-          encryptedApiKey: encryptedKey,
-          memoryMd: memoryMd || '',
-          userMd: userMd || '',
+          ...(encryptedKey ? { encryptedApiKey: encryptedKey } : {}),
+          openclawState: formattedState,
           updatedAt: new Date(),
         })
         .where(eq(agentConfigs.userId, userId));
@@ -85,8 +84,7 @@ export async function POST(req: Request) {
       await db.insert(agentConfigs).values({
         userId,
         encryptedApiKey: encryptedKey,
-        memoryMd: memoryMd || '',
-        userMd: userMd || '',
+        openclawState: formattedState,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -116,8 +114,7 @@ export async function GET(req: Request) {
       return NextResponse.json({
         config: {
           hasApiKey: !!config[0].encryptedApiKey,
-          memoryMd: config[0].memoryMd,
-          userMd: config[0].userMd,
+          openclawState: config[0].openclawState || JSON.stringify({ activeAgent: 'openclaw' }),
         }
       });
     }
@@ -130,8 +127,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     config: {
       hasApiKey: !!localConfig.encryptedApiKey,
-      memoryMd: localConfig.memoryMd,
-      userMd: localConfig.userMd,
+      openclawState: localConfig.openclawState,
     }
   });
 }

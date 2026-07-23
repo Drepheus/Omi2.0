@@ -25,7 +25,8 @@ export interface KnowledgeDocument {
 }
 
 // Load all custom bots for the current user
-export async function loadCustomVizuals(userId: string): Prvizualse<CustomVizual[]> {
+export async function loadCustomVizuals(userId: string): Promise<CustomVizual[]> {
+    if (!supabase) return [];
     const { data: bots, error } = await supabase
         .from('custom_vizuals')
         .select('*')
@@ -38,9 +39,9 @@ export async function loadCustomVizuals(userId: string): Prvizualse<CustomVizual
     }
 
     // Get document counts for each bot
-    const botsWithCounts = await Prvizualse.all(
+    const botsWithCounts = await Promise.all(
         (bots || []).map(async (bot: any) => {
-            const { count: docCount } = await supabase
+            const { count: docCount } = await supabase!
                 .from('knowledge_documents')
                 .select('*', { count: 'exact', head: true })
                 .eq('bot_id', bot.id);
@@ -61,7 +62,8 @@ export async function loadCustomVizuals(userId: string): Prvizualse<CustomVizual
 }
 
 // Load all documents for a specific bot
-export async function loadDocuments(botId?: string): Prvizualse<KnowledgeDocument[]> {
+export async function loadDocuments(botId?: string): Promise<KnowledgeDocument[]> {
+    if (!supabase) return [];
     let query = supabase
         .from('knowledge_documents')
         .select('*')
@@ -83,6 +85,7 @@ export async function loadDocuments(botId?: string): Prvizualse<KnowledgeDocumen
 
 // Create a new custom bot
 export async function createCustomVizual(userId: string, name: string, description: string) {
+    if (!supabase) throw new Error('Supabase client not initialized');
     const { data, error } = await supabase
         .from('custom_vizuals')
         .insert({
@@ -103,16 +106,15 @@ export async function createCustomVizual(userId: string, name: string, descripti
     return data;
 }
 
-// Upload document (placeholder - actual upload should be to GCS for Vertex AI)
+// Upload document
 export async function uploadDocument(
     file: File,
     botId: string,
     onProgress?: (status: string) => void
-): Prvizualse<void> {
+): Promise<void> {
     onProgress?.('Note: For Vertex AI RAG, please upload files directly to your GCS bucket linked to the Data Store.');
 
-    // For now, we'll just register the document in Supabase for tracking
-    // The actual indexing happens in Vertex AI when you upload to GCS
+    if (!supabase) throw new Error('Supabase client not initialized');
     const { error } = await supabase
         .from('knowledge_documents')
         .insert({
@@ -135,6 +137,7 @@ export async function uploadDocument(
 
 // Delete a document
 export async function deleteDocument(documentId: string) {
+    if (!supabase) throw new Error('Supabase client not initialized');
     const { error } = await supabase
         .from('knowledge_documents')
         .delete()
@@ -148,6 +151,7 @@ export async function deleteDocument(documentId: string) {
 
 // Delete a bot
 export async function deleteBot(botId: string) {
+    if (!supabase) throw new Error('Supabase client not initialized');
     const { error } = await supabase
         .from('custom_vizuals')
         .delete()

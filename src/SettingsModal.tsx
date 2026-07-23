@@ -30,7 +30,7 @@ export default function SettingsModal({ isOpen, onClose, user }: SettingsModalPr
   }, [user, isOpen]);
 
   const fetchUserData = async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     
     setIsLoading(true);
     try {
@@ -59,7 +59,9 @@ export default function SettingsModal({ isOpen, onClose, user }: SettingsModalPr
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
       onClose();
       window.location.reload();
     } catch (error) {

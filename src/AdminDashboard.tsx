@@ -89,6 +89,7 @@ const AdminDashboard = () => {
 
   // Fetch system metrics
   const fetchSystemMetrics = async () => {
+    if (!supabase) return;
     try {
       // Get total users from public.users table
       const { count: totalUsers } = await supabase
@@ -134,6 +135,7 @@ const AdminDashboard = () => {
 
   // Fetch all users with stats
   const fetchUsers = async () => {
+    if (!supabase) return;
     try {
       const { data, error } = await supabase.rpc('get_admin_user_stats');
       
@@ -150,27 +152,27 @@ const AdminDashboard = () => {
             created_at
           `);
         
-        const userStats = await Prvizualse.all((usersData || []).map(async (user) => {
+        const userStats = await Promise.all((usersData || []).map(async (user) => {
           // Get aggregated usage stats
-          const { data: chatUsage } = await supabase
+          const { data: chatUsage } = await supabase!
             .from('usage_tracking')
             .select('count')
             .eq('user_id', user.id)
             .eq('usage_type', 'chat');
           
-          const { data: imageUsage } = await supabase
+          const { data: imageUsage } = await supabase!
             .from('usage_tracking')
             .select('count')
             .eq('user_id', user.id)
             .eq('usage_type', 'image_gen');
           
-          const { data: videoUsage } = await supabase
+          const { data: videoUsage } = await supabase!
             .from('usage_tracking')
             .select('count')
             .eq('user_id', user.id)
             .eq('usage_type', 'video_gen');
 
-          const { data: lastActivity } = await supabase
+          const { data: lastActivity } = await supabase!
             .from('usage_tracking')
             .select('created_at')
             .eq('user_id', user.id)
@@ -203,6 +205,7 @@ const AdminDashboard = () => {
 
   // Fetch API logs
   const fetchApiLogs = async () => {
+    if (!supabase) return;
     try {
       const query = supabase
         .from('api_logs')
@@ -228,8 +231,8 @@ const AdminDashboard = () => {
 
       if (!error && data) {
         // Fetch user emails
-        const logsWithEmails = await Prvizualse.all(data.map(async (log) => {
-          const { data: userData } = await supabase.auth.admin.getUserById(log.user_id);
+        const logsWithEmails = await Promise.all(data.map(async (log) => {
+          const { data: userData } = await supabase!.auth.admin.getUserById(log.user_id);
           return {
             ...log,
             email: userData?.user?.email || 'Unknown',
@@ -254,7 +257,7 @@ const AdminDashboard = () => {
       
       console.log('AdminDashboard: Loading admin data...');
       setIsLoading(true);
-      await Prvizualse.all([
+      await Promise.all([
         fetchSystemMetrics(),
         fetchUsers(),
         fetchApiLogs(),
@@ -295,6 +298,7 @@ const AdminDashboard = () => {
 
   // User action handlers
   const handleUpgradeUser = async (userId: string, tier: 'pro' | 'ultra') => {
+    if (!supabase) return;
     try {
       // Update the users table directly
       await supabase
@@ -314,6 +318,7 @@ const AdminDashboard = () => {
   };
 
   const handleResetUsage = async (userId: string) => {
+    if (!supabase) return;
     try {
       // Delete all usage records for this user to reset
       await supabase
@@ -330,6 +335,7 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteUser = async (userId: string) => {
+    if (!supabase) return;
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return;
     }

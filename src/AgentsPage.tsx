@@ -82,21 +82,11 @@ const agentCatalog: Agent[] = [
     id: 'openclaw',
     name: 'OpenClaw',
     icon: 'openclaw',
-    description: 'Autonomous web scraper and data extraction agent with advanced parsing',
+    description: 'Autonomous persistent worker agent with state synchronization and custom tool execution',
     type: 'Autonomous',
     status: 'idle',
     category: 'autonomous',
-    tags: ['scraping', 'data', 'automation']
-  },
-  {
-    id: 'hermes',
-    name: 'Hermes',
-    icon: 'hermes',
-    description: 'Stateless messaging and context synchronization agent for multi-tenant SaaS loops',
-    type: 'Autonomous',
-    status: 'idle',
-    category: 'autonomous',
-    tags: ['messaging', 'celery', 'sync', 'supa']
+    tags: ['scraping', 'data', 'automation', 'openclaw']
   },
   {
     id: 'agentzero',
@@ -150,8 +140,6 @@ const renderAgentIcon = (id: string, className = "w-5 h-5") => {
   switch (id) {
     case 'openclaw':
       return <Globe className={className} />;
-    case 'hermes':
-      return <Zap className={className} />;
     case 'agentzero':
       return <Bot className={className} />;
     case 'researcher':
@@ -180,14 +168,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
   
-  // Hermes Configuration Form State
+  // OpenClaw Configuration Form State
   const [apiKey, setApiKey] = useState('');
-  const [memoryMd, setMemoryMd] = useState(`# Core Memories
-- User values technical blueprints over summaries.
-- Deploying on multi-tenant Hermes SaaS framework.`);
-  const [userMd, setUserMd] = useState(`# User Profile
-- Technical Founder
-- Preferences: JSON formatted data`);
+  const [openclawState, setOpenclawState] = useState(JSON.stringify({
+    activeAgent: "openclaw",
+    framework: "OpenClaw Node SDK",
+    settings: { verbose: true, timeoutMs: 180000 }
+  }, null, 2));
   const [isSavingConfig, setIsSavingConfig] = useState(false);
   const [hasSavedConfig, setHasSavedConfig] = useState(false);
 
@@ -204,7 +191,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activityTimeline, setActivityTimeline] = useState<Array<{ id: string; title: string; desc: string; time: string; type: string }>>([]);
   const [executionError, setExecutionError] = useState<{ title: string; code: string; details: string } | null>(null);
-  const [consoleLogs, setConsoleLogs] = useState<string>('Hermes Terminal initialized. Awaiting commands...');
+  const [consoleLogs, setConsoleLogs] = useState<string>('OpenClaw Terminal initialized. Awaiting commands...');
   const [consoleInput, setConsoleInput] = useState('');
   const [isConsoleExecuting, setIsConsoleExecuting] = useState(false);
   const [expandedReasoningIndex, setExpandedReasoningIndex] = useState<number | null>(null);
@@ -246,8 +233,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         const data = await res.json();
         if (data.config) {
           setHasSavedConfig(data.config.hasApiKey);
-          if (data.config.memoryMd) setMemoryMd(data.config.memoryMd);
-          if (data.config.userMd) setUserMd(data.config.userMd);
+          if (data.config.openclawState) setOpenclawState(data.config.openclawState);
         }
       }
     } catch (err) {
@@ -268,18 +254,18 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   const parseLogsForChat = (logs: string) => {
-    const hermesMatch = logs.match(/💬 \[(?:[^\]]+)\]:\s*([\s\S]*)/i);
+    const openclawMatch = logs.match(/💬 \[(?:[^\]]+)\]:\s*([\s\S]*)/i);
     let content = '';
     let reasoning = '';
     
-    if (hermesMatch) {
-      content = hermesMatch[1].trim();
+    if (openclawMatch) {
+      content = openclawMatch[1].trim();
       // clean up trailing logs
-      content = content.replace(/📝 \[Memory Update\][\s\S]*/, '').trim();
+      content = content.replace(/📝 \[State Update\][\s\S]*/, '').trim();
       content = content.replace(/💾 \[Database Syncing\][\s\S]*/, '').trim();
-      content = content.replace(/\[Hermes: Task executed successfully[\s\S]*/, '').trim();
+      content = content.replace(/\[OpenClaw Worker: Task executed successfully[\s\S]*/, '').trim();
       
-      reasoning = logs.substring(0, hermesMatch.index).trim();
+      reasoning = logs.substring(0, openclawMatch.index).trim();
     } else {
       reasoning = logs.trim();
     }
@@ -386,7 +372,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     setShowPlayground(true);
     setPlaygroundTab('chat');
     setConsoleLogs(`${dep.agentName} Terminal initialized. Awaiting commands...`);
-    setMemoryMd(`# ${dep.agentName} Memory Context\n- User values technical blueprints over summaries.\n- Deploying on multi-tenant ${dep.agentName} worker pool.`);
+    setOpenclawState(JSON.stringify({ activeAgent: dep.agentName, framework: "OpenClaw Node SDK", settings: { verbose: true, timeoutMs: 180000 } }, null, 2));
     fetchSessionHistory(dep.agentId);
 
     // Initial timeline event
@@ -413,8 +399,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         },
         body: JSON.stringify({
           apiKey: apiKey || 'dummy-test-key-simulated',
-          memoryMd,
-          userMd,
+          openclawState,
         }),
       });
 
@@ -458,8 +443,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     if (!consoleInput.trim() || isConsoleExecuting) return;
 
     const userPrompt = consoleInput;
-    const currentAgentId = playgroundDeployment?.agentId || 'hermes';
-    const currentAgentName = playgroundDeployment?.agentName || 'Hermes';
+    const currentAgentId = playgroundDeployment?.agentId || 'openclaw';
+    const currentAgentName = playgroundDeployment?.agentName || 'OpenClaw';
 
     setConsoleInput('');
     setExecutionError(null);
@@ -711,7 +696,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     return matchesCategory && matchesSearch;
   });
 
-  const categories = ['all', ...new Set(agentCatalog.map(a => a.category))];
+  const categories = ['all', ...Array.from(new Set(agentCatalog.map(a => a.category)))];
   const runningCount = deployments.filter(d => d.status === 'running').length;
   const stoppedCount = deployments.filter(d => d.status === 'stopped').length;
 
@@ -724,7 +709,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         <div className="agent-sidebar-header">
           <div className="agent-logo" onClick={onClose}>
             <span className="agent-logo-lucide"><Bot size={22} className="text-violet-400" /></span>
-            <span className="agent-logo-text">Hermes Hub</span>
+            <span className="agent-logo-text">OpenClaw Hub</span>
           </div>
           <button className="agent-sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={18} />
@@ -805,12 +790,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </button>
             <div>
               <h1 className="agent-topbar-title">One-Click Deployments</h1>
-              <p className="agent-topbar-subtitle">Deploy stateful Hermes and OpenClaw loops to Serverless Backends</p>
+              <p className="agent-topbar-subtitle">Deploy stateful OpenClaw agent loops to Serverless Worker Backends</p>
             </div>
           </div>
           <div className="agent-topbar-right">
             <button className="agent-btn agent-btn-primary" onClick={() => {
-              setSelectedAgent(agentCatalog.find(a => a.id === 'hermes') || agentCatalog[0]);
+              setSelectedAgent(agentCatalog.find(a => a.id === 'openclaw') || agentCatalog[0]);
               setShowDeployModal(true);
             }}>
               <Plus size={16} />
@@ -999,7 +984,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <p>{selectedAgent.description}</p>
             </div>
             <div className="agent-modal-body">
-              {selectedAgent.id === 'hermes' ? (
+              {selectedAgent.id === 'openclaw' ? (
                 <>
                   <div className="agent-modal-field">
                     <label>
@@ -1019,26 +1004,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                   <div className="agent-modal-field">
                     <label>
                       <FileText size={14} style={{ display: 'inline', marginRight: 4 }} />
-                      MEMORY.md Initial State
+                      OpenClaw State (JSON)
                     </label>
                     <textarea
-                      className="agent-modal-textarea"
-                      value={memoryMd}
-                      onChange={(e) => setMemoryMd(e.target.value)}
-                      rows={5}
-                    />
-                  </div>
-
-                  <div className="agent-modal-field">
-                    <label>
-                      <FileText size={14} style={{ display: 'inline', marginRight: 4 }} />
-                      USER.md Initial State
-                    </label>
-                    <textarea
-                      className="agent-modal-textarea"
-                      value={userMd}
-                      onChange={(e) => setUserMd(e.target.value)}
-                      rows={4}
+                      className="agent-modal-textarea font-mono text-xs"
+                      value={openclawState}
+                      onChange={(e) => setOpenclawState(e.target.value)}
+                      rows={6}
                     />
                   </div>
                 </>
@@ -1418,27 +1390,19 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 <div className="state-pane-section">
                   <div className="state-section-header">
                     <Database size={14} className="text-violet-400" />
-                    <h3>Supabase Memory Sync</h3>
+                    <h3>Supabase State Sync</h3>
                     <span className="sync-status-badge">Synced</span>
                   </div>
                   <p className="state-section-desc">
-                    These memory contexts are loaded into the reasoning container at startup and saved on completion.
+                    OpenClaw state JSON object stored cleanly under agent_configs in Supabase.
                   </p>
 
                   <div className="memory-file-box">
                     <div className="memory-file-title">
                       <FileText size={12} />
-                      <span>MEMORY.md</span>
+                      <span>openclawState.json</span>
                     </div>
-                    <pre className="memory-file-body">{memoryMd}</pre>
-                  </div>
-
-                  <div className="memory-file-box">
-                    <div className="memory-file-title">
-                      <FileText size={12} />
-                      <span>USER.md</span>
-                    </div>
-                    <pre className="memory-file-body">{userMd}</pre>
+                    <pre className="memory-file-body">{openclawState}</pre>
                   </div>
                 </div>
 

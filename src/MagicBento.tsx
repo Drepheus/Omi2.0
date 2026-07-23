@@ -47,7 +47,7 @@ const cardData = [
     color: '#0a0a0a',
     icon: <Workflow size={48} strokeWidth={1} />,
     title: 'Agents',
-    description: 'Deploy autonomous agents like OpenClaw, Hermes, and AgentZero',
+    description: 'Deploy persistent autonomous OpenClaw agents on serverless workers',
     label: 'Agentic',
     action: 'agents'
   },
@@ -606,7 +606,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         return;
       }
 
-      if (user) {
+      if (user && supabase) {
         const { data, error } = await supabase
           .from('users')
           .select('subscription_tier')

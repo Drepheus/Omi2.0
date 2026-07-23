@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   } catch {}
 
   const { searchParams } = new URL(req.url);
-  const agentId = searchParams.get('agentId') || 'hermes';
+  const agentId = searchParams.get('agentId') || 'openclaw';
 
   try {
     const sessionsList = await db.select()
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     title?: string;
   };
 
-  const targetAgentId = agentId || 'hermes';
+  const targetAgentId = agentId || 'openclaw';
   const targetSessionId = sessionId || `sess_${targetAgentId}_${Date.now()}`;
   const now = new Date();
 

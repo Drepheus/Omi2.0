@@ -29,8 +29,7 @@ export const agentConfigs = pgTable('agent_configs', {
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
   encryptedApiKey: text('encrypted_api_key'),
-  memoryMd: text('memory_md'),
-  userMd: text('user_md'),
+  openclawState: text('openclaw_state'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

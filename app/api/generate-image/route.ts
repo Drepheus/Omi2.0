@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
 
     // Guest mode - auth disabled for deployment
-    const user = null;
+    const user: any = null;
 
     try {
         const { prompt, aspectRatio = '3:2' } = await req.json();

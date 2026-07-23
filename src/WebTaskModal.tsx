@@ -67,7 +67,9 @@ const WebTaskModal: React.FC<WebTaskModalProps> = ({ isOpen, onClose }) => {
     setResult(null);
 
     try {
-      // Get auth token
+      if (!supabase) {
+        throw new Error('Authentication service unavailable');
+      }
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {

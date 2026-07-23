@@ -39,3 +39,7 @@ env/
 *.swo
 *~
 .vercel
+diff.txt
+oldAgentsPage.css
+*.tsbuildinfo
+

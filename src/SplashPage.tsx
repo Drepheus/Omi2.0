@@ -389,7 +389,7 @@ function SplashPage({ onClose }: SplashPageProps) {
 
   // Fetch subscription tier
   const fetchSubscriptionTier = async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
 
     try {
       const { data, error } = await supabase

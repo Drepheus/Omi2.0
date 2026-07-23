@@ -34,7 +34,10 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
       }
 
       // For Pro plan, use the API checkout session
-      // Get current user from Supabase
+      if (!supabase) {
+        alert('Authentication service unavailable');
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {

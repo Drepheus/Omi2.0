@@ -13,7 +13,7 @@ export async function chatWithVertexRAG(
     message: string,
     history: ChatMessage[],
     onChunk: (text: string) => void
-): Prvizualse<void> {
+): Promise<void> {
     try {
         const response = await fetch('/api/rag-chat', {
             method: 'POST',

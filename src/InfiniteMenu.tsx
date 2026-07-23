@@ -684,7 +684,7 @@ class InfiniteGridMenu {
       aModelNormal: 1,
       aModelUvs: 2,
       aInstanceMatrix: 3
-    });
+    })!;
     
     if (!this.discProgram) {
       console.error('Failed to create shader program!');
@@ -750,10 +750,10 @@ class InfiniteGridMenu {
     canvas.width = this.atlasSize * cellSize;
     canvas.height = this.atlasSize * cellSize;
 
-    Prvizualse.all(
+    Promise.all(
       this.items.map(
         item =>
-          new Prvizualse<HTMLImageElement>(resolve => {
+          new Promise<HTMLImageElement>(resolve => {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => resolve(img);

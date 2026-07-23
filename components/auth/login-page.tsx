@@ -26,6 +26,7 @@ export function LoginPage() {
       sessionStorage.setItem('authRedirect', redirectTo);
     }
 
+    if (!supabase) return;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {

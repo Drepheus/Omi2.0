@@ -24,7 +24,8 @@ export async function createConversation(
   userId: string,
   title: string = 'New Conversation',
   model: string = 'Gemini Pro'
-): Prvizualse<DbConversation | null> {
+): Promise<DbConversation | null> {
+  if (!supabase) return null
   try {
     const { data, error } = await supabase
       .from('conversations')
@@ -51,7 +52,8 @@ export async function createConversation(
 /**
  * Get all conversations for a user
  */
-export async function getUserConversations(userId: string): Prvizualse<DbConversation[]> {
+export async function getUserConversations(userId: string): Promise<DbConversation[]> {
+  if (!supabase) return []
   try {
     const { data, error } = await supabase
       .from('conversations')
@@ -74,7 +76,8 @@ export async function getUserConversations(userId: string): Prvizualse<DbConvers
 /**
  * Get messages for a specific conversation
  */
-export async function getConversationMessages(conversationId: string): Prvizualse<DbMessage[]> {
+export async function getConversationMessages(conversationId: string): Promise<DbMessage[]> {
+  if (!supabase) return []
   try {
     const { data, error } = await supabase
       .from('messages')
@@ -101,7 +104,8 @@ export async function saveMessage(
   conversationId: string,
   role: 'user' | 'assistant',
   content: string
-): Prvizualse<DbMessage | null> {
+): Promise<DbMessage | null> {
+  if (!supabase) return null
   try {
     const { data, error } = await supabase
       .from('messages')
@@ -137,7 +141,8 @@ export async function saveMessage(
 export async function updateConversationTitle(
   conversationId: string,
   title: string
-): Prvizualse<boolean> {
+): Promise<boolean> {
+  if (!supabase) return false
   try {
     const { error } = await supabase
       .from('conversations')
@@ -159,7 +164,8 @@ export async function updateConversationTitle(
 /**
  * Delete a conversation and all its messages
  */
-export async function deleteConversation(conversationId: string): Prvizualse<boolean> {
+export async function deleteConversation(conversationId: string): Promise<boolean> {
+  if (!supabase) return false
   try {
     const { error } = await supabase
       .from('conversations')
@@ -179,10 +185,11 @@ export async function deleteConversation(conversationId: string): Prvizualse<boo
 }
 
 /**
- * Generate a smart title from the first user message
+ * Generate a conversation title from a prompt
  */
-export function generateConversationTitle(firstMessage: string): string {
-  // Take first 50 characters or up to first line break
-  const title = firstMessage.split('\n')[0].slice(0, 50)
-  return title.length < firstMessage.length ? `${title}...` : title
+export function generateConversationTitle(prompt: string): string {
+  const cleanPrompt = prompt.trim()
+  if (cleanPrompt.length <= 40) return cleanPrompt
+  return cleanPrompt.substring(0, 40) + '...'
 }
+
