@@ -32,6 +32,7 @@ import {
   Bot,
   Search,
   Code,
+  Brain,
   MessageSquare,
   Layers,
   Settings2,
