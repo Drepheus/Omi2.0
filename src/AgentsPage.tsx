@@ -122,21 +122,7 @@ const agentCatalog: Agent[] = [
   }
 ];
 
-const initialDeployments: Deployment[] = [
-  {
-    id: 'dep-1',
-    agentId: 'openclaw',
-    agentName: 'OpenClaw',
-    agentIcon: 'openclaw',
-    status: 'running',
-    vmName: 'railway-worker-node-1',
-    ipAddress: '104.28.45.12',
-    uptime: '14d 7h 32m',
-    cpu: 12,
-    memory: 28,
-    deployedAt: '2026-06-24T10:30:00Z'
-  }
-];
+const initialDeployments: Deployment[] = [];
 
 const renderAgentIcon = (id: string, className = "w-5 h-5") => {
   switch (id) {

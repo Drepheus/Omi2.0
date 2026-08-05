@@ -1,91 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Orb } from "@/components/visuals/orb";
 import { ShinyText } from "@/components/typography/shiny-text";
+import { ThinkingOrb, OrbState } from "thinking-orbs";
 import {
-  Globe,
-  Code2,
-  BarChart3,
-  Terminal,
+  Wrench,
   Zap,
-  Brain,
-  Sparkles,
+  Key,
+  CreditCard,
   ArrowRight,
   ArrowLeft,
-  Check
+  Check,
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 import "./onboarding-wizard.css";
 
-interface SimpleOption {
+interface ConsumerOption {
   id: string;
   title: string;
-  subtitle: string;
+  badge: string;
+  description: string;
   icon: any;
   agentId: string;
 }
 
-const AGENT_PURPOSES: SimpleOption[] = [
+const AGENT_TYPES: ConsumerOption[] = [
   {
-    id: "web",
-    title: "Web Research & Scraping",
-    subtitle: "Search the live web, extract data, and generate summary reports",
-    icon: Globe,
-    agentId: "openclaw-scraper"
-  },
-  {
-    id: "coder",
-    title: "Software & Code Engineer",
-    subtitle: "Write microservices, fix code bugs, and build features",
-    icon: Code2,
+    id: "builder",
+    title: "Autonomous AI Builder",
+    badge: "App & Code Automation",
+    description: "Build apps, write microservices, refactor codebases, & automate complex engineering projects.",
+    icon: Wrench,
     agentId: "openclaw-coder"
   },
   {
-    id: "data",
-    title: "Data Analyst & Insights",
-    subtitle: "Query databases, organize tables, and analyze metrics",
-    icon: BarChart3,
-    agentId: "openclaw-data"
-  },
-  {
-    id: "general",
-    title: "Custom AI Task Specialist",
-    subtitle: "Run flexible multi-step autonomous AI agent loops",
-    icon: Terminal,
+    id: "assistant",
+    title: "Executive AI Assistant",
+    badge: "Web & Task Autopilot",
+    description: "Search live web data, research topics, organize databases, & manage daily tasks on autopilot.",
+    icon: Zap,
     agentId: "openclaw"
   }
 ];
 
-const INTELLIGENCE_MODES = [
+const KEY_OPTIONS = [
   {
-    id: "turbo",
-    title: "Turbo Speed Mode",
-    badge: "Fastest Response",
-    subtitle: "Optimized for quick task turns and immediate answers",
-    icon: Zap
+    id: "platform",
+    title: "Omi Hosted Key Pool",
+    badge: "Instant Zero Setup",
+    description: "Use included platform credits for immediate, zero-friction agent deployment.",
+    icon: CreditCard
   },
   {
-    id: "reasoning",
-    title: "Ultra Deep Thinking Mode",
-    badge: "Maximum Accuracy",
-    subtitle: "Performs multi-step reasoning & tool diagnostics before answering",
-    icon: Brain
+    id: "byok",
+    title: "Bring Your Own Key (BYOK)",
+    badge: "AES-256 Encrypted",
+    description: "Connect your custom OpenAI API key stored securely with native AES-256 server-side encryption.",
+    icon: Key
   }
 ];
 
 export function OnboardingWizard() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [selectedPurpose, setSelectedPurpose] = useState("web");
-  const [selectedMode, setSelectedMode] = useState("reasoning");
-  const [isDeploying, setIsDeploying] = useState(false);
+  const [selectedType, setSelectedType] = useState("builder");
+  const [selectedKeyPref, setSelectedKeyPref] = useState("platform");
+  const [customKey, setCustomKey] = useState("");
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [bufferStatusIndex, setBufferStatusIndex] = useState(0);
+  const [orbState, setOrbState] = useState<OrbState>("solving");
+
+  const bufferStatuses = [
+    "⚡ Provisioning isolated OpenClaw microservice container...",
+    "🧠 Loading reasoning core & mounting secure workspace environment...",
+    "✨ Agent core ready! Launching your workspace dashboard..."
+  ];
 
   const handleNext = () => {
-    if (step < 3) {
+    if (step < 2) {
       setStep(prev => prev + 1);
     } else {
-      handleLaunch();
+      startBufferAndLaunch();
     }
   };
 
@@ -95,171 +93,199 @@ export function OnboardingWizard() {
     }
   };
 
-  const handleLaunch = () => {
-    setIsDeploying(true);
+  const startBufferAndLaunch = () => {
+    setIsBuffering(true);
 
-    const chosenPurpose = AGENT_PURPOSES.find(p => p.id === selectedPurpose);
+    const chosenType = AGENT_TYPES.find(t => t.id === selectedType);
     const config = {
-      agentId: chosenPurpose?.agentId || "openclaw",
-      agentName: chosenPurpose?.title || "OpenClaw Agent",
-      mode: selectedMode,
-      deployedAt: new Date().toISOString()
+      agentId: chosenType?.agentId || "openclaw",
+      agentName: chosenType?.title || "OpenClaw Agent",
+      keyPref: selectedKeyPref,
+      customKey: customKey.trim(),
+      configuredAt: new Date().toISOString()
     };
 
     if (typeof window !== "undefined") {
       localStorage.setItem("omi_onboarding_config", JSON.stringify(config));
     }
 
+    // Cycle orb state & status text during 5 second buffer
+    setTimeout(() => {
+      setBufferStatusIndex(1);
+      setOrbState("working");
+    }, 1600);
+
+    setTimeout(() => {
+      setBufferStatusIndex(2);
+      setOrbState("composing");
+    }, 3400);
+
     setTimeout(() => {
       router.push("/agents");
-    }, 800);
+    }, 5000);
   };
-
-  const currentPurpose = AGENT_PURPOSES.find(p => p.id === selectedPurpose);
-  const currentMode = INTELLIGENCE_MODES.find(m => m.id === selectedMode);
 
   return (
     <div className="omi-onboarding-wrapper">
-      {/* Visual Ambient Background matching LandingPage */}
+      {/* Visual Ambient Background */}
       <div className="orb-background">
         <Orb hue={220} hoverIntensity={0.3} rotateOnHover forceHoverState={false} />
       </div>
 
-      <div className={`omi-onboarding-content ${isDeploying ? "fade-out" : ""}`}>
-        {/* Sleek Top Navigation */}
-        <nav className="omi-onboarding-nav">
-          <div className="brand-badge">
-            <Sparkles size={16} className="sparkle-icon" />
-            <span className="brand-text">OMI AI</span>
+      {/* FULLSCREEN 5-SECOND BUFFER / LOADING SCREEN */}
+      {isBuffering ? (
+        <div className="onboarding-buffer-screen animate-fade-in">
+          <div className="buffer-orb-stage">
+            <ThinkingOrb state={orbState} size={64} theme="dark" />
           </div>
 
-          <button onClick={() => router.push("/agents")} className="skip-link">
-            Skip to Dashboard →
-          </button>
-        </nav>
-
-        {/* Header Indicator */}
-        <div className="step-indicator-bar">
-          <div className={`step-dot ${step >= 1 ? "active" : ""}`}>1</div>
-          <div className="step-line-segment" />
-          <div className={`step-dot ${step >= 2 ? "active" : ""}`}>2</div>
-          <div className="step-line-segment" />
-          <div className={`step-dot ${step >= 3 ? "active" : ""}`}>3</div>
+          <div className="buffer-text-container">
+            <div className="buffer-pulse-pill">
+              <span className="buffer-pulse-dot" />
+              <span>SETUP IN PROGRESS</span>
+            </div>
+            <h2 className="buffer-heading">{bufferStatuses[bufferStatusIndex]}</h2>
+            <p className="buffer-subtext">Setting up your Hetzner microservice node (5.78.197.8:8080)</p>
+          </div>
         </div>
-
-        {/* STEP 1: SIMPLE PURPOSE SELECTION */}
-        {step === 1 && (
-          <div className="step-container animate-fade-in">
-            <h1 className="omi-step-heading">What should your AI Agent do?</h1>
-            <p className="omi-step-subheading">Select your primary task objective to configure your OpenClaw worker.</p>
-
-            <div className="simple-cards-grid">
-              {AGENT_PURPOSES.map(item => {
-                const Icon = item.icon;
-                const isSelected = selectedPurpose === item.id;
-
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => setSelectedPurpose(item.id)}
-                    className={`simple-card ${isSelected ? "selected" : ""}`}
-                  >
-                    <div className="card-top">
-                      <div className="card-icon-wrapper">
-                        <Icon size={22} />
-                      </div>
-                      {isSelected && <Check size={18} className="card-check-icon" />}
-                    </div>
-
-                    <h3 className="card-title">{item.title}</h3>
-                    <p className="card-subtitle">{item.subtitle}</p>
-                  </div>
-                );
-              })}
+      ) : (
+        <div className="omi-onboarding-content">
+          {/* Top Navigation */}
+          <nav className="omi-onboarding-nav">
+            <div className="brand-badge">
+              <Sparkles size={16} className="sparkle-icon" />
+              <span className="brand-text">OMI AI</span>
             </div>
-          </div>
-        )}
 
-        {/* STEP 2: SIMPLE INTELLIGENCE MODE */}
-        {step === 2 && (
-          <div className="step-container animate-fade-in">
-            <h1 className="omi-step-heading">Choose Agent Intelligence Mode</h1>
-            <p className="omi-step-subheading">Pick how your agent balances response speed and deep reasoning capability.</p>
-
-            <div className="modes-stack">
-              {INTELLIGENCE_MODES.map(mode => {
-                const Icon = mode.icon;
-                const isSelected = selectedMode === mode.id;
-
-                return (
-                  <div
-                    key={mode.id}
-                    onClick={() => setSelectedMode(mode.id)}
-                    className={`mode-card ${isSelected ? "selected" : ""}`}
-                  >
-                    <div className="mode-left">
-                      <div className="mode-icon-box">
-                        <Icon size={24} />
-                      </div>
-                      <div>
-                        <div className="mode-title-row">
-                          <h3 className="mode-title">{mode.title}</h3>
-                          <span className="mode-badge">{mode.badge}</span>
-                        </div>
-                        <p className="mode-subtitle">{mode.subtitle}</p>
-                      </div>
-                    </div>
-
-                    <div className={`selection-circle ${isSelected ? "checked" : ""}`} />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: READY TO LAUNCH SUMMARY */}
-        {step === 3 && (
-          <div className="step-container animate-fade-in">
-            <h1 className="omi-step-heading">Ready to Deploy Agent</h1>
-            <p className="omi-step-subheading">Your OpenClaw AI worker is pre-configured and ready for launch.</p>
-
-            <div className="summary-glass-card">
-              <div className="summary-item">
-                <span className="summary-label">Selected Goal</span>
-                <span className="summary-value">{currentPurpose?.title}</span>
-              </div>
-              <div className="summary-divider" />
-              <div className="summary-item">
-                <span className="summary-label">Intelligence Engine</span>
-                <span className="summary-value">{currentMode?.title}</span>
-              </div>
-              <div className="summary-divider" />
-              <div className="summary-item">
-                <span className="summary-label">Backend Worker</span>
-                <span className="summary-value text-glow">Hetzner Container Node (dre@openclaw)</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Action Controls */}
-        <div className="omi-step-actions">
-          {step > 1 ? (
-            <button onClick={handleBack} className="omi-back-btn">
-              <ArrowLeft size={16} />
-              <span>Back</span>
+            <button onClick={startBufferAndLaunch} className="skip-link">
+              Skip to Dashboard →
             </button>
-          ) : <div />}
+          </nav>
 
-          <button onClick={handleNext} className="omi-next-btn" disabled={isDeploying}>
-            <ShinyText
-              text={step === 3 ? (isDeploying ? "Deploying..." : "Deploy Agent →") : "Continue →"}
-              speed={3}
-            />
-          </button>
+          {/* Step Indicator */}
+          <div className="step-indicator-bar">
+            <div className={`step-dot ${step >= 1 ? "active" : ""}`}>1</div>
+            <div className="step-line-segment" />
+            <div className={`step-dot ${step >= 2 ? "active" : ""}`}>2</div>
+          </div>
+
+          {/* STEP 1: CONSUMER AGENT TYPE (BUILDER vs ASSISTANT) */}
+          {step === 1 && (
+            <div className="step-container animate-fade-in">
+              <h1 className="omi-step-heading">Choose Your AI Agent Type</h1>
+              <p className="omi-step-subheading">Select the autonomous agent core tailored to your primary workflow.</p>
+
+              <div className="consumer-cards-grid">
+                {AGENT_TYPES.map(item => {
+                  const Icon = item.icon;
+                  const isSelected = selectedType === item.id;
+
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedType(item.id)}
+                      className={`consumer-card ${isSelected ? "selected" : ""}`}
+                    >
+                      <div className="card-top">
+                        <div className="card-icon-wrapper">
+                          <Icon size={24} />
+                        </div>
+                        <span className="consumer-badge">{item.badge}</span>
+                      </div>
+
+                      <h3 className="card-title">{item.title}</h3>
+                      <p className="card-subtitle">{item.description}</p>
+
+                      <div className="card-select-footer">
+                        {isSelected ? (
+                          <span className="selected-tag"><Check size={14} /> Selected</span>
+                        ) : (
+                          <span className="select-tag">Click to Select</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 2: CONSUMER API KEY & CREDIT PREFERENCE */}
+          {step === 2 && (
+            <div className="step-container animate-fade-in">
+              <h1 className="omi-step-heading">API Key & Execution Preference</h1>
+              <p className="omi-step-subheading">Choose how your AI agent will be powered and authenticated.</p>
+
+              <div className="consumer-cards-grid">
+                {KEY_OPTIONS.map(opt => {
+                  const Icon = opt.icon;
+                  const isSelected = selectedKeyPref === opt.id;
+
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => setSelectedKeyPref(opt.id)}
+                      className={`consumer-card ${isSelected ? "selected" : ""}`}
+                    >
+                      <div className="card-top">
+                        <div className="card-icon-wrapper">
+                          <Icon size={24} />
+                        </div>
+                        <span className="consumer-badge">{opt.badge}</span>
+                      </div>
+
+                      <h3 className="card-title">{opt.title}</h3>
+                      <p className="card-subtitle">{opt.description}</p>
+
+                      <div className="card-select-footer">
+                        {isSelected ? (
+                          <span className="selected-tag"><Check size={14} /> Selected</span>
+                        ) : (
+                          <span className="select-tag">Click to Select</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {selectedKeyPref === "byok" && (
+                <div className="byok-input-container animate-fade-in">
+                  <div className="byok-header">
+                    <ShieldCheck size={16} className="text-emerald-400" />
+                    <span>Enter Your OpenAI API Key</span>
+                  </div>
+                  <input
+                    type="password"
+                    placeholder="sk-proj-..."
+                    value={customKey}
+                    onChange={e => setCustomKey(e.target.value)}
+                    className="byok-input-field"
+                  />
+                  <p className="byok-hint">Encrypted server-side via AES-256-CBC before hitting database storage.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Action Controls */}
+          <div className="omi-step-actions">
+            {step > 1 ? (
+              <button onClick={handleBack} className="omi-back-btn">
+                <ArrowLeft size={16} />
+                <span>Back</span>
+              </button>
+            ) : <div />}
+
+            <button onClick={handleNext} className="omi-next-btn">
+              <ShinyText
+                text={step === 2 ? "Launch Agent Space →" : "Continue →"}
+                speed={3}
+              />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
