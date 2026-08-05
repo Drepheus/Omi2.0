@@ -1,18 +1,17 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getBrowserSupabaseClient } from "@/lib/supabase-browser";
-import { useAuth } from "@/context/auth-context";
+import { signIn, useSession } from "@/lib/auth-client";
 import { useGuestMode } from "@/context/guest-mode-context";
 
 export function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/command-hub';
-  const supabase = useMemo(() => getBrowserSupabaseClient(), []);
-  const { session, loading } = useAuth();
+  const { data: session, isPending } = useSession();
   const { setGuestMode } = useGuestMode();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     if (session) {
@@ -21,27 +20,28 @@ export function LoginPage() {
   }, [router, session, redirectTo]);
 
   const signInWithGoogle = async () => {
-    // Store redirect URL for after OAuth callback
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('authRedirect', redirectTo);
+    setAuthError(null);
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: redirectTo,
+      });
+    } catch (err: any) {
+      console.error("Error signing in with Google:", err);
+      setAuthError(err.message || "Failed to initiate Google sign-in.");
     }
+  };
 
-    if (!supabase) return;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
-        skipBrowserRedirect: false,
-      },
-    });
-
-    if (error) {
-      console.error("Error signing in with Google", error);
-      alert(`Error signing in with Google: ${error.message}`);
+  const signInWithGithub = async () => {
+    setAuthError(null);
+    try {
+      await signIn.social({
+        provider: "github",
+        callbackURL: redirectTo,
+      });
+    } catch (err: any) {
+      console.error("Error signing in with GitHub:", err);
+      setAuthError(err.message || "Failed to initiate GitHub sign-in.");
     }
   };
 
@@ -50,7 +50,7 @@ export function LoginPage() {
     router.push(redirectTo);
   };
 
-  if (loading) {
+  if (isPending) {
     return (
       <div className="login-page">
         <div className="login-container">
@@ -70,8 +70,14 @@ export function LoginPage() {
         <div className="login-card">
           <div className="login-header">
             <h1 className="login-title">Welcome to Omi AI</h1>
-            <p className="login-subtitle">Sign in to start your AI conversation</p>
+            <p className="login-subtitle">Sign in to deploy & execute persistent AI agents</p>
           </div>
+
+          {authError && (
+            <div style={{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '1rem', textAlign: 'center' }}>
+              {authError}
+            </div>
+          )}
 
           <div className="login-buttons">
             <button onClick={signInWithGoogle} className="login-google-btn">
@@ -100,6 +106,13 @@ export function LoginPage() {
                 </g>
               </svg>
               Continue with Google
+            </button>
+
+            <button onClick={signInWithGithub} className="login-google-btn" style={{ background: '#24292e', color: '#ffffff', marginTop: '0.75rem' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px' }}>
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              Continue with GitHub
             </button>
 
             <button onClick={handleGuestMode} className="login-guest-btn">
