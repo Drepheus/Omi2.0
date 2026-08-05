@@ -36,6 +36,7 @@ import {
   MessageSquare,
   Sparkles,
   Layers,
+  LayoutDashboard,
   Settings2,
   X,
   Menu,
@@ -222,6 +223,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   // Dashboard & Deployments State
+  const [mainTab, setMainTab] = useState<'overview' | 'templates'>('overview');
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
@@ -836,44 +838,69 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </button>
         </div>
 
-        <div className="agent-search-container">
-          <span className="agent-search-icon"><Search size={14} /></span>
-          <input
-            type="text"
-            className="agent-search"
-            placeholder="Search agents..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Main Navigation Tabs */}
+        <div className="sidebar-nav-section">
+          <span className="nav-section-title">NAVIGATE</span>
+          <button
+            className={`sidebar-item ${mainTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setMainTab('overview')}
+          >
+            <LayoutDashboard size={18} className="sidebar-icon" />
+            <span className="sidebar-label">Overview / Dashboard</span>
+          </button>
+
+          <button
+            className={`sidebar-item ${mainTab === 'templates' ? 'active' : ''}`}
+            onClick={() => setMainTab('templates')}
+          >
+            <Layers size={18} className="sidebar-icon" />
+            <span className="sidebar-label">Templates & Prebuilt Agents</span>
+          </button>
         </div>
 
-        <nav className="agent-categories">
-          {categories.map(cat => {
-            const isActive = selectedCategory === cat;
-            const meta = categoryMeta[cat];
-            return (
-              <button
-                key={cat}
-                className={`agent-category-btn ${isActive ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(cat)}
-              >
-                {cat !== 'all' && meta && (
-                  <span className="agent-category-icon" style={{ color: meta.color }}>
-                    <meta.icon size={15} />
-                  </span>
-                )}
-                <span className="agent-category-label">
-                  {cat === 'all' ? 'All Skill Templates' : (meta ? meta.label : cat)}
-                </span>
-                <span className="agent-category-count">
-                  {cat === 'all'
-                    ? agentCatalog.length
-                    : agentCatalog.filter(a => a.category === cat).length}
-                </span>
-              </button>
-            );
-          })}
-        </nav>
+        {mainTab === 'templates' && (
+          <>
+            <div className="agent-sidebar-divider" />
+            <div className="agent-search-container">
+              <span className="agent-search-icon"><Search size={14} /></span>
+              <input
+                type="text"
+                className="agent-search"
+                placeholder="Search templates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            <nav className="agent-categories">
+              {categories.map(cat => {
+                const isActive = selectedCategory === cat;
+                const meta = categoryMeta[cat];
+                return (
+                  <button
+                    key={cat}
+                    className={`agent-category-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory(cat)}
+                  >
+                    {cat !== 'all' && meta && (
+                      <span className="agent-category-icon" style={{ color: meta.color }}>
+                        <meta.icon size={15} />
+                      </span>
+                    )}
+                    <span className="agent-category-label">
+                      {cat === 'all' ? 'All Skill Templates' : (meta ? meta.label : cat)}
+                    </span>
+                    <span className="agent-category-count">
+                      {cat === 'all'
+                        ? agentCatalog.length
+                        : agentCatalog.filter(a => a.category === cat).length}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          </>
+        )}
 
         <div className="agent-sidebar-divider" />
 
@@ -909,8 +936,14 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <Menu size={20} />
             </button>
             <div>
-              <h1 className="agent-topbar-title">AI Agent Hub & Templates</h1>
-              <p className="agent-topbar-subtitle">Launch state-of-the-art AI agents and skill packages with a single click.</p>
+              <h1 className="agent-topbar-title">
+                {mainTab === 'overview' ? 'Agent Overview & Studio' : 'Templates & Prebuilt Agents'}
+              </h1>
+              <p className="agent-topbar-subtitle">
+                {mainTab === 'overview'
+                  ? 'Monitor active agent instances, turn speeds, and deploy custom prompt agents.'
+                  : 'Deploy pre-packaged .md skill templates and autonomous tool loops.'}
+              </p>
             </div>
           </div>
           <div className="agent-topbar-right">
@@ -924,243 +957,247 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
         </header>
 
-        {/* Stats Row */}
-        {/* Consumer Stats Row with Glowing Indicator */}
-        <section className="agent-stats">
-          <div className="agent-stat-card">
-            <div
-              className="agent-stat-icon"
-              style={{
-                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.06)',
-                color: runningCount > 0 ? '#10b981' : '#e0e0e0'
-              }}
-            >
-              <Bot size={20} />
-            </div>
-            <div className="agent-stat-info">
-              <span className="agent-stat-value">{runningCount}</span>
-              <span className="agent-stat-label">Active Agents Running</span>
-            </div>
+        {mainTab === 'overview' ? (
+          <>
+            {/* Stats Row */}
+            <section className="agent-stats">
+              <div className="agent-stat-card">
+                <div
+                  className="agent-stat-icon"
+                  style={{
+                    background: runningCount > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.06)',
+                    color: runningCount > 0 ? '#10b981' : '#e0e0e0'
+                  }}
+                >
+                  <Bot size={20} />
+                </div>
+                <div className="agent-stat-info">
+                  <span className="agent-stat-value">{runningCount}</span>
+                  <span className="agent-stat-label">Active Agents Running</span>
+                </div>
 
-            <div className={`agent-status-glowing-indicator ${runningCount > 0 ? 'online' : 'offline'}`}>
-              <span className="glowing-light-dot" />
-              <span>{runningCount > 0 ? 'ACTIVE' : 'IDLE'}</span>
-            </div>
-          </div>
+                <div className={`agent-status-glowing-indicator ${runningCount > 0 ? 'online' : 'offline'}`}>
+                  <span className="glowing-light-dot" />
+                  <span>{runningCount > 0 ? 'ACTIVE' : 'IDLE'}</span>
+                </div>
+              </div>
 
-          <div className="agent-stat-card">
-            <div className="agent-stat-icon">
-              <MessageSquare size={20} />
-            </div>
-            <div className="agent-stat-info">
-              <span className="agent-stat-value">1,280</span>
-              <span className="agent-stat-label">Total Messages Sent</span>
-            </div>
-          </div>
+              <div className="agent-stat-card">
+                <div className="agent-stat-icon">
+                  <MessageSquare size={20} />
+                </div>
+                <div className="agent-stat-info">
+                  <span className="agent-stat-value">1,280</span>
+                  <span className="agent-stat-label">Total Messages Sent</span>
+                </div>
+              </div>
 
-          <div className="agent-stat-card">
-            <div className="agent-stat-icon">
-              <Coins size={20} />
-            </div>
-            <div className="agent-stat-info">
-              <span className="agent-stat-value">{credits}</span>
-              <span className="agent-stat-label">Credits Remaining</span>
-            </div>
-          </div>
+              <div className="agent-stat-card">
+                <div className="agent-stat-icon">
+                  <Coins size={20} />
+                </div>
+                <div className="agent-stat-info">
+                  <span className="agent-stat-value">{credits}</span>
+                  <span className="agent-stat-label">Credits Remaining</span>
+                </div>
+              </div>
 
-          <div className="agent-stat-card">
-            <div className="agent-stat-icon">
-              <Zap size={20} />
-            </div>
-            <div className="agent-stat-info">
-              <span className="agent-stat-value">0.8s</span>
-              <span className="agent-stat-label">Average Turn Speed</span>
-            </div>
-          </div>
-        </section>
+              <div className="agent-stat-card">
+                <div className="agent-stat-icon">
+                  <Zap size={20} />
+                </div>
+                <div className="agent-stat-info">
+                  <span className="agent-stat-value">0.8s</span>
+                  <span className="agent-stat-label">Average Turn Speed</span>
+                </div>
+              </div>
+            </section>
 
-        {/* Deployments & Agent Prompt Creation Hub */}
-        <section className="agent-section">
-          <div className="agent-section-header">
-            <h2 className="agent-section-title">Agent Workspace & Prompt Studio</h2>
-          </div>
+            {/* Deployments & Agent Prompt Creation Hub */}
+            <section className="agent-section">
+              <div className="agent-section-header">
+                <h2 className="agent-section-title">Agent Workspace & Prompt Studio</h2>
+              </div>
 
-          {deployments.length > 0 && (
-            <div className="agent-deployments-grid mb-6">
-              {deployments.map(dep => (
-                <div key={dep.id} className="agent-deployment-card">
-                  <div className="agent-deployment-top">
-                    <div className="agent-deployment-agent">
-                      <span className="agent-deployment-icon-wrapper">
-                        {renderAgentIcon(dep.agentId, "w-6 h-6 text-gray-200")}
-                      </span>
-                      <div>
-                        <span className="agent-deployment-name">{dep.agentName}</span>
-                        <span className="agent-deployment-vm">{dep.vmName}</span>
+              {deployments.length > 0 && (
+                <div className="agent-deployments-grid mb-6">
+                  {deployments.map(dep => (
+                    <div key={dep.id} className="agent-deployment-card">
+                      <div className="agent-deployment-top">
+                        <div className="agent-deployment-agent">
+                          <span className="agent-deployment-icon-wrapper">
+                            {renderAgentIcon(dep.agentId, "w-6 h-6 text-gray-200")}
+                          </span>
+                          <div>
+                            <span className="agent-deployment-name">{dep.agentName}</span>
+                            <span className="agent-deployment-vm">{dep.vmName}</span>
+                          </div>
+                        </div>
+                        <span className={`agent-status-badge ${dep.status}`}>
+                          <span className="agent-status-dot" />
+                          {dep.status}
+                        </span>
+                      </div>
+                      <div className="agent-deployment-details">
+                        <div className="agent-deployment-detail">
+                          <Globe size={14} />
+                          <span>{dep.ipAddress}</span>
+                        </div>
+                        <div className="agent-deployment-detail">
+                          <Clock size={14} />
+                          <span>{dep.uptime}</span>
+                        </div>
+                      </div>
+                      <div className="agent-deployment-actions">
+                        <button className="agent-deployment-action-btn" onClick={() => openPlayground(dep)}>
+                          <MessageSquare size={14} /> Chat & Workspace
+                        </button>
+                        <button className="agent-deployment-action-btn danger" onClick={() => handleStopDeployment(dep.id)}>
+                          <Square size={14} /> Stop
+                        </button>
                       </div>
                     </div>
-                    <span className={`agent-status-badge ${dep.status}`}>
-                      <span className="agent-status-dot" />
-                      {dep.status}
+                  ))}
+                </div>
+              )}
+
+              {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
+              <BorderGlow
+                edgeSensitivity={30}
+                glowColor="0 0 90"
+                backgroundColor="#0f0f14"
+                borderRadius={24}
+                glowRadius={35}
+                glowIntensity={1.2}
+                coneSpread={25}
+                animated={true}
+                autoRevolve={true}
+                colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
+                className="w-full mb-8"
+              >
+                <div className="studio-inner-card">
+                  <div className="studio-header">
+                    <div>
+                      <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
+                      <p className="studio-subtitle">Type your prompt or select a ready starter below to deploy instantly.</p>
+                    </div>
+                  </div>
+
+                  {/* Custom Prompt Box (matching user's attached design) */}
+                  <div className="prompt-input-box">
+                    <textarea
+                      value={customPrompt}
+                      onChange={e => setCustomPrompt(e.target.value)}
+                      placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
+                      className="prompt-textarea"
+                      rows={3}
+                    />
+                    <div className="prompt-box-footer">
+                      <div className="studio-model-selector">
+                        {agentCatalog.slice(0, 4).map(model => (
+                          <button
+                            key={model.id}
+                            onClick={() => setSelectedPromptModel(model.id)}
+                            className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
+                          >
+                            <span>{model.framework}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
+                        <Sparkles size={16} />
+                        <span>Launch Agent</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Sleek Pill Starters (matching attached image) */}
+                  <div className="prompt-starters-pills-row">
+                    {promptStarters.map(starter => {
+                      const Icon = starter.icon;
+                      return (
+                        <button
+                          key={starter.id}
+                          onClick={() => {
+                            setCustomPrompt(starter.prompt);
+                            setSelectedPromptModel(starter.modelId);
+                          }}
+                          className="omi-starter-pill"
+                        >
+                          <Icon size={14} className="starter-pill-icon" />
+                          <span>{starter.title}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </BorderGlow>
+            </section>
+          </>
+        ) : (
+          /* Available Skill Templates & Tools Section */
+          <section className="agent-section">
+            <div className="agent-section-header">
+              <div>
+                <h2 className="agent-section-title">Trending Skill Templates & Tools</h2>
+                <p className="agent-section-subtitle">
+                  Deploy pre-packaged <code>.md</code> skills and autonomous tool loops powered by Claude 5, OpenClaw 2.0, Hermes 4, & DeepSeek V4.
+                </p>
+              </div>
+            </div>
+
+            <div className="agent-catalog">
+              {filteredAgents.map(agent => (
+                <div
+                  key={agent.id}
+                  className={`agent-catalog-card ${selectedAgent?.id === agent.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedAgent(agent)}
+                >
+                  <div className="agent-catalog-card-header">
+                    <div className="agent-skill-file-badge">
+                      <FileText size={13} className="text-sky-400" />
+                      <span>{agent.skillFile}</span>
+                    </div>
+                    <span className="agent-framework-badge">{agent.framework}</span>
+                  </div>
+
+                  <div className="agent-catalog-card-title-row">
+                    <span className="agent-catalog-icon-wrapper">
+                      {renderAgentIcon(agent.id, "w-6 h-6 text-gray-100")}
                     </span>
-                  </div>
-                  <div className="agent-deployment-details">
-                    <div className="agent-deployment-detail">
-                      <Globe size={14} />
-                      <span>{dep.ipAddress}</span>
-                    </div>
-                    <div className="agent-deployment-detail">
-                      <Clock size={14} />
-                      <span>{dep.uptime}</span>
+                    <div>
+                      <h3 className="agent-catalog-name">{agent.name}</h3>
+                      <span className="agent-runs-count">{agent.runsCount}</span>
                     </div>
                   </div>
-                  <div className="agent-deployment-actions">
-                    <button className="agent-deployment-action-btn" onClick={() => openPlayground(dep)}>
-                      <MessageSquare size={14} /> Chat & Workspace
-                    </button>
-                    <button className="agent-deployment-action-btn danger" onClick={() => handleStopDeployment(dep.id)}>
-                      <Square size={14} /> Stop
+
+                  <p className="agent-catalog-desc">{agent.description}</p>
+
+                  <div className="agent-catalog-tags">
+                    {agent.tags.map(tag => (
+                      <span key={tag} className="agent-tag">{tag}</span>
+                    ))}
+                  </div>
+
+                  <div className="agent-catalog-card-footer">
+                    <span className="agent-catalog-type">{agent.type}</span>
+                    <button
+                      className="agent-deploy-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTriggerDeployment(agent);
+                      }}
+                    >
+                      <Play size={12} fill="currentColor" />
+                      <span>Deploy Skill Template</span>
                     </button>
                   </div>
                 </div>
               ))}
             </div>
-          )}
-
-          {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
-          <BorderGlow
-            edgeSensitivity={30}
-            glowColor="0 0 90"
-            backgroundColor="#0f0f14"
-            borderRadius={24}
-            glowRadius={35}
-            glowIntensity={1.2}
-            coneSpread={25}
-            animated={true}
-            colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
-            className="w-full mb-8"
-          >
-            <div className="studio-inner-card">
-              <div className="studio-header">
-                <div>
-                  <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
-                  <p className="studio-subtitle">Type your prompt or select a ready starter below to deploy instantly.</p>
-                </div>
-              </div>
-
-              {/* Custom Prompt Box (matching user's attached design) */}
-              <div className="prompt-input-box">
-                <textarea
-                  value={customPrompt}
-                  onChange={e => setCustomPrompt(e.target.value)}
-                  placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
-                  className="prompt-textarea"
-                  rows={3}
-                />
-                <div className="prompt-box-footer">
-                  <div className="studio-model-selector">
-                    {agentCatalog.slice(0, 4).map(model => (
-                      <button
-                        key={model.id}
-                        onClick={() => setSelectedPromptModel(model.id)}
-                        className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
-                      >
-                        <span>{model.framework}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
-                    <Sparkles size={16} />
-                    <span>Launch Agent</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Sleek Pill Starters (matching attached image) */}
-              <div className="prompt-starters-pills-row">
-                {promptStarters.map(starter => {
-                  const Icon = starter.icon;
-                  return (
-                    <button
-                      key={starter.id}
-                      onClick={() => {
-                        setCustomPrompt(starter.prompt);
-                        setSelectedPromptModel(starter.modelId);
-                      }}
-                      className="omi-starter-pill"
-                    >
-                      <Icon size={14} className="starter-pill-icon" />
-                      <span>{starter.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </BorderGlow>
-        </section>
-
-        {/* Available Skill Templates & Tools Section */}
-        <section className="agent-section">
-          <div className="agent-section-header">
-            <div>
-              <h2 className="agent-section-title">Trending Skill Templates & Tools</h2>
-              <p className="agent-section-subtitle">
-                Deploy pre-packaged <code>.md</code> skills and autonomous tool loops powered by Claude 5, OpenClaw 2.0, Hermes 4, & DeepSeek V4.
-              </p>
-            </div>
-          </div>
-
-          <div className="agent-catalog">
-            {filteredAgents.map(agent => (
-              <div
-                key={agent.id}
-                className={`agent-catalog-card ${selectedAgent?.id === agent.id ? 'selected' : ''}`}
-                onClick={() => setSelectedAgent(agent)}
-              >
-                <div className="agent-catalog-card-header">
-                  <div className="agent-skill-file-badge">
-                    <FileText size={13} className="text-sky-400" />
-                    <span>{agent.skillFile}</span>
-                  </div>
-                  <span className="agent-framework-badge">{agent.framework}</span>
-                </div>
-
-                <div className="agent-catalog-card-title-row">
-                  <span className="agent-catalog-icon-wrapper">
-                    {renderAgentIcon(agent.id, "w-6 h-6 text-gray-100")}
-                  </span>
-                  <div>
-                    <h3 className="agent-catalog-name">{agent.name}</h3>
-                    <span className="agent-runs-count">{agent.runsCount}</span>
-                  </div>
-                </div>
-
-                <p className="agent-catalog-desc">{agent.description}</p>
-
-                <div className="agent-catalog-tags">
-                  {agent.tags.map(tag => (
-                    <span key={tag} className="agent-tag">{tag}</span>
-                  ))}
-                </div>
-
-                <div className="agent-catalog-card-footer">
-                  <span className="agent-catalog-type">{agent.type}</span>
-                  <button
-                    className="agent-deploy-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleTriggerDeployment(agent);
-                    }}
-                  >
-                    <Play size={12} fill="currentColor" />
-                    <span>Deploy Skill Template</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       {/* Deploy Modal */}

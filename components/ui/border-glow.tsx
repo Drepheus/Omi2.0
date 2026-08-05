@@ -14,6 +14,7 @@ interface BorderGlowProps {
   glowIntensity?: number;
   coneSpread?: number;
   animated?: boolean;
+  autoRevolve?: boolean;
   colors?: string[];
   fillOpacity?: number;
 }
@@ -86,10 +87,12 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
   glowIntensity = 1.2,
   coneSpread = 25,
   animated = true,
+  autoRevolve = true,
   colors = ['#ffffff', '#e0e0e0', '#a8a8a8'],
   fillOpacity = 0.5,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const isHoveredRef = useRef<boolean>(false);
 
   const getCenterOfElement = useCallback((el: HTMLElement) => {
     const { width, height } = el.getBoundingClientRect();
@@ -121,6 +124,7 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
+    isHoveredRef.current = true;
 
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -133,8 +137,34 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
     card.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
   }, [getEdgeProximity, getCursorAngle]);
 
+  const handlePointerLeave = useCallback(() => {
+    isHoveredRef.current = false;
+  }, []);
+
+  // Continuous auto-revolve loop
   useEffect(() => {
-    if (!animated || !cardRef.current) return;
+    if (!autoRevolve || !cardRef.current) return;
+    const card = cardRef.current;
+    card.classList.add('sweep-active');
+
+    let animationFrameId: number;
+    let currentAngle = 0;
+
+    const revolveStep = () => {
+      if (!isHoveredRef.current && card) {
+        currentAngle = (currentAngle + 0.75) % 360;
+        card.style.setProperty('--cursor-angle', `${currentAngle.toFixed(3)}deg`);
+        card.style.setProperty('--edge-proximity', '100');
+      }
+      animationFrameId = requestAnimationFrame(revolveStep);
+    };
+
+    animationFrameId = requestAnimationFrame(revolveStep);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [autoRevolve]);
+
+  useEffect(() => {
+    if (!animated || autoRevolve || !cardRef.current) return;
     const card = cardRef.current;
     const angleStart = 110;
     const angleEnd = 465;
@@ -152,7 +182,7 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
       onUpdate: v => card.style.setProperty('--edge-proximity', `${v}`),
       onEnd: () => card.classList.remove('sweep-active'),
     });
-  }, [animated]);
+  }, [animated, autoRevolve]);
 
   const glowVars = buildGlowVars(glowColor, glowIntensity);
 
@@ -160,6 +190,7 @@ export const BorderGlow: React.FC<BorderGlowProps> = ({
     <div
       ref={cardRef}
       onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
       className={`border-glow-card ${className}`}
       style={{
         '--card-bg': backgroundColor,
