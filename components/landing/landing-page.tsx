@@ -22,9 +22,9 @@ export function LandingPage() {
   const handleStartClick = () => {
     setIsTransitioning(true);
     setTimeout(() => {
-      // Always go to Command Hub first, auth check happens there on interaction
-      router.push("/command-hub");
-    }, 800);
+      // Transition smoothly into Onboarding Flow
+      router.push("/onboarding");
+    }, 600);
   };
 
   return (

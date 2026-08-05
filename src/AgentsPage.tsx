@@ -167,7 +167,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   
   const { isGuestMode } = useGuestMode();
   const { data: session } = useSession();
-  const isAuthenticated = Boolean(session) && !isGuestMode;
+  // Guest restrictions temporarily disabled for testing in production
+  const isAuthenticated = true;
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleTriggerDeployment = (agent: Agent) => {
