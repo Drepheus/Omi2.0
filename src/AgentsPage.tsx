@@ -34,6 +34,7 @@ import {
   Code,
   Brain,
   MessageSquare,
+  Sparkles,
   Layers,
   Settings2,
   X,
@@ -45,6 +46,7 @@ import {
 } from 'lucide-react';
 
 import { ThinkingOrb, OrbState } from 'thinking-orbs';
+import { ShinyText } from '@/components/typography/shiny-text';
 
 import './AgentsPage.css';
 
@@ -825,8 +827,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       <aside className={`agent-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="agent-sidebar-header">
           <div className="agent-logo" onClick={onClose}>
-            <span className="agent-logo-lucide"><Bot size={22} className="text-violet-400" /></span>
-            <span className="agent-logo-text">OpenClaw Hub</span>
+            <span className="agent-logo-lucide"><Sparkles size={20} className="text-white" /></span>
+            <span className="agent-logo-text">OMI AI</span>
           </div>
           <button className="agent-sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}>
             <X size={18} />
@@ -916,7 +918,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               handleTriggerDeployment(agent);
             }}>
               <Plus size={16} />
-              <span>New Deployment</span>
+              <ShinyText text="New Deployment" speed={3} />
             </button>
           </div>
         </header>
@@ -1059,7 +1061,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 <span className="prompt-hint">Powered by OpenClaw Stateless Engine</span>
                 <button onClick={handleLaunchCustomPrompt} className="launch-custom-agent-btn">
                   <Play size={14} />
-                  <span>Launch Custom Agent</span>
+                  <ShinyText text="Launch Custom Agent →" speed={3} />
                 </button>
               </div>
             </div>
@@ -1150,7 +1152,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     }}
                   >
                     <Play size={12} />
-                    Deploy Skill Template
+                    <ShinyText text="Deploy Skill Template" speed={3} />
                   </button>
                 </div>
               </div>
