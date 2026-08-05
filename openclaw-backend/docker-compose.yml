@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  openclaw-worker:
+    build: .
+    container_name: openclaw-worker
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
