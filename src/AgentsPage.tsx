@@ -930,8 +930,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             <div
               className="agent-stat-icon"
               style={{
-                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                color: runningCount > 0 ? '#34d399' : '#f87171'
+                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.06)',
+                color: runningCount > 0 ? '#10b981' : '#e0e0e0'
               }}
             >
               <Bot size={20} />
@@ -948,7 +948,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#c084fc' }}>
+            <div className="agent-stat-icon">
               <MessageSquare size={20} />
             </div>
             <div className="agent-stat-info">
@@ -958,7 +958,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24' }}>
+            <div className="agent-stat-icon">
               <Coins size={20} />
             </div>
             <div className="agent-stat-info">
@@ -968,7 +968,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8' }}>
+            <div className="agent-stat-icon">
               <Zap size={20} />
             </div>
             <div className="agent-stat-info">
@@ -1026,71 +1026,62 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
           )}
 
-          {/* Interactive Agent Creation Studio */}
-          <div className="agent-prompt-studio-card">
-            <div className="studio-header">
-              <div>
-                <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
-                <p className="studio-subtitle">Type your custom prompt or select a ready starter below to deploy instantly.</p>
+          {/* Interactive Agent Creation Studio with Animated Omi Silver Neon Light Border */}
+          <div className="agent-prompt-studio-card omi-neon-border-wrapper">
+            <div className="omi-neon-beam" />
+            <div className="studio-inner-card">
+              <div className="studio-header">
+                <div>
+                  <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
+                  <p className="studio-subtitle">Type your prompt or select a ready starter below to deploy instantly.</p>
+                </div>
               </div>
 
-              {/* Model Selector Tabs */}
-              <div className="studio-model-selector">
-                {agentCatalog.slice(0, 4).map(model => (
-                  <button
-                    key={model.id}
-                    onClick={() => setSelectedPromptModel(model.id)}
-                    className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
-                  >
-                    <span>{model.framework}</span>
+              {/* Custom Prompt Box (matching user's attached design) */}
+              <div className="prompt-input-box">
+                <textarea
+                  value={customPrompt}
+                  onChange={e => setCustomPrompt(e.target.value)}
+                  placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
+                  className="prompt-textarea"
+                  rows={3}
+                />
+                <div className="prompt-box-footer">
+                  <div className="studio-model-selector">
+                    {agentCatalog.slice(0, 4).map(model => (
+                      <button
+                        key={model.id}
+                        onClick={() => setSelectedPromptModel(model.id)}
+                        className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
+                      >
+                        <span>{model.framework}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
+                    <Sparkles size={16} />
+                    <span>Launch Agent</span>
                   </button>
-                ))}
+                </div>
               </div>
-            </div>
 
-            {/* Custom Prompt Input Box */}
-            <div className="prompt-input-wrapper">
-              <textarea
-                value={customPrompt}
-                onChange={e => setCustomPrompt(e.target.value)}
-                placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
-                className="prompt-textarea"
-                rows={3}
-              />
-              <div className="prompt-action-bar">
-                <span className="prompt-hint">Powered by OpenClaw Stateless Engine</span>
-                <button onClick={handleLaunchCustomPrompt} className="launch-custom-agent-btn">
-                  <Play size={14} fill="currentColor" />
-                  <span>Launch Custom Agent →</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Ready Prompt Starter Cards */}
-            <div className="prompt-starters-section">
-              <h4 className="starters-heading">Ready-to-Use Agent Prompt Starters:</h4>
-              <div className="prompt-starters-grid">
+              {/* Sleek Pill Starters (matching attached image) */}
+              <div className="prompt-starters-pills-row">
                 {promptStarters.map(starter => {
                   const Icon = starter.icon;
                   return (
-                    <div
+                    <button
                       key={starter.id}
                       onClick={() => {
                         setCustomPrompt(starter.prompt);
                         setSelectedPromptModel(starter.modelId);
                       }}
-                      className="prompt-starter-card"
+                      className="omi-starter-pill"
                     >
-                      <div className="starter-card-top">
-                        <div className="starter-icon-wrapper">
-                          <Icon size={16} />
-                        </div>
-                        <span className="starter-badge">{starter.badge}</span>
-                      </div>
-                      <h4 className="starter-title">{starter.title}</h4>
-                      <p className="starter-prompt-preview">"{starter.prompt}"</p>
-                      <span className="starter-click-tag">Click to pre-fill prompt →</span>
-                    </div>
+                      <Icon size={14} className="starter-pill-icon" />
+                      <span>{starter.title}</span>
+                    </button>
                   );
                 })}
               </div>
