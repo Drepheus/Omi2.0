@@ -333,9 +333,13 @@
 }
 
 .buffer-orb-stage {
-  margin-bottom: 2rem;
-  filter: drop-shadow(0 0 35px rgba(99, 102, 241, 0.4));
-  transform: scale(1.1);
+  margin-top: 2rem;
+  margin-bottom: 4.5rem;
+  filter: drop-shadow(0 0 55px rgba(255, 255, 255, 0.3));
+  transform: scale(3.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .buffer-text-container {
@@ -374,15 +378,21 @@
 }
 
 .buffer-heading {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 300;
   color: #ffffff;
-  max-width: 520px;
+  max-width: 560px;
   line-height: 1.4;
   min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.65rem;
+}
+
+.buffer-status-icon {
+  color: #e0e0e0;
+  flex-shrink: 0;
 }
 
 .buffer-subtext {

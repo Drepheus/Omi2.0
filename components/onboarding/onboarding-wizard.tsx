@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Orb } from "@/components/visuals/orb";
 import { ShinyText } from "@/components/typography/shiny-text";
@@ -14,7 +14,9 @@ import {
   ArrowLeft,
   Check,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Cpu,
+  Server
 } from "lucide-react";
 import "./onboarding-wizard.css";
 
@@ -74,9 +76,9 @@ export function OnboardingWizard() {
   const [orbState, setOrbState] = useState<OrbState>("solving");
 
   const bufferStatuses = [
-    "⚡ Provisioning isolated OpenClaw microservice container...",
-    "🧠 Loading reasoning core & mounting secure workspace environment...",
-    "✨ Agent core ready! Launching your workspace dashboard..."
+    { text: "Provisioning isolated OpenClaw microservice container...", icon: Server },
+    { text: "Loading reasoning core & mounting workspace environment...", icon: Cpu },
+    { text: "Agent core ready! Launching your workspace dashboard...", icon: Sparkles }
   ];
 
   const handleNext = () => {
@@ -125,6 +127,8 @@ export function OnboardingWizard() {
     }, 5000);
   };
 
+  const CurrentStatusIcon = bufferStatuses[bufferStatusIndex].icon;
+
   return (
     <div className="omi-onboarding-wrapper">
       {/* Visual Ambient Background */}
@@ -142,10 +146,15 @@ export function OnboardingWizard() {
           <div className="buffer-text-container">
             <div className="buffer-pulse-pill">
               <span className="buffer-pulse-dot" />
-              <span>SETUP IN PROGRESS</span>
+              <span>INITIALIZING WORKSPACE ENGINE</span>
             </div>
-            <h2 className="buffer-heading">{bufferStatuses[bufferStatusIndex]}</h2>
-            <p className="buffer-subtext">Setting up your Hetzner microservice node (5.78.197.8:8080)</p>
+
+            <h2 className="buffer-heading">
+              <CurrentStatusIcon size={20} className="buffer-status-icon" />
+              <span>{bufferStatuses[bufferStatusIndex].text}</span>
+            </h2>
+
+            <p className="buffer-subtext">Hetzner Worker Node (5.78.197.8:8080)</p>
           </div>
         </div>
       ) : (
