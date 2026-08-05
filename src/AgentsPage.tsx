@@ -50,12 +50,16 @@ import './AgentsPage.css';
 interface Agent {
   id: string;
   name: string;
-  icon: string; // 'openclaw', 'hermes', 'agentzero', 'researcher', 'coder'
+  skillFile: string;
+  framework: string;
+  icon: string;
   description: string;
   type: string;
   status: 'idle' | 'running' | 'stopped' | 'error';
   category: string;
   tags: string[];
+  runsCount: string;
+  isTrending?: boolean;
 }
 
 interface Deployment {
@@ -81,44 +85,86 @@ interface Message {
 
 const agentCatalog: Agent[] = [
   {
-    id: 'openclaw',
-    name: 'OpenClaw',
-    icon: 'openclaw',
-    description: 'Autonomous persistent worker agent with state synchronization and custom tool execution',
-    type: 'Autonomous',
-    status: 'idle',
-    category: 'autonomous',
-    tags: ['scraping', 'data', 'automation', 'openclaw']
-  },
-  {
-    id: 'agentzero',
-    name: 'AgentZero',
-    icon: 'agentzero',
-    description: 'General purpose autonomous agent with tool-use and reasoning capabilities',
-    type: 'Autonomous',
-    status: 'idle',
-    category: 'autonomous',
-    tags: ['reasoning', 'tools', 'multi-modal']
-  },
-  {
-    id: 'researcher',
-    name: 'Deep Researcher',
-    icon: 'researcher',
-    description: 'Autonomous research agent that performs deep web research and synthesis',
-    type: 'Specialized',
-    status: 'idle',
-    category: 'specialized',
-    tags: ['research', 'search', 'analysis']
-  },
-  {
-    id: 'coder',
-    name: 'DevAgent',
+    id: 'claude-code',
+    name: 'Claude Code CLI Engineer',
+    skillFile: 'claude-code-cli.md',
+    framework: 'Claude 3.7 Sonnet',
     icon: 'coder',
-    description: 'AI coding agent for automated code generation, review, and refactoring',
-    type: 'Specialized',
+    description: 'Terminal-native autonomous software engineer for repo refactoring, git diffs, and automated bug fixing loops.',
+    type: 'Code & Dev',
     status: 'idle',
-    category: 'specialized',
-    tags: ['code', 'review', 'development']
+    category: 'code-dev',
+    tags: ['claude-code.md', 'terminal-exec', 'git-ops', 'refactor'],
+    runsCount: '18.4k runs',
+    isTrending: true
+  },
+  {
+    id: 'openclaw',
+    name: 'OpenClaw Web Scraper & Intelligence',
+    skillFile: 'openclaw-web-scraper.md',
+    framework: 'OpenClaw Engine',
+    icon: 'openclaw',
+    description: 'Stateful containerized web scraper & crawler for headless page parsing and multi-source research synthesis.',
+    type: 'Web & Scraping',
+    status: 'idle',
+    category: 'web-scraping',
+    tags: ['openclaw-sdk.md', 'playwright.md', 'web-search', 'json-extract'],
+    runsCount: '14.2k runs',
+    isTrending: true
+  },
+  {
+    id: 'hermes-3',
+    name: 'Hermes 3 Deep Reasoning Core',
+    skillFile: 'hermes-3-reasoning.md',
+    framework: 'Nous Hermes 3',
+    icon: 'hermes',
+    description: 'Multi-turn chain-of-thought solving, complex function calling, and structured decision tree verification.',
+    type: 'Reasoning',
+    status: 'idle',
+    category: 'reasoning',
+    tags: ['hermes-3.md', 'reasoning.md', 'function-calling', 'logic-verify'],
+    runsCount: '11.8k runs',
+    isTrending: true
+  },
+  {
+    id: 'deepseek-r1',
+    name: 'DeepSeek R1 Thought Analyst',
+    skillFile: 'deepseek-r1-cot.md',
+    framework: 'DeepSeek R1 Core',
+    icon: 'researcher',
+    description: 'Step-by-step mathematical reasoning, statistical synthesis, and full chain-of-thought trace outputs.',
+    type: 'Reasoning',
+    status: 'idle',
+    category: 'reasoning',
+    tags: ['deepseek-r1.md', 'thought-trace.md', 'math-solving', 'analytics'],
+    runsCount: '9.6k runs',
+    isTrending: true
+  },
+  {
+    id: 'browser-use',
+    name: 'Browser-Use Stealth Automator',
+    skillFile: 'browser-use-stealth.md',
+    framework: 'Playwright Stealth',
+    icon: 'agentzero',
+    description: 'Automated web session navigation, form submissions, authenticated workflow tasks, and visual UI checks.',
+    type: 'Web & Scraping',
+    status: 'idle',
+    category: 'web-scraping',
+    tags: ['browser-use.md', 'playwright-stealth.md', 'ui-automation'],
+    runsCount: '7.9k runs'
+  },
+  {
+    id: 'alloydb-postgres',
+    name: 'PostgreSQL & AlloyDB Data Agent',
+    skillFile: 'alloydb-postgres-data.md',
+    framework: 'PostgreSQL / AlloyDB',
+    icon: 'agentzero',
+    description: 'Schema exploration, automated SQL query generation, table metrics auditing, and Drizzle ORM pipeline ops.',
+    type: 'Data & SQL',
+    status: 'idle',
+    category: 'data-sql',
+    tags: ['alloydb-data.md', 'postgres-admin.md', 'sql-gen', 'drizzle'],
+    runsCount: '6.3k runs'
   }
 ];
 
@@ -128,21 +174,26 @@ const renderAgentIcon = (id: string, className = "w-5 h-5") => {
   switch (id) {
     case 'openclaw':
       return <Globe className={className} />;
-    case 'agentzero':
-      return <Bot className={className} />;
-    case 'researcher':
-      return <Search className={className} />;
-    case 'coder':
+    case 'claude-code':
       return <Code className={className} />;
+    case 'hermes-3':
+      return <Bot className={className} />;
+    case 'deepseek-r1':
+      return <Activity className={className} />;
+    case 'browser-use':
+      return <Search className={className} />;
+    case 'alloydb-postgres':
+      return <Database className={className} />;
     default:
-      return <Cpu className={className} />;
+      return <Bot className={className} />;
   }
 };
 
-const categoryMeta: Record<string, { icon: string; color: string }> = {
-  autonomous: { icon: '🤖', color: '#818cf8' },
-  specialized: { icon: '⚙️', color: '#60a5fa' },
-  premium: { icon: '⭐', color: '#fbbf24' }
+const categoryMeta: Record<string, { label: string; icon: string; color: string }> = {
+  'code-dev': { label: 'Code & Dev', icon: '💻', color: '#60a5fa' },
+  'web-scraping': { label: 'Web & Scraping', icon: '🌐', color: '#34d399' },
+  'reasoning': { label: 'Deep Reasoning', icon: '🧠', color: '#a78bfa' },
+  'data-sql': { label: 'Data & SQL', icon: '📊', color: '#f59e0b' }
 };
 
 export default function AgentsPage({ onClose }: { onClose?: () => void }) {
@@ -936,10 +987,15 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           )}
         </section>
 
-        {/* Available Agents Section */}
+        {/* Available Skill Templates & Tools Section */}
         <section className="agent-section">
           <div className="agent-section-header">
-            <h2 className="agent-section-title">Available Agents</h2>
+            <div>
+              <h2 className="agent-section-title">Trending Skill Templates & Tools</h2>
+              <p className="agent-section-subtitle">
+                Deploy pre-packaged <code>.md</code> skills and autonomous tool loops inspired by Claude Code, OpenClaw, Hermes 3, & DeepSeek R1.
+              </p>
+            </div>
           </div>
 
           <div className="agent-catalog">
@@ -950,18 +1006,31 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 onClick={() => setSelectedAgent(agent)}
               >
                 <div className="agent-catalog-card-header">
-                  <span className="agent-catalog-icon-wrapper">
-                    {renderAgentIcon(agent.id, "w-8 h-8 text-gray-100")}
-                  </span>
-                  <span className={`agent-status-indicator running`} />
+                  <div className="agent-skill-file-badge">
+                    <FileText size={13} className="text-sky-400" />
+                    <span>{agent.skillFile}</span>
+                  </div>
+                  <span className="agent-framework-badge">{agent.framework}</span>
                 </div>
-                <h3 className="agent-catalog-name">{agent.name}</h3>
+
+                <div className="agent-catalog-card-title-row">
+                  <span className="agent-catalog-icon-wrapper">
+                    {renderAgentIcon(agent.id, "w-6 h-6 text-gray-100")}
+                  </span>
+                  <div>
+                    <h3 className="agent-catalog-name">{agent.name}</h3>
+                    <span className="agent-runs-count">{agent.runsCount}</span>
+                  </div>
+                </div>
+
                 <p className="agent-catalog-desc">{agent.description}</p>
+
                 <div className="agent-catalog-tags">
                   {agent.tags.map(tag => (
                     <span key={tag} className="agent-tag">{tag}</span>
                   ))}
                 </div>
+
                 <div className="agent-catalog-card-footer">
                   <span className="agent-catalog-type">{agent.type}</span>
                   <button
@@ -972,7 +1041,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     }}
                   >
                     <Play size={12} />
-                    Deploy
+                    Deploy Skill Template
                   </button>
                 </div>
               </div>
