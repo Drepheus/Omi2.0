@@ -1014,13 +1014,6 @@
   border-color: #ffffff;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.agent-deploy-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
-}
 
 /* Modals */
 .agent-modal-overlay {
