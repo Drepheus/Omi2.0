@@ -37,6 +37,12 @@ import {
   Sparkles,
   Layers,
   LayoutDashboard,
+  PlusCircle,
+  TrendingUp,
+  Download,
+  ExternalLink,
+  FolderCheck,
+  Flame,
   Settings2,
   X,
   Menu,
@@ -838,6 +844,18 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </button>
         </div>
 
+        {/* Prominent Sidebar CTA for Create Agent */}
+        <div className="sidebar-cta-wrapper">
+          <button
+            className={`sidebar-create-cta ${mainTab === 'create' ? 'active' : ''}`}
+            onClick={() => setMainTab('create')}
+          >
+            <PlusCircle size={17} />
+            <span>Create Custom Agent</span>
+            <Sparkles size={14} className="ml-auto text-amber-300 opacity-80" />
+          </button>
+        </div>
+
         {/* Main Navigation Tabs */}
         <div className="sidebar-nav-section">
           <span className="nav-section-title">NAVIGATE</span>
@@ -846,7 +864,15 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             onClick={() => setMainTab('overview')}
           >
             <LayoutDashboard size={18} className="sidebar-icon" />
-            <span className="sidebar-label">Overview / Dashboard</span>
+            <span className="sidebar-label">Overview & Dashboard</span>
+          </button>
+
+          <button
+            className={`sidebar-item ${mainTab === 'create' ? 'active' : ''}`}
+            onClick={() => setMainTab('create')}
+          >
+            <Bot size={18} className="sidebar-icon" />
+            <span className="sidebar-label">Create Agent Studio</span>
           </button>
 
           <button
@@ -854,7 +880,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             onClick={() => setMainTab('templates')}
           >
             <Layers size={18} className="sidebar-icon" />
-            <span className="sidebar-label">Templates & Prebuilt Agents</span>
+            <span className="sidebar-label">Templates & Prebuilt</span>
           </button>
         </div>
 
@@ -937,29 +963,28 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </button>
             <div>
               <h1 className="agent-topbar-title">
-                {mainTab === 'overview' ? 'Agent Overview & Studio' : 'Templates & Prebuilt Agents'}
+                {mainTab === 'overview' && 'Agent Command & Analytics Hub'}
+                {mainTab === 'create' && 'Create Custom AI Agent Studio'}
+                {mainTab === 'templates' && 'Templates & Prebuilt Agents'}
               </h1>
               <p className="agent-topbar-subtitle">
-                {mainTab === 'overview'
-                  ? 'Monitor active agent instances, turn speeds, and deploy custom prompt agents.'
-                  : 'Deploy pre-packaged .md skill templates and autonomous tool loops.'}
+                {mainTab === 'overview' && 'Central command center for active agent execution, compute metrics, activity trends, & output files.'}
+                {mainTab === 'create' && 'Type custom prompts or pick pre-engineered starters to deploy state-of-the-art AI agents.'}
+                {mainTab === 'templates' && 'Deploy pre-packaged .md skill templates and autonomous tool loops.'}
               </p>
             </div>
           </div>
           <div className="agent-topbar-right">
-            <button className="agent-btn agent-btn-primary" onClick={() => {
-              const agent = agentCatalog.find(a => a.id === 'openclaw') || agentCatalog[0];
-              handleTriggerDeployment(agent);
-            }}>
-              <Plus size={16} />
-              <span>New Deployment</span>
+            <button className="agent-btn agent-btn-primary" onClick={() => setMainTab('create')}>
+              <PlusCircle size={16} />
+              <span>Create Agent</span>
             </button>
           </div>
         </header>
 
-        {mainTab === 'overview' ? (
-          <>
-            {/* Stats Row */}
+        {mainTab === 'overview' && (
+          <div className="overview-hub-space space-y-8">
+            {/* Top Consumer Metrics Grid */}
             <section className="agent-stats">
               <div className="agent-stat-card">
                 <div
@@ -1013,14 +1038,167 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               </div>
             </section>
 
-            {/* Deployments & Agent Prompt Creation Hub */}
-            <section className="agent-section">
-              <div className="agent-section-header">
-                <h2 className="agent-section-title">Agent Workspace & Prompt Studio</h2>
+            {/* Compute Highlights & Agent Analytics */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="analytics-card col-span-1 lg:col-span-2">
+                <div className="card-title-row">
+                  <div className="flex items-center gap-2">
+                    <Activity size={18} className="text-emerald-400" />
+                    <h3 className="card-heading">Compute & Token Activity Trend</h3>
+                  </div>
+                  <span className="card-badge">Last 7 Days</span>
+                </div>
+
+                {/* SVG Activity Graph Bar Visualization */}
+                <div className="activity-chart-container mt-4">
+                  <div className="chart-bars-row flex items-end justify-between h-40 pt-6 px-4">
+                    {[
+                      { day: 'Mon', val: 45, runs: 12, tokens: '34k' },
+                      { day: 'Tue', val: 70, runs: 28, tokens: '89k' },
+                      { day: 'Wed', val: 60, runs: 19, tokens: '62k' },
+                      { day: 'Thu', val: 95, runs: 42, tokens: '145k' },
+                      { day: 'Fri', val: 80, runs: 34, tokens: '110k' },
+                      { day: 'Sat', val: 35, runs: 8, tokens: '24k' },
+                      { day: 'Sun', val: 50, runs: 15, tokens: '48k' },
+                    ].map(bar => (
+                      <div key={bar.day} className="chart-bar-group flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+                        <span className="bar-tooltip opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-white/20 text-xs px-2 py-1 rounded shadow-lg">
+                          {bar.runs} runs ({bar.tokens})
+                        </span>
+                        <div className="bar-track w-full max-w-[28px] bg-white/5 rounded-t-md relative overflow-hidden h-28 flex items-end">
+                          <div
+                            className="bar-fill w-full bg-gradient-to-t from-gray-400 via-gray-200 to-white transition-all duration-500 rounded-t-md group-hover:brightness-125"
+                            style={{ height: `${bar.val}%` }}
+                          />
+                        </div>
+                        <span className="bar-label text-xs text-gray-400 font-medium">{bar.day}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              {deployments.length > 0 && (
-                <div className="agent-deployments-grid mb-6">
+              {/* Resource Insights & Compute Usage */}
+              <div className="analytics-card">
+                <div className="card-title-row">
+                  <div className="flex items-center gap-2">
+                    <Flame size={18} className="text-amber-400" />
+                    <h3 className="card-heading">Top Compute Metrics</h3>
+                  </div>
+                </div>
+                <div className="space-y-4 mt-4">
+                  <div className="metric-box">
+                    <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                      <span>Most Used Agent</span>
+                      <span className="text-emerald-400 font-semibold">412 Turns</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Bot size={15} className="text-sky-400" />
+                      <span>OpenClaw 2.0 Engine</span>
+                    </div>
+                  </div>
+
+                  <div className="metric-box">
+                    <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                      <span>Highest Token Task</span>
+                      <span className="text-amber-400 font-semibold">184.2k Tokens</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Code size={15} className="text-purple-400" />
+                      <span>Multi-Step Code Base Refactor</span>
+                    </div>
+                  </div>
+
+                  <div className="metric-box">
+                    <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+                      <span>Total Active Runtime</span>
+                      <span className="text-sky-400 font-semibold">+14.2% vs last week</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                      <Clock size={15} className="text-emerald-400" />
+                      <span>142.5 Hours Active Compute</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Generated Documents & Output Files Section */}
+            <section className="analytics-card">
+              <div className="card-title-row mb-4">
+                <div className="flex items-center gap-2">
+                  <FolderCheck size={18} className="text-sky-400" />
+                  <h3 className="card-heading">Generated Documents & Artifact Files</h3>
+                </div>
+                <span className="text-xs text-gray-400">4 Recent Artifacts</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  {
+                    name: 'competitor_pricing_matrix.csv',
+                    size: '14.2 KB',
+                    agent: 'OpenClaw Web Scraper',
+                    time: '42m ago',
+                    type: 'CSV Dataset'
+                  },
+                  {
+                    name: 'git_diff_refactored_patch.diff',
+                    size: '8.6 KB',
+                    agent: 'Claude 5 Code Bug Fixer',
+                    time: '2h ago',
+                    type: 'Git Diff'
+                  },
+                  {
+                    name: 'contract_risk_assessment.pdf',
+                    size: '1.4 MB',
+                    agent: 'Nous Hermes 4 Reasoning',
+                    time: '5h ago',
+                    type: 'PDF Report'
+                  },
+                  {
+                    name: 'optimized_db_indexes.sql',
+                    size: '24.8 KB',
+                    agent: 'AlloyDB Performance Auditor',
+                    time: '1d ago',
+                    type: 'SQL Script'
+                  }
+                ].map(file => (
+                  <div key={file.name} className="generated-file-card">
+                    <div className="flex items-center gap-3">
+                      <div className="file-icon-box">
+                        <FileText size={18} className="text-gray-200" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="file-name text-sm font-medium text-white truncate">{file.name}</h4>
+                        <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+                          <span>{file.size}</span>
+                          <span>•</span>
+                          <span>{file.agent}</span>
+                          <span>•</span>
+                          <span>{file.time}</span>
+                        </div>
+                      </div>
+                      <button className="file-action-btn" title="Download Artifact">
+                        <Download size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Live Active Deployments & Quick Action Shortcuts */}
+            <section className="agent-section">
+              <div className="agent-section-header flex items-center justify-between">
+                <h2 className="agent-section-title">Active Deployments & Instances</h2>
+                <button className="text-xs text-gray-400 hover:text-white flex items-center gap-1" onClick={() => setMainTab('create')}>
+                  <span>Launch New Agent</span> <ArrowUpRight size={14} />
+                </button>
+              </div>
+
+              {deployments.length > 0 ? (
+                <div className="agent-deployments-grid">
                   {deployments.map(dep => (
                     <div key={dep.id} className="agent-deployment-card">
                       <div className="agent-deployment-top">
@@ -1059,83 +1237,104 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <div className="empty-deployments-card text-center py-10 px-6 rounded-2xl bg-white/5 border border-white/10">
+                  <Bot size={36} className="mx-auto text-gray-400 mb-3" />
+                  <h4 className="text-base font-medium text-white mb-1">No Active Agents Currently Running</h4>
+                  <p className="text-xs text-gray-400 max-w-md mx-auto mb-4">You don't have any background agent processes deployed right now. Click below to prompt and launch a new agent.</p>
+                  <button className="omi-generate-btn" onClick={() => setMainTab('create')}>
+                    <Sparkles size={15} />
+                    <span>Create Your First Agent</span>
+                  </button>
+                </div>
               )}
+            </section>
+          </div>
+        )}
 
-              {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
-              <BorderGlow
-                edgeSensitivity={30}
-                glowColor="0 0 90"
-                backgroundColor="#0f0f14"
-                borderRadius={24}
-                glowRadius={35}
-                glowIntensity={1.2}
-                coneSpread={25}
-                animated={true}
-                autoRevolve={true}
-                colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
-                className="w-full mb-8"
-              >
-                <div className="studio-inner-card">
-                  <div className="studio-header">
-                    <div>
-                      <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
-                      <p className="studio-subtitle">Type your prompt or select a ready starter below to deploy instantly.</p>
-                    </div>
-                  </div>
+        {mainTab === 'create' && (
+          <section className="agent-section max-w-4xl mx-auto">
+            <div className="mb-6">
+              <h2 className="text-2xl font-light text-white mb-1">Build & Launch Custom AI Agent</h2>
+              <p className="text-sm text-gray-400">Describe what you want your agent to automate or select a ready starter below.</p>
+            </div>
 
-                  {/* Custom Prompt Box (matching user's attached design) */}
-                  <div className="prompt-input-box">
-                    <textarea
-                      value={customPrompt}
-                      onChange={e => setCustomPrompt(e.target.value)}
-                      placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
-                      className="prompt-textarea"
-                      rows={3}
-                    />
-                    <div className="prompt-box-footer">
-                      <div className="studio-model-selector">
-                        {agentCatalog.slice(0, 4).map(model => (
-                          <button
-                            key={model.id}
-                            onClick={() => setSelectedPromptModel(model.id)}
-                            className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
-                          >
-                            <span>{model.framework}</span>
-                          </button>
-                        ))}
-                      </div>
-
-                      <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
-                        <Sparkles size={16} />
-                        <span>Launch Agent</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Sleek Pill Starters (matching attached image) */}
-                  <div className="prompt-starters-pills-row">
-                    {promptStarters.map(starter => {
-                      const Icon = starter.icon;
-                      return (
-                        <button
-                          key={starter.id}
-                          onClick={() => {
-                            setCustomPrompt(starter.prompt);
-                            setSelectedPromptModel(starter.modelId);
-                          }}
-                          className="omi-starter-pill"
-                        >
-                          <Icon size={14} className="starter-pill-icon" />
-                          <span>{starter.title}</span>
-                        </button>
-                      );
-                    })}
+            {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
+            <BorderGlow
+              edgeSensitivity={30}
+              glowColor="0 0 90"
+              backgroundColor="#0f0f14"
+              borderRadius={24}
+              glowRadius={35}
+              glowIntensity={1.2}
+              coneSpread={25}
+              animated={true}
+              autoRevolve={true}
+              colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
+              className="w-full mb-8"
+            >
+              <div className="studio-inner-card">
+                <div className="studio-header">
+                  <div>
+                    <h3 className="studio-title">Prompt & Agent Automation Studio</h3>
+                    <p className="studio-subtitle">Select your underlying engine model and prompt your autonomous tool loop.</p>
                   </div>
                 </div>
-              </BorderGlow>
-            </section>
-          </>
-        ) : (
+
+                {/* Custom Prompt Box (matching user's attached design) */}
+                <div className="prompt-input-box">
+                  <textarea
+                    value={customPrompt}
+                    onChange={e => setCustomPrompt(e.target.value)}
+                    placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
+                    className="prompt-textarea"
+                    rows={4}
+                  />
+                  <div className="prompt-box-footer">
+                    <div className="studio-model-selector">
+                      {agentCatalog.slice(0, 4).map(model => (
+                        <button
+                          key={model.id}
+                          onClick={() => setSelectedPromptModel(model.id)}
+                          className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
+                        >
+                          <span>{model.framework}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
+                      <Sparkles size={16} />
+                      <span>Launch Agent</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sleek Pill Starters (matching attached image) */}
+                <div className="prompt-starters-pills-row">
+                  {promptStarters.map(starter => {
+                    const Icon = starter.icon;
+                    return (
+                      <button
+                        key={starter.id}
+                        onClick={() => {
+                          setCustomPrompt(starter.prompt);
+                          setSelectedPromptModel(starter.modelId);
+                        }}
+                        className="omi-starter-pill"
+                      >
+                        <Icon size={14} className="starter-pill-icon" />
+                        <span>{starter.title}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </BorderGlow>
+          </section>
+        )}
+
+        {mainTab === 'templates' && (
           /* Available Skill Templates & Tools Section */
           <section className="agent-section">
             <div className="agent-section-header">
