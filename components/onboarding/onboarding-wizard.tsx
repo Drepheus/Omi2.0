@@ -2,357 +2,262 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Orb } from "@/components/visuals/orb";
+import { ShinyText } from "@/components/typography/shiny-text";
 import {
-  Sparkles,
-  Bot,
-  Server,
-  Key,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  Cpu,
   Globe,
   Code2,
   BarChart3,
-  ShieldCheck,
+  Terminal,
   Zap,
-  Terminal
+  Brain,
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  Check
 } from "lucide-react";
 import "./onboarding-wizard.css";
 
-interface AgentObjective {
+interface SimpleOption {
   id: string;
   title: string;
-  badge: string;
-  description: string;
+  subtitle: string;
   icon: any;
   agentId: string;
 }
 
-const OBJECTIVES: AgentObjective[] = [
+const AGENT_PURPOSES: SimpleOption[] = [
   {
-    id: "scraper",
-    title: "Web Scraper & Intelligence Researcher",
-    badge: "Autonomous Crawling",
-    description: "Crawl web pages, extract structured JSON data, and run multi-step analytical research synthesis.",
+    id: "web",
+    title: "Web Research & Scraping",
+    subtitle: "Search the live web, extract data, and generate summary reports",
     icon: Globe,
     agentId: "openclaw-scraper"
   },
   {
     id: "coder",
-    title: "Full-Stack Code Generation Engine",
-    badge: "Repository Ops",
-    description: "Write TypeScript/Python microservices, fix build bugs, and generate complete project structures.",
+    title: "Software & Code Engineer",
+    subtitle: "Write microservices, fix code bugs, and build features",
     icon: Code2,
     agentId: "openclaw-coder"
   },
   {
-    id: "analyst",
-    title: "SQL & Data Intelligence Agent",
-    badge: "Database Querying",
-    description: "Connect to Supabase / PostgreSQL databases, generate SQL queries, and summarize data trends.",
+    id: "data",
+    title: "Data Analyst & Insights",
+    subtitle: "Query databases, organize tables, and analyze metrics",
     icon: BarChart3,
     agentId: "openclaw-data"
   },
   {
-    id: "custom",
-    title: "General OpenClaw Task Automator",
-    badge: "Universal Loop",
-    description: "Execute arbitrary multi-step AI reasoning loops with custom system prompts & tools.",
+    id: "general",
+    title: "Custom AI Task Specialist",
+    subtitle: "Run flexible multi-step autonomous AI agent loops",
     icon: Terminal,
     agentId: "openclaw"
   }
 ];
 
-const INFRASTRUCTURES = [
+const INTELLIGENCE_MODES = [
   {
-    id: "hetzner",
-    title: "Hetzner Dedicated Worker VM",
-    subtitle: "Recommended for Low Latency",
-    description: "Docker Compose isolated node (dre@openclaw) running Node 20 LTS with maximum step safeguards.",
-    recommended: true
+    id: "turbo",
+    title: "Turbo Speed Mode",
+    badge: "Fastest Response",
+    subtitle: "Optimized for quick task turns and immediate answers",
+    icon: Zap
   },
   {
-    id: "gcr",
-    title: "Google Cloud Run Container",
-    subtitle: "Scale-to-Zero",
-    description: "Stateless microservice deployment scaled on demand for high concurrency workloads.",
-    recommended: false
-  },
-  {
-    id: "local",
-    title: "Local / Private BYOK Worker",
-    subtitle: "Self-Hosted",
-    description: "Direct connection to your private container instance via internal secret bearer auth.",
-    recommended: false
+    id: "reasoning",
+    title: "Ultra Deep Thinking Mode",
+    badge: "Maximum Accuracy",
+    subtitle: "Performs multi-step reasoning & tool diagnostics before answering",
+    icon: Brain
   }
 ];
 
 export function OnboardingWizard() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedObjective, setSelectedObjective] = useState<string>("custom");
-  const [selectedInfra, setSelectedInfra] = useState<string>("hetzner");
-  const [apiKeyPreference, setApiKeyPreference] = useState<"platform" | "byok">("platform");
-  const [customApiKey, setCustomApiKey] = useState<string>("");
-  const [isFinishing, setIsFinishing] = useState(false);
+  const [step, setStep] = useState(1);
+  const [selectedPurpose, setSelectedPurpose] = useState("web");
+  const [selectedMode, setSelectedMode] = useState("reasoning");
+  const [isDeploying, setIsDeploying] = useState(false);
 
-  const handleNextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(prev => prev + 1);
+  const handleNext = () => {
+    if (step < 3) {
+      setStep(prev => prev + 1);
     } else {
-      handleCompleteOnboarding();
+      handleLaunch();
     }
   };
 
-  const handlePrevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(prev => prev - 1);
     }
   };
 
-  const handleCompleteOnboarding = () => {
-    setIsFinishing(true);
+  const handleLaunch = () => {
+    setIsDeploying(true);
 
-    // Save onboarding preferences locally
-    const targetObjective = OBJECTIVES.find(o => o.id === selectedObjective);
-    const onboardingConfig = {
-      agentId: targetObjective?.agentId || "openclaw",
-      agentTitle: targetObjective?.title || "OpenClaw Agent",
-      infra: selectedInfra,
-      apiKeyPreference,
-      hasCustomKey: Boolean(customApiKey.trim()),
-      completedAt: new Date().toISOString()
+    const chosenPurpose = AGENT_PURPOSES.find(p => p.id === selectedPurpose);
+    const config = {
+      agentId: chosenPurpose?.agentId || "openclaw",
+      agentName: chosenPurpose?.title || "OpenClaw Agent",
+      mode: selectedMode,
+      deployedAt: new Date().toISOString()
     };
 
     if (typeof window !== "undefined") {
-      localStorage.setItem("omi_onboarding_config", JSON.stringify(onboardingConfig));
+      localStorage.setItem("omi_onboarding_config", JSON.stringify(config));
     }
 
     setTimeout(() => {
       router.push("/agents");
-    }, 700);
+    }, 800);
   };
 
+  const currentPurpose = AGENT_PURPOSES.find(p => p.id === selectedPurpose);
+  const currentMode = INTELLIGENCE_MODES.find(m => m.id === selectedMode);
+
   return (
-    <div className="onboarding-root">
-      {/* Dynamic Background */}
-      <div className="onboarding-bg-overlay" />
-      <div className="onboarding-grid-pattern" />
+    <div className="omi-onboarding-wrapper">
+      {/* Visual Ambient Background matching LandingPage */}
+      <div className="orb-background">
+        <Orb hue={220} hoverIntensity={0.3} rotateOnHover forceHoverState={false} />
+      </div>
 
-      {/* Main Container */}
-      <div className={`onboarding-container ${isFinishing ? "onboarding-exit" : ""}`}>
-        {/* Header */}
-        <header className="onboarding-header">
-          <div className="onboarding-brand">
-            <div className="onboarding-logo-badge">
-              <Zap size={18} className="onboarding-logo-icon" />
-            </div>
-            <span className="onboarding-brand-title">Omi AI Engine</span>
-            <span className="onboarding-brand-divider">/</span>
-            <span className="onboarding-brand-sub">Worker Deployment Setup</span>
+      <div className={`omi-onboarding-content ${isDeploying ? "fade-out" : ""}`}>
+        {/* Sleek Top Navigation */}
+        <nav className="omi-onboarding-nav">
+          <div className="brand-badge">
+            <Sparkles size={16} className="sparkle-icon" />
+            <span className="brand-text">OMI AI</span>
           </div>
 
-          <button onClick={handleCompleteOnboarding} className="onboarding-skip-btn">
-            Skip to /agents
+          <button onClick={() => router.push("/agents")} className="skip-link">
+            Skip to Dashboard →
           </button>
-        </header>
+        </nav>
 
-        {/* Progress Bar */}
-        <div className="onboarding-progress-wrapper">
-          <div className="onboarding-progress-track">
-            <div
-              className="onboarding-progress-fill"
-              style={{ width: `${(currentStep / 3) * 100}%` }}
-            />
-          </div>
-
-          <div className="onboarding-step-pills">
-            <div className={`step-pill ${currentStep >= 1 ? "active" : ""}`}>
-              <span className="step-num">01</span>
-              <span className="step-label">Agent Objective</span>
-            </div>
-            <div className={`step-pill ${currentStep >= 2 ? "active" : ""}`}>
-              <span className="step-num">02</span>
-              <span className="step-label">Execution Engine</span>
-            </div>
-            <div className={`step-pill ${currentStep >= 3 ? "active" : ""}`}>
-              <span className="step-num">03</span>
-              <span className="step-label">Model Credentials</span>
-            </div>
-          </div>
+        {/* Header Indicator */}
+        <div className="step-indicator-bar">
+          <div className={`step-dot ${step >= 1 ? "active" : ""}`}>1</div>
+          <div className="step-line-segment" />
+          <div className={`step-dot ${step >= 2 ? "active" : ""}`}>2</div>
+          <div className="step-line-segment" />
+          <div className={`step-dot ${step >= 3 ? "active" : ""}`}>3</div>
         </div>
 
-        {/* Wizard Card Body */}
-        <div className="onboarding-card">
-          {/* STEP 1: OBJECTIVE */}
-          {currentStep === 1 && (
-            <div className="onboarding-step-pane fade-in-step">
-              <div className="step-meta">
-                <span className="step-badge">
-                  <Sparkles size={12} /> Step 1 of 3
-                </span>
-                <h2 className="step-title">Select Your Agent Objective</h2>
-                <p className="step-desc">
-                  Choose the specialized task type to pre-configure your containerized OpenClaw worker loop.
-                </p>
-              </div>
+        {/* STEP 1: SIMPLE PURPOSE SELECTION */}
+        {step === 1 && (
+          <div className="step-container animate-fade-in">
+            <h1 className="omi-step-heading">What should your AI Agent do?</h1>
+            <p className="omi-step-subheading">Select your primary task objective to configure your OpenClaw worker.</p>
 
-              <div className="objectives-grid">
-                {OBJECTIVES.map(obj => {
-                  const Icon = obj.icon;
-                  const isSelected = selectedObjective === obj.id;
+            <div className="simple-cards-grid">
+              {AGENT_PURPOSES.map(item => {
+                const Icon = item.icon;
+                const isSelected = selectedPurpose === item.id;
 
-                  return (
-                    <div
-                      key={obj.id}
-                      onClick={() => setSelectedObjective(obj.id)}
-                      className={`objective-card ${isSelected ? "selected" : ""}`}
-                    >
-                      <div className="objective-card-header">
-                        <div className="objective-icon-box">
-                          <Icon size={20} />
-                        </div>
-                        <span className="objective-pill">{obj.badge}</span>
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedPurpose(item.id)}
+                    className={`simple-card ${isSelected ? "selected" : ""}`}
+                  >
+                    <div className="card-top">
+                      <div className="card-icon-wrapper">
+                        <Icon size={22} />
                       </div>
+                      {isSelected && <Check size={18} className="card-check-icon" />}
+                    </div>
 
-                      <h3 className="objective-title">{obj.title}</h3>
-                      <p className="objective-desc">{obj.description}</p>
+                    <h3 className="card-title">{item.title}</h3>
+                    <p className="card-subtitle">{item.subtitle}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-                      <div className="objective-select-indicator">
-                        <CheckCircle2 size={16} className="check-icon" />
+        {/* STEP 2: SIMPLE INTELLIGENCE MODE */}
+        {step === 2 && (
+          <div className="step-container animate-fade-in">
+            <h1 className="omi-step-heading">Choose Agent Intelligence Mode</h1>
+            <p className="omi-step-subheading">Pick how your agent balances response speed and deep reasoning capability.</p>
+
+            <div className="modes-stack">
+              {INTELLIGENCE_MODES.map(mode => {
+                const Icon = mode.icon;
+                const isSelected = selectedMode === mode.id;
+
+                return (
+                  <div
+                    key={mode.id}
+                    onClick={() => setSelectedMode(mode.id)}
+                    className={`mode-card ${isSelected ? "selected" : ""}`}
+                  >
+                    <div className="mode-left">
+                      <div className="mode-icon-box">
+                        <Icon size={24} />
+                      </div>
+                      <div>
+                        <div className="mode-title-row">
+                          <h3 className="mode-title">{mode.title}</h3>
+                          <span className="mode-badge">{mode.badge}</span>
+                        </div>
+                        <p className="mode-subtitle">{mode.subtitle}</p>
                       </div>
                     </div>
-                  );
-                })}
+
+                    <div className={`selection-circle ${isSelected ? "checked" : ""}`} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: READY TO LAUNCH SUMMARY */}
+        {step === 3 && (
+          <div className="step-container animate-fade-in">
+            <h1 className="omi-step-heading">Ready to Deploy Agent</h1>
+            <p className="omi-step-subheading">Your OpenClaw AI worker is pre-configured and ready for launch.</p>
+
+            <div className="summary-glass-card">
+              <div className="summary-item">
+                <span className="summary-label">Selected Goal</span>
+                <span className="summary-value">{currentPurpose?.title}</span>
+              </div>
+              <div className="summary-divider" />
+              <div className="summary-item">
+                <span className="summary-label">Intelligence Engine</span>
+                <span className="summary-value">{currentMode?.title}</span>
+              </div>
+              <div className="summary-divider" />
+              <div className="summary-item">
+                <span className="summary-label">Backend Worker</span>
+                <span className="summary-value text-glow">Hetzner Container Node (dre@openclaw)</span>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* STEP 2: INFRASTRUCTURE */}
-          {currentStep === 2 && (
-            <div className="onboarding-step-pane fade-in-step">
-              <div className="step-meta">
-                <span className="step-badge">
-                  <Cpu size={12} /> Step 2 of 3
-                </span>
-                <h2 className="step-title">Choose Microservice Infrastructure</h2>
-                <p className="step-desc">
-                  Select the isolated execution environment for dispatching multi-tenant agent tasks.
-                </p>
-              </div>
-
-              <div className="infra-list">
-                {INFRASTRUCTURES.map(infra => {
-                  const isSelected = selectedInfra === infra.id;
-
-                  return (
-                    <div
-                      key={infra.id}
-                      onClick={() => setSelectedInfra(infra.id)}
-                      className={`infra-card ${isSelected ? "selected" : ""}`}
-                    >
-                      <div className="infra-left">
-                        <div className="infra-icon-box">
-                          <Server size={20} />
-                        </div>
-                        <div>
-                          <div className="infra-title-row">
-                            <h3 className="infra-title">{infra.title}</h3>
-                            {infra.recommended && (
-                              <span className="infra-recommended-tag">Default VM</span>
-                            )}
-                          </div>
-                          <p className="infra-subtitle">{infra.subtitle}</p>
-                          <p className="infra-desc">{infra.description}</p>
-                        </div>
-                      </div>
-
-                      <div className="infra-radio">
-                        <div className={`radio-dot ${isSelected ? "active" : ""}`} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: CREDENTIALS */}
-          {currentStep === 3 && (
-            <div className="onboarding-step-pane fade-in-step">
-              <div className="step-meta">
-                <span className="step-badge">
-                  <ShieldCheck size={12} /> Step 3 of 3
-                </span>
-                <h2 className="step-title">Configure API Key & Model Settings</h2>
-                <p className="step-desc">
-                  Select whether to execute turns using platform credits or your encrypted BYOK API key.
-                </p>
-              </div>
-
-              <div className="credentials-options">
-                <div
-                  onClick={() => setApiKeyPreference("platform")}
-                  className={`cred-option-card ${apiKeyPreference === "platform" ? "selected" : ""}`}
-                >
-                  <div className="cred-icon-box">
-                    <Zap size={20} />
-                  </div>
-                  <div className="cred-details">
-                    <h3>Platform Managed Key Pool</h3>
-                    <p>Use pre-allocated SaaS credits for seamless agent turn execution.</p>
-                  </div>
-                  <div className={`radio-dot ${apiKeyPreference === "platform" ? "active" : ""}`} />
-                </div>
-
-                <div
-                  onClick={() => setApiKeyPreference("byok")}
-                  className={`cred-option-card ${apiKeyPreference === "byok" ? "selected" : ""}`}
-                >
-                  <div className="cred-icon-box">
-                    <Key size={20} />
-                  </div>
-                  <div className="cred-details">
-                    <h3>Bring Your Own Key (BYOK)</h3>
-                    <p>AES-256 encrypted server-side storage for custom OpenAI or Anthropic keys.</p>
-                  </div>
-                  <div className={`radio-dot ${apiKeyPreference === "byok" ? "active" : ""}`} />
-                </div>
-              </div>
-
-              {apiKeyPreference === "byok" && (
-                <div className="custom-key-input-box fade-in-step">
-                  <label>OpenAI / OpenClaw API Key</label>
-                  <input
-                    type="password"
-                    placeholder="sk-proj-..."
-                    value={customApiKey}
-                    onChange={e => setCustomApiKey(e.target.value)}
-                    className="key-input"
-                  />
-                  <p className="key-hint">Keys are encrypted using Node native AES-256-CBC before DB storage.</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Footer Controls */}
-          <div className="onboarding-card-footer">
-            <button
-              onClick={handlePrevStep}
-              disabled={currentStep === 1}
-              className="onboarding-btn secondary"
-            >
+        {/* Action Controls */}
+        <div className="omi-step-actions">
+          {step > 1 ? (
+            <button onClick={handleBack} className="omi-back-btn">
               <ArrowLeft size={16} />
               <span>Back</span>
             </button>
+          ) : <div />}
 
-            <button onClick={handleNextStep} className="onboarding-btn primary">
-              <span>{currentStep === 3 ? "Launch Agent Hub" : "Continue"}</span>
-              <ArrowRight size={16} />
-            </button>
-          </div>
+          <button onClick={handleNext} className="omi-next-btn" disabled={isDeploying}>
+            <ShinyText
+              text={step === 3 ? (isDeploying ? "Deploying..." : "Deploy Agent →") : "Continue →"}
+              speed={3}
+            />
+          </button>
         </div>
       </div>
     </div>
