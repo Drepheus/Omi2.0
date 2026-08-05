@@ -86,15 +86,15 @@ interface Message {
 const agentCatalog: Agent[] = [
   {
     id: 'claude-code',
-    name: 'Claude Code CLI Engineer',
-    skillFile: 'claude-code-cli.md',
-    framework: 'Claude 3.7 Sonnet',
+    name: 'Claude 5 Code CLI Engine',
+    skillFile: 'claude-5-code.md',
+    framework: 'Claude 5 Sonnet',
     icon: 'coder',
     description: 'Terminal-native autonomous software engineer for repo refactoring, git diffs, and automated bug fixing loops.',
     type: 'Code & Dev',
     status: 'idle',
     category: 'code-dev',
-    tags: ['claude-code.md', 'terminal-exec', 'git-ops', 'refactor'],
+    tags: ['claude-5.md', 'terminal-exec', 'git-ops', 'refactor'],
     runsCount: '18.4k runs',
     isTrending: true
   },
@@ -102,7 +102,7 @@ const agentCatalog: Agent[] = [
     id: 'openclaw',
     name: 'OpenClaw Web Scraper & Intelligence',
     skillFile: 'openclaw-web-scraper.md',
-    framework: 'OpenClaw Engine',
+    framework: 'OpenClaw 2.0 Engine',
     icon: 'openclaw',
     description: 'Stateful containerized web scraper & crawler for headless page parsing and multi-source research synthesis.',
     type: 'Web & Scraping',
@@ -113,30 +113,30 @@ const agentCatalog: Agent[] = [
     isTrending: true
   },
   {
-    id: 'hermes-3',
-    name: 'Hermes 3 Deep Reasoning Core',
-    skillFile: 'hermes-3-reasoning.md',
-    framework: 'Nous Hermes 3',
+    id: 'hermes-4',
+    name: 'Hermes 4 Deep Reasoning Core',
+    skillFile: 'hermes-4-reasoning.md',
+    framework: 'Nous Hermes 4',
     icon: 'hermes',
     description: 'Multi-turn chain-of-thought solving, complex function calling, and structured decision tree verification.',
     type: 'Reasoning',
     status: 'idle',
     category: 'reasoning',
-    tags: ['hermes-3.md', 'reasoning.md', 'function-calling', 'logic-verify'],
+    tags: ['hermes-4.md', 'reasoning.md', 'function-calling', 'logic-verify'],
     runsCount: '11.8k runs',
     isTrending: true
   },
   {
-    id: 'deepseek-r1',
-    name: 'DeepSeek R1 Thought Analyst',
-    skillFile: 'deepseek-r1-cot.md',
-    framework: 'DeepSeek R1 Core',
+    id: 'deepseek-v4',
+    name: 'DeepSeek V4 Thought Analyst',
+    skillFile: 'deepseek-v4-cot.md',
+    framework: 'DeepSeek V4 Core',
     icon: 'researcher',
     description: 'Step-by-step mathematical reasoning, statistical synthesis, and full chain-of-thought trace outputs.',
     type: 'Reasoning',
     status: 'idle',
     category: 'reasoning',
-    tags: ['deepseek-r1.md', 'thought-trace.md', 'math-solving', 'analytics'],
+    tags: ['deepseek-v4.md', 'thought-trace.md', 'math-solving', 'analytics'],
     runsCount: '9.6k runs',
     isTrending: true
   },
@@ -144,7 +144,7 @@ const agentCatalog: Agent[] = [
     id: 'browser-use',
     name: 'Browser-Use Stealth Automator',
     skillFile: 'browser-use-stealth.md',
-    framework: 'Playwright Stealth',
+    framework: 'Browser-Use Stealth 2.0',
     icon: 'agentzero',
     description: 'Automated web session navigation, form submissions, authenticated workflow tasks, and visual UI checks.',
     type: 'Web & Scraping',
@@ -155,15 +155,15 @@ const agentCatalog: Agent[] = [
   },
   {
     id: 'alloydb-postgres',
-    name: 'PostgreSQL & AlloyDB Data Agent',
-    skillFile: 'alloydb-postgres-data.md',
-    framework: 'PostgreSQL / AlloyDB',
+    name: 'PostgreSQL & Supabase Data Agent',
+    skillFile: 'supabase-postgres-data.md',
+    framework: 'PostgreSQL / Supabase V4',
     icon: 'agentzero',
     description: 'Schema exploration, automated SQL query generation, table metrics auditing, and Drizzle ORM pipeline ops.',
     type: 'Data & SQL',
     status: 'idle',
     category: 'data-sql',
-    tags: ['alloydb-data.md', 'postgres-admin.md', 'sql-gen', 'drizzle'],
+    tags: ['supabase-data.md', 'postgres-admin.md', 'sql-gen', 'drizzle'],
     runsCount: '6.3k runs'
   }
 ];
@@ -176,9 +176,9 @@ const renderAgentIcon = (id: string, className = "w-5 h-5") => {
       return <Globe className={className} />;
     case 'claude-code':
       return <Code className={className} />;
-    case 'hermes-3':
+    case 'hermes-4':
       return <Bot className={className} />;
-    case 'deepseek-r1':
+    case 'deepseek-v4':
       return <Activity className={className} />;
     case 'browser-use':
       return <Search className={className} />;
@@ -189,11 +189,11 @@ const renderAgentIcon = (id: string, className = "w-5 h-5") => {
   }
 };
 
-const categoryMeta: Record<string, { label: string; icon: string; color: string }> = {
-  'code-dev': { label: 'Code & Dev', icon: '💻', color: '#60a5fa' },
-  'web-scraping': { label: 'Web & Scraping', icon: '🌐', color: '#34d399' },
-  'reasoning': { label: 'Deep Reasoning', icon: '🧠', color: '#a78bfa' },
-  'data-sql': { label: 'Data & SQL', icon: '📊', color: '#f59e0b' }
+const categoryMeta: Record<string, { label: string; icon: any; color: string }> = {
+  'code-dev': { label: 'Code & Dev', icon: Code, color: '#60a5fa' },
+  'web-scraping': { label: 'Web & Scraping', icon: Globe, color: '#34d399' },
+  'reasoning': { label: 'Deep Reasoning', icon: Brain, color: '#a78bfa' },
+  'data-sql': { label: 'Data & SQL', icon: Database, color: '#f59e0b' }
 };
 
 export default function AgentsPage({ onClose }: { onClose?: () => void }) {
@@ -801,11 +801,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               >
                 {cat !== 'all' && meta && (
                   <span className="agent-category-icon" style={{ color: meta.color }}>
-                    {meta.icon}
+                    <meta.icon size={15} />
                   </span>
                 )}
                 <span className="agent-category-label">
-                  {cat === 'all' ? 'All Agents' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  {cat === 'all' ? 'All Skill Templates' : (meta ? meta.label : cat)}
                 </span>
                 <span className="agent-category-count">
                   {cat === 'all'
@@ -851,8 +851,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <Menu size={20} />
             </button>
             <div>
-              <h1 className="agent-topbar-title">One-Click Deployments</h1>
-              <p className="agent-topbar-subtitle">Deploy stateful OpenClaw agent loops to Serverless Worker Backends</p>
+              <h1 className="agent-topbar-title">AI Agent Hub & Templates</h1>
+              <p className="agent-topbar-subtitle">Launch state-of-the-art AI agents and skill packages with a single click.</p>
             </div>
           </div>
           <div className="agent-topbar-right">
@@ -867,45 +867,49 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         </header>
 
         {/* Stats Row */}
+        {/* Consumer Stats Row */}
         <section className="agent-stats">
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(220, 220, 220, 0.05)', color: '#dcdcdc' }}>
-              <Server size={20} />
-            </div>
-            <div className="agent-stat-info">
-              <span className="agent-stat-value">{deployments.length}</span>
-              <span className="agent-stat-label">Total Deployments</span>
-            </div>
-            <span className="agent-stat-trend up">
-              <Activity size={12} className="animate-pulse" />
-              Active
-            </span>
-          </div>
-          <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.05)', color: '#10b981' }}>
-              <Zap size={20} />
+            <div className="agent-stat-icon" style={{ background: 'rgba(56, 189, 248, 0.08)', color: '#38bdf8' }}>
+              <Bot size={20} />
             </div>
             <div className="agent-stat-info">
               <span className="agent-stat-value">{runningCount}</span>
-              <span className="agent-stat-label">Running Agents</span>
+              <span className="agent-stat-label">Active Agents Running</span>
             </div>
+            <span className="agent-stat-trend up">
+              <Activity size={12} className="animate-pulse" />
+              Live
+            </span>
           </div>
+
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.05)', color: '#f59e0b' }}>
-              <Cpu size={20} />
+            <div className="agent-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.08)', color: '#c084fc' }}>
+              <MessageSquare size={20} />
             </div>
             <div className="agent-stat-info">
-              <span className="agent-stat-value">Celery</span>
-              <span className="agent-stat-label">Worker Engine</span>
+              <span className="agent-stat-value">1,280</span>
+              <span className="agent-stat-label">Total Messages Sent</span>
             </div>
           </div>
+
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(99, 102, 241, 0.05)', color: '#818cf8' }}>
-              <BarChart3 size={20} />
+            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.08)', color: '#fbbf24' }}>
+              <Coins size={20} />
             </div>
             <div className="agent-stat-info">
-              <span className="agent-stat-value">Upstash</span>
-              <span className="agent-stat-label">Redis Cache</span>
+              <span className="agent-stat-value">{credits}</span>
+              <span className="agent-stat-label">Credits Remaining</span>
+            </div>
+          </div>
+
+          <div className="agent-stat-card">
+            <div className="agent-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#34d399' }}>
+              <Zap size={20} />
+            </div>
+            <div className="agent-stat-info">
+              <span className="agent-stat-value">0.8s</span>
+              <span className="agent-stat-label">Average Turn Speed</span>
             </div>
           </div>
         </section>
@@ -980,9 +984,9 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
           ) : (
             <div className="agent-empty-deployments">
-              <Server size={48} className="agent-empty-icon" />
-              <h3>No Active Deployments</h3>
-              <p>Deploy an agent to a Celery cluster to get started</p>
+              <Bot size={48} className="agent-empty-icon text-sky-400" />
+              <h3>No Active Agents Currently Running</h3>
+              <p>Select and deploy any skill template below to launch your first autonomous AI agent space.</p>
             </div>
           )}
         </section>
@@ -993,7 +997,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             <div>
               <h2 className="agent-section-title">Trending Skill Templates & Tools</h2>
               <p className="agent-section-subtitle">
-                Deploy pre-packaged <code>.md</code> skills and autonomous tool loops inspired by Claude Code, OpenClaw, Hermes 3, & DeepSeek R1.
+                Deploy pre-packaged <code>.md</code> skills and autonomous tool loops powered by Claude 5, OpenClaw 2.0, Hermes 4, & DeepSeek V4.
               </p>
             </div>
           </div>
@@ -1490,31 +1494,25 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 <div className="state-pane-section">
                   <div className="state-section-header">
                     <Activity size={14} className="text-violet-400" />
-                    <h3>Telemetry & Stats</h3>
+                    <h3>Agent Performance & Status</h3>
                   </div>
                   
                   <div className="telemetry-stats-list">
                     <div className="telemetry-stat-row">
-                      <span>Server Engine</span>
-                      <span className="text-violet-300 font-mono">Celery 5.4</span>
+                      <span>AI Model Engine</span>
+                      <span className="text-violet-300 font-mono">Claude 5 / DeepSeek V4</span>
                     </div>
                     <div className="telemetry-stat-row">
-                      <span>Redis Queue</span>
-                      <span className="text-violet-300 font-mono">Upstash Serverless</span>
+                      <span>Agent Status</span>
+                      <span className="text-emerald-400 font-mono">Online & Ready</span>
                     </div>
                     <div className="telemetry-stat-row">
-                      <span>VM CPU Usage</span>
-                      <div className="telemetry-stat-progress-wrapper">
-                        <div className="telemetry-stat-progress-bar" style={{ width: '8%' }} />
-                        <span className="font-mono">8%</span>
-                      </div>
+                      <span>Response Latency</span>
+                      <span className="text-sky-300 font-mono">0.8s Superfast</span>
                     </div>
                     <div className="telemetry-stat-row">
-                      <span>VM Memory Usage</span>
-                      <div className="telemetry-stat-progress-wrapper">
-                        <div className="telemetry-stat-progress-bar" style={{ width: '22%' }} />
-                        <span className="font-mono">22%</span>
-                      </div>
+                      <span>Execution Cost</span>
+                      <span className="text-amber-300 font-mono">1 Credit / Turn</span>
                     </div>
                   </div>
                 </div>
