@@ -47,6 +47,7 @@ import {
 
 import { ThinkingOrb, OrbState } from 'thinking-orbs';
 import { ShinyText } from '@/components/typography/shiny-text';
+import BorderGlow from '@/components/ui/border-glow';
 
 import './AgentsPage.css';
 
@@ -1026,9 +1027,19 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
           )}
 
-          {/* Interactive Agent Creation Studio with Animated Omi Silver Neon Light Border */}
-          <div className="agent-prompt-studio-card omi-neon-border-wrapper">
-            <div className="omi-neon-beam" />
+          {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
+          <BorderGlow
+            edgeSensitivity={30}
+            glowColor="0 0 90"
+            backgroundColor="#0f0f14"
+            borderRadius={24}
+            glowRadius={35}
+            glowIntensity={1.2}
+            coneSpread={25}
+            animated={true}
+            colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
+            className="w-full mb-8"
+          >
             <div className="studio-inner-card">
               <div className="studio-header">
                 <div>
@@ -1086,7 +1097,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 })}
               </div>
             </div>
-          </div>
+          </BorderGlow>
         </section>
 
         {/* Available Skill Templates & Tools Section */}
