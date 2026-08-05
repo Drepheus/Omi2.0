@@ -918,7 +918,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               handleTriggerDeployment(agent);
             }}>
               <Plus size={16} />
-              <ShinyText text="New Deployment" speed={3} />
+              <span>New Deployment</span>
             </button>
           </div>
         </header>
@@ -930,7 +930,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             <div
               className="agent-stat-icon"
               style={{
-                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                 color: runningCount > 0 ? '#34d399' : '#f87171'
               }}
             >
@@ -948,7 +948,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.08)', color: '#c084fc' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(168, 85, 247, 0.12)', color: '#c084fc' }}>
               <MessageSquare size={20} />
             </div>
             <div className="agent-stat-info">
@@ -958,7 +958,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.08)', color: '#fbbf24' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24' }}>
               <Coins size={20} />
             </div>
             <div className="agent-stat-info">
@@ -968,7 +968,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#34d399' }}>
+            <div className="agent-stat-icon" style={{ background: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8' }}>
               <Zap size={20} />
             </div>
             <div className="agent-stat-info">
@@ -1060,8 +1060,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <div className="prompt-action-bar">
                 <span className="prompt-hint">Powered by OpenClaw Stateless Engine</span>
                 <button onClick={handleLaunchCustomPrompt} className="launch-custom-agent-btn">
-                  <Play size={14} />
-                  <ShinyText text="Launch Custom Agent →" speed={3} />
+                  <Play size={14} fill="currentColor" />
+                  <span>Launch Custom Agent →</span>
                 </button>
               </div>
             </div>
@@ -1151,8 +1151,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       handleTriggerDeployment(agent);
                     }}
                   >
-                    <Play size={12} />
-                    <ShinyText text="Deploy Skill Template" speed={3} />
+                    <Play size={12} fill="currentColor" />
+                    <span>Deploy Skill Template</span>
                   </button>
                 </div>
               </div>
