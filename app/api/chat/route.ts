@@ -3,32 +3,32 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { db } from '@/src/db';
 import { users, agentConfigs } from '@/src/db/schema';
-import { decrypt } from '@/lib/crypto';
+import { decryptApiKey } from '@/lib/crypto';
 import { eq, sql } from 'drizzle-orm';
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
-    // 1. Authenticate user via BetterAuth (with guest mode fallback for local development)
-    let userId = 'usr_guest';
-    let email = 'guest@example.com';
-    let name = 'Guest User';
-
+    // 1. Auth & Session Check via BetterAuth
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (session) {
-      userId = session.user.id;
-      email = session.user.email;
-      name = session.user.name || 'User';
-    } else if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized. Please sign in to access agent execution.' }, { status: 401 });
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Please sign in to access agent execution.' },
+        { status: 401 }
+      );
     }
 
+    const userId = session.user.id;
+
     const body = await req.json();
-    const { messages, agentId } = body as { messages: any[]; agentId?: string };
+    const { messages, systemPrompt: customSystemPrompt } = body as {
+      messages: Array<{ role: string; content: string }>;
+      systemPrompt?: string;
+    };
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
@@ -37,183 +37,154 @@ export async function POST(req: Request) {
     const latestMessage = messages[messages.length - 1];
     const userPrompt = latestMessage.content || '';
 
-    // 2. Fetch user's credit balance (with local DB error fallback)
-    let creditBalance = 10;
-    try {
-      let userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-      if (userRecord.length === 0) {
-        // Auto-initialize new user record with 10 starting credits if not present
-        await db.insert(users).values({
-          id: userId,
-          name,
-          email,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          creditBalance: 10,
-        });
-      } else {
-        creditBalance = userRecord[0].creditBalance;
-      }
-    } catch (dbErr: any) {
-      console.warn('[DB Fallback] Could not query user credit balance from database, using simulated balance (10):', dbErr.message);
-    }
+    // 2. Database Lookup (Neon + Drizzle) for user credit balance & agent configs
+    const userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const creditBalance = userRecord.length > 0 ? userRecord[0].creditBalance : 0;
 
-    // 3. Verify user has credit balance > 0
-    if (creditBalance <= 0) {
-      return NextResponse.json({
-        error: 'Payment Required',
-        code: 'INSUFFICIENT_CREDITS',
-        details: 'Your credit balance is 0. Top up $10 (1,000 credits) to continue agent execution turns.'
-      }, { status: 402 });
-    }
+    const configRecord = await db.select().from(agentConfigs).where(eq(agentConfigs.userId, userId)).limit(1);
+    let encryptedApiKey = '';
+    let openclawState: any = null;
 
-    // 4. Fetch agent configuration, encrypted API key, and openclaw state from database
-    let encryptedKey = '';
-    let openclawState = JSON.stringify({ activeAgent: 'openclaw', framework: 'OpenClaw Node SDK' });
-
-    try {
-      const configRecord = await db.select().from(agentConfigs).where(eq(agentConfigs.userId, userId)).limit(1);
-      if (configRecord.length > 0) {
-        if (configRecord[0].encryptedApiKey) {
-          encryptedKey = configRecord[0].encryptedApiKey;
-        }
-        if (configRecord[0].openclawState) {
-          openclawState = configRecord[0].openclawState;
+    if (configRecord.length > 0) {
+      encryptedApiKey = configRecord[0].encryptedApiKey || '';
+      if (configRecord[0].openclawState) {
+        try {
+          openclawState = typeof configRecord[0].openclawState === 'string'
+            ? JSON.parse(configRecord[0].openclawState)
+            : configRecord[0].openclawState;
+        } catch {
+          openclawState = { raw: configRecord[0].openclawState };
         }
       }
-    } catch (dbErr: any) {
-      console.warn('[DB Fallback] Could not fetch agent config from database:', dbErr.message);
     }
 
-    // 5. Decrypt API Key server-side using ENCRYPTION_KEY (with local dev fallback)
-    let apiKey = process.env.OPENAI_API_KEY || 'simulated-dev-key';
-    if (encryptedKey) {
+    const isBYOK = Boolean(encryptedApiKey && encryptedApiKey.trim().length > 0);
+
+    // 3. Credit Verification: If creditBalance <= 0 and user is not BYOK, return 402
+    if (creditBalance <= 0 && !isBYOK) {
+      return NextResponse.json(
+        {
+          error: 'Payment Required',
+          code: 'INSUFFICIENT_CREDITS',
+          details: 'Your credit balance is 0. Top up $10 (1,000 credits) or configure your own API key (BYOK) to continue.'
+        },
+        { status: 402 }
+      );
+    }
+
+    // 4. Key Decryption: Decrypt stored API key using decryptApiKey or fallback
+    let apiKey = '';
+    if (isBYOK) {
       try {
-        apiKey = decrypt(encryptedKey);
+        apiKey = decryptApiKey(encryptedApiKey);
       } catch (cryptoErr: any) {
-        console.warn('[Crypto Warning] Could not decrypt user API key, using dev key fallback:', cryptoErr.message);
-        apiKey = process.env.OPENAI_API_KEY || 'simulated-dev-key';
+        console.error('[Crypto Error] Failed to decrypt user stored API key:', cryptoErr.message);
+        return NextResponse.json(
+          { error: 'Failed to decrypt user API key configuration.' },
+          { status: 500 }
+        );
       }
+    } else {
+      apiKey = process.env.OPENAI_API_KEY || '';
     }
 
-    // 6. Make secure POST request exclusively to Railway OpenClaw Worker URL
-    const workerUrl = process.env.RAILWAY_OPENCLAW_WORKER_URL || 'http://localhost:3001';
-    const internalSecret = process.env.INTERNAL_API_SECRET || 'dev_internal_secret_key_123';
+    // 5. Worker Execution Call to Hetzner VM / Container Backend
+    const workerUrl = process.env.OPENCLAW_WORKER_URL || 'http://5.78.197.8:8080';
+    const internalSecret = process.env.INTERNAL_API_SECRET || 'your_super_secret_token_123';
 
-    let response: Response;
+    let workerResponse: Response;
     try {
-      response = await fetch(`${workerUrl}/execute`, {
+      workerResponse = await fetch(`${workerUrl}/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${internalSecret}`,
         },
         body: JSON.stringify({
-          apiKey,
-          prompt: userPrompt,
-          openclawState,
           userId,
-          sessionId: `sess_${Date.now()}`,
-          agentId: agentId || 'openclaw',
+          prompt: userPrompt,
+          apiKey,
+          systemPrompt: customSystemPrompt || 'You are an autonomous OpenClaw AI agent working on behalf of the user.',
+          openclawState
         }),
       });
     } catch (fetchErr: any) {
-      return NextResponse.json({
-        error: 'Backend Worker Connection Failed',
-        code: 'WORKER_CONNECTION_FAILED',
-        details: `Could not connect to OpenClaw Node worker at ${workerUrl}. Please verify the Railway worker container is running.`
-      }, { status: 503 });
+      console.error('[Worker Connection Error]:', fetchErr.message);
+      return NextResponse.json(
+        {
+          error: 'Backend Worker Connection Failed',
+          code: 'WORKER_CONNECTION_FAILED',
+          details: `Could not connect to OpenClaw worker at ${workerUrl}. Please verify the container service is running.`
+        },
+        { status: 503 }
+      );
     }
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error('OpenClaw Worker execute error:', errText);
-      return NextResponse.json({ error: 'OpenClaw worker execution failed', details: errText }, { status: response.status });
+    if (!workerResponse.ok) {
+      const errText = await workerResponse.text();
+      console.error('[Worker Execution Failed]:', errText);
+      return NextResponse.json(
+        { error: 'OpenClaw worker execution failed', details: errText },
+        { status: workerResponse.status }
+      );
     }
 
-    const { task_id } = await response.json();
+    const workerResult = await workerResponse.json();
 
-    // 7. Stream progress and decrement credit balance upon completion
+    // 6. Credit Deduction & Persistent State Sync
+    if (workerResult.success) {
+      // Deduct 1 credit atomically if user is using platform credits (non-BYOK)
+      if (!isBYOK && creditBalance > 0) {
+        try {
+          await db
+            .update(users)
+            .set({
+              creditBalance: sql`${users.creditBalance} - 1`,
+              updatedAt: new Date()
+            })
+            .where(eq(users.id, userId));
+        } catch (dbErr: any) {
+          console.error('[Credit Deduction Error]:', dbErr.message);
+        }
+      }
+
+      // Update openclawState in database if returned by worker
+      if (workerResult.updatedState) {
+        try {
+          const stateStr = typeof workerResult.updatedState === 'string'
+            ? workerResult.updatedState
+            : JSON.stringify(workerResult.updatedState);
+
+          if (configRecord.length > 0) {
+            await db
+              .update(agentConfigs)
+              .set({ openclawState: stateStr, updatedAt: new Date() })
+              .where(eq(agentConfigs.userId, userId));
+          } else {
+            await db.insert(agentConfigs).values({
+              userId,
+              openclawState: stateStr,
+              updatedAt: new Date()
+            });
+          }
+        } catch (stateErr: any) {
+          console.warn('[State Sync Warning]:', stateErr.message);
+        }
+      }
+    }
+
+    // Stream logs & output back to client for real-time console rendering
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
-      async start(controller) {
-        let completed = false;
-        let lastLogLength = 0;
-        let attempts = 0;
-        const maxAttempts = 180; // 3 minute timeout limit
-
-        while (!completed && attempts < maxAttempts) {
-          attempts++;
-          try {
-            const taskResponse = await fetch(`${workerUrl}/tasks/${task_id}`, {
-              headers: {
-                'Authorization': `Bearer ${internalSecret}`,
-              },
-            });
-
-            if (!taskResponse.ok) {
-              controller.enqueue(encoder.encode(`[System Error: Failed to poll task status: ${taskResponse.statusText}]\n`));
-              completed = true;
-              break;
-            }
-
-            const taskData = await taskResponse.json();
-            const logs = taskData.logs || '';
-
-            if (logs.length > lastLogLength) {
-              const newLogs = logs.slice(lastLogLength);
-              controller.enqueue(encoder.encode(newLogs));
-              lastLogLength = logs.length;
-            }
-
-            if (taskData.openclawState) {
-              // Update persistent state back in DB if worker updated it
-              try {
-                await db.update(agentConfigs)
-                  .set({ openclawState: typeof taskData.openclawState === 'string' ? taskData.openclawState : JSON.stringify(taskData.openclawState), updatedAt: new Date() })
-                  .where(eq(agentConfigs.userId, userId));
-              } catch (dbStateErr: any) {
-                console.warn('State sync warning:', dbStateErr.message);
-              }
-            }
-
-            if (taskData.status === 'SUCCESS') {
-              completed = true;
-              
-              // Decrement user credit balance in database by 1
-              try {
-                await db.update(users)
-                  .set({ creditBalance: sql`${users.creditBalance} - 1` })
-                  .where(eq(users.id, userId));
-              } catch (dbErr: any) {
-                console.error('Failed to decrement credit balance:', dbErr.message);
-              }
-
-              controller.enqueue(encoder.encode('\n\n[OpenClaw Worker: Task executed successfully. 1 credit charged.]\n'));
-              break;
-            }
-
-            if (taskData.status === 'FAILURE') {
-              completed = true;
-              controller.enqueue(encoder.encode(`\n\n[OpenClaw Worker: Task failed. Details: ${taskData.logs || 'Unknown error'}]\n`));
-              break;
-            }
-
-          } catch (pollErr: any) {
-            console.error('Polling error:', pollErr);
-            controller.enqueue(encoder.encode(`[System Error: Polling connection failed: ${pollErr.message}]\n`));
+      start(controller) {
+        if (workerResult.logs && Array.isArray(workerResult.logs)) {
+          for (const logItem of workerResult.logs) {
+            controller.enqueue(encoder.encode(`[${logItem.type.toUpperCase()}] ${logItem.description}\n`));
           }
-
-          // Poll every 1.5 seconds
-          await new Promise((resolve) => setTimeout(resolve, 1500));
         }
-
-        if (attempts >= maxAttempts) {
-          controller.enqueue(encoder.encode('\n\n[System Timeout: OpenClaw execution exceeded timeout limit.]\n'));
-        }
-
+        controller.enqueue(encoder.encode(`\n💬 ${workerResult.output || 'Execution complete.'}\n`));
         controller.close();
-      },
+      }
     });
 
     return new Response(stream, {
@@ -225,7 +196,10 @@ export async function POST(req: Request) {
     });
 
   } catch (error: any) {
-    console.error('Error in chat route:', error);
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+    console.error('Error in chat route handler:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error', details: error.message },
+      { status: 500 }
+    );
   }
 }
