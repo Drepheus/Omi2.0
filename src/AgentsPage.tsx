@@ -222,6 +222,60 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [selectedPromptModel, setSelectedPromptModel] = useState('claude-code');
+
+  const promptStarters = [
+    {
+      id: 'lead-scraper',
+      title: 'Web Lead Generation & Scraper',
+      category: 'Web & Scraping',
+      badge: 'Popular',
+      icon: Globe,
+      modelId: 'openclaw',
+      prompt: 'Crawl target company pricing pages, extract structured JSON contact details, and compile a comparative summary table.'
+    },
+    {
+      id: 'code-refactor',
+      title: 'Autonomous Code & Bug Fixer',
+      category: 'Code & Dev',
+      badge: 'Trending',
+      icon: Code,
+      modelId: 'claude-code',
+      prompt: 'Scan the codebase repository for open bugs, run unit test suites, apply code refactoring, and output a clean git diff.'
+    },
+    {
+      id: 'logic-reasoning',
+      title: 'Deep Logic & Contract Inspector',
+      category: 'Deep Reasoning',
+      badge: 'High Precision',
+      icon: Brain,
+      modelId: 'deepseek-v4',
+      prompt: 'Perform multi-step chain-of-thought analysis on complex technical documents and generate a detailed risk assessment report.'
+    },
+    {
+      id: 'db-optimizer',
+      title: 'Database & SQL Performance Auditor',
+      category: 'Data & SQL',
+      badge: 'Data Ops',
+      icon: Database,
+      modelId: 'alloydb-postgres',
+      prompt: 'Inspect PostgreSQL schema relationships, identify slow query bottlenecks, and suggest indexed ORM optimizations.'
+    }
+  ];
+
+  const handleLaunchCustomPrompt = () => {
+    const targetAgent = agentCatalog.find(a => a.id === selectedPromptModel) || agentCatalog[0];
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    setSelectedAgent({
+      ...targetAgent,
+      description: customPrompt.trim() || targetAgent.description
+    });
+    setShowDeployModal(true);
+  };
   
   // OpenClaw Configuration Form State
   const [apiKey, setApiKey] = useState('');
@@ -868,20 +922,27 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         </header>
 
         {/* Stats Row */}
-        {/* Consumer Stats Row */}
+        {/* Consumer Stats Row with Glowing Indicator */}
         <section className="agent-stats">
           <div className="agent-stat-card">
-            <div className="agent-stat-icon" style={{ background: 'rgba(56, 189, 248, 0.08)', color: '#38bdf8' }}>
+            <div
+              className="agent-stat-icon"
+              style={{
+                background: runningCount > 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                color: runningCount > 0 ? '#34d399' : '#f87171'
+              }}
+            >
               <Bot size={20} />
             </div>
             <div className="agent-stat-info">
               <span className="agent-stat-value">{runningCount}</span>
               <span className="agent-stat-label">Active Agents Running</span>
             </div>
-            <span className="agent-stat-trend up">
-              <Activity size={12} className="animate-pulse" />
-              Live
-            </span>
+
+            <div className={`agent-status-glowing-indicator ${runningCount > 0 ? 'online' : 'offline'}`}>
+              <span className="glowing-light-dot" />
+              <span>{runningCount > 0 ? 'ACTIVE' : 'IDLE'}</span>
+            </div>
           </div>
 
           <div className="agent-stat-card">
@@ -915,14 +976,14 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
           </div>
         </section>
 
-        {/* Deployments Section */}
+        {/* Deployments & Agent Prompt Creation Hub */}
         <section className="agent-section">
           <div className="agent-section-header">
-            <h2 className="agent-section-title">Active Deployments</h2>
+            <h2 className="agent-section-title">Agent Workspace & Prompt Studio</h2>
           </div>
 
-          {deployments.length > 0 ? (
-            <div className="agent-deployments-grid">
+          {deployments.length > 0 && (
+            <div className="agent-deployments-grid mb-6">
               {deployments.map(dep => (
                 <div key={dep.id} className="agent-deployment-card">
                   <div className="agent-deployment-top">
@@ -950,28 +1011,6 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       <span>{dep.uptime}</span>
                     </div>
                   </div>
-                  <div className="agent-deployment-resources">
-                    <div className="agent-resource-bar">
-                      <div className="agent-resource-header">
-                        <Cpu size={12} />
-                        <span>CPU</span>
-                        <span>{dep.cpu}%</span>
-                      </div>
-                      <div className="agent-resource-track">
-                        <div className="agent-resource-fill" style={{ width: `${dep.cpu}%` }} />
-                      </div>
-                    </div>
-                    <div className="agent-resource-bar">
-                      <div className="agent-resource-header">
-                        <HardDrive size={12} />
-                        <span>Memory</span>
-                        <span>{dep.memory}%</span>
-                      </div>
-                      <div className="agent-resource-track">
-                        <div className="agent-resource-fill memory" style={{ width: `${dep.memory}%` }} />
-                      </div>
-                    </div>
-                  </div>
                   <div className="agent-deployment-actions">
                     <button className="agent-deployment-action-btn" onClick={() => openPlayground(dep)}>
                       <MessageSquare size={14} /> Chat & Workspace
@@ -983,13 +1022,78 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="agent-empty-deployments">
-              <Bot size={48} className="agent-empty-icon text-sky-400" />
-              <h3>No Active Agents Currently Running</h3>
-              <p>Select and deploy any skill template below to launch your first autonomous AI agent space.</p>
-            </div>
           )}
+
+          {/* Interactive Agent Creation Studio */}
+          <div className="agent-prompt-studio-card">
+            <div className="studio-header">
+              <div>
+                <h3 className="studio-title">Build & Launch a Custom AI Agent</h3>
+                <p className="studio-subtitle">Type your custom prompt or select a ready starter below to deploy instantly.</p>
+              </div>
+
+              {/* Model Selector Tabs */}
+              <div className="studio-model-selector">
+                {agentCatalog.slice(0, 4).map(model => (
+                  <button
+                    key={model.id}
+                    onClick={() => setSelectedPromptModel(model.id)}
+                    className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
+                  >
+                    <span>{model.framework}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Prompt Input Box */}
+            <div className="prompt-input-wrapper">
+              <textarea
+                value={customPrompt}
+                onChange={e => setCustomPrompt(e.target.value)}
+                placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
+                className="prompt-textarea"
+                rows={3}
+              />
+              <div className="prompt-action-bar">
+                <span className="prompt-hint">Powered by OpenClaw Stateless Engine</span>
+                <button onClick={handleLaunchCustomPrompt} className="launch-custom-agent-btn">
+                  <Play size={14} />
+                  <span>Launch Custom Agent</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Ready Prompt Starter Cards */}
+            <div className="prompt-starters-section">
+              <h4 className="starters-heading">Ready-to-Use Agent Prompt Starters:</h4>
+              <div className="prompt-starters-grid">
+                {promptStarters.map(starter => {
+                  const Icon = starter.icon;
+                  return (
+                    <div
+                      key={starter.id}
+                      onClick={() => {
+                        setCustomPrompt(starter.prompt);
+                        setSelectedPromptModel(starter.modelId);
+                      }}
+                      className="prompt-starter-card"
+                    >
+                      <div className="starter-card-top">
+                        <div className="starter-icon-wrapper">
+                          <Icon size={16} />
+                        </div>
+                        <span className="starter-badge">{starter.badge}</span>
+                      </div>
+                      <h4 className="starter-title">{starter.title}</h4>
+                      <p className="starter-prompt-preview">"{starter.prompt}"</p>
+                      <span className="starter-click-tag">Click to pre-fill prompt →</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Available Skill Templates & Tools Section */}
