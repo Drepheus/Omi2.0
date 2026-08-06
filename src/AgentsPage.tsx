@@ -237,6 +237,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [showSelectRunningModal, setShowSelectRunningModal] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
   const [selectedPromptModel, setSelectedPromptModel] = useState('claude-code');
 
@@ -943,13 +944,15 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             className={`agent-quick-stat-card ${runningCount > 0 ? 'active-running' : ''}`}
             onClick={() => {
               const runningDepts = deployments.filter(d => d.status === 'running');
-              if (runningDepts.length > 0) {
+              if (runningDepts.length === 1) {
                 openPlayground(runningDepts[0]);
+              } else if (runningDepts.length > 1) {
+                setShowSelectRunningModal(true);
               } else {
                 setMainTab('overview');
               }
             }}
-            title={runningCount > 0 ? "Click to open active agent playground" : "Click to view overview"}
+            title={runningCount > 1 ? "Click to select running agent workspace" : runningCount === 1 ? "Click to open active agent playground" : "Click to view overview"}
           >
             <div className="stat-card-top flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
@@ -958,9 +961,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               </div>
               <Play size={14} className={runningCount > 0 ? 'text-emerald-400' : 'text-gray-500'} />
             </div>
-            {runningCount > 0 && (
+            {runningCount > 1 ? (
+              <span className="text-[11px] text-emerald-400/80 mt-1 block">Choose running agent ({runningCount}) →</span>
+            ) : runningCount === 1 ? (
               <span className="text-[11px] text-emerald-400/80 mt-1 block">Click to open workspace →</span>
-            )}
+            ) : null}
           </div>
 
           <div
@@ -1619,6 +1624,63 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         </div>
       )}
 
+      {/* Select Active Running Agent Modal */}
+      {showSelectRunningModal && (
+        <div className="agent-modal-overlay" onClick={() => setShowSelectRunningModal(false)}>
+          <div className="agent-modal" onClick={e => e.stopPropagation()}>
+            <button className="agent-modal-close" onClick={() => setShowSelectRunningModal(false)}>✕</button>
+            <div className="agent-modal-header">
+              <span className="agent-modal-icon-wrapper">
+                <Play size={28} className="text-emerald-400" />
+              </span>
+              <h2>Select Running Agent Workspace</h2>
+              <p>You have {deployments.filter(d => d.status === 'running').length} active running agents. Choose which workspace to open:</p>
+            </div>
+
+            <div className="agent-modal-body space-y-3">
+              {deployments.filter(d => d.status === 'running').map((dep) => (
+                <div
+                  key={dep.id}
+                  onClick={() => {
+                    setShowSelectRunningModal(false);
+                    openPlayground(dep);
+                  }}
+                  className="p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-500/40 cursor-pointer flex items-center justify-between transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                      {renderAgentIcon(dep.agentId, "w-5 h-5")}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-white group-hover:text-emerald-300 transition-colors text-sm">{dep.agentName}</h4>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Running
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 font-mono mt-0.5">
+                        {dep.ipAddress} • Node: {dep.vmName}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold group-hover:bg-emerald-500 group-hover:text-black transition-all flex items-center gap-1">
+                    <span>Open</span>
+                    <ChevronRight size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="agent-modal-footer">
+              <button className="agent-btn agent-btn-secondary" onClick={() => setShowSelectRunningModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stateful Agent Chat Playground Workspace */}
       {showPlayground && playgroundDeployment && (
         <div className="playground-overlay" onClick={() => setShowPlayground(false)}>
@@ -1630,8 +1692,24 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                   {renderAgentIcon(playgroundDeployment.agentId, "w-5 h-5 text-violet-400")}
                 </span>
                 <div>
-                  <div className="playground-header-title">
-                    {playgroundDeployment.agentName} Workspace
+                  <div className="playground-header-title flex items-center gap-2 flex-wrap">
+                    <span>{playgroundDeployment.agentName} Workspace</span>
+                    {deployments.filter(d => d.status === 'running').length > 1 && (
+                      <select
+                        className="bg-white/10 text-xs text-emerald-300 font-medium border border-emerald-500/30 rounded-lg px-2.5 py-1 outline-none cursor-pointer hover:bg-white/20 transition-colors"
+                        value={playgroundDeployment.id}
+                        onChange={(e) => {
+                          const target = deployments.find(d => d.id === e.target.value);
+                          if (target) openPlayground(target);
+                        }}
+                      >
+                        {deployments.filter(d => d.status === 'running').map(d => (
+                          <option key={d.id} value={d.id} className="bg-[#0f0f14] text-white">
+                            Switch Workspace: {d.agentName}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                     <span className="playground-header-badge">
                       <span className="pulsing-dot" />
                       Omi Managed Cloud Engine
