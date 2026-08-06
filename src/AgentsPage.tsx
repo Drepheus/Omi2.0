@@ -17,6 +17,7 @@ import {
   Globe,
   Zap,
   Shield,
+  ShieldCheck,
   Database,
   Cpu,
   HardDrive,
@@ -320,6 +321,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [consoleInput, setConsoleInput] = useState('');
   const [isConsoleExecuting, setIsConsoleExecuting] = useState(false);
   const [expandedReasoningIndex, setExpandedReasoningIndex] = useState<number | null>(null);
+  const [showAdvancedState, setShowAdvancedState] = useState(false);
   
   const logsEndRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -1778,7 +1780,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     onClick={() => setPlaygroundTab('logs')}
                   >
                     <Terminal size={14} />
-                    <span>Live Telemetry Logs</span>
+                    <span>Advanced System Logs</span>
                   </button>
                 </div>
 
@@ -2057,24 +2059,35 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                 </div>
               </div>
 
-              {/* Right Pane (30%): State & Telemetry */}
+              {/* Right Pane (30%): Consumer Agent Overview & Capabilities */}
               <div className="playground-state-pane">
                 <div className="state-pane-section">
                   <div className="state-section-header">
-                    <Database size={14} className="text-violet-400" />
-                    <h3>Supabase State Sync</h3>
-                    <span className="sync-status-badge">Synced</span>
+                    <Sparkles size={14} className="text-violet-400" />
+                    <h3>Agent Overview & Status</h3>
+                    <span className="sync-status-badge">Active & Ready</span>
                   </div>
                   <p className="state-section-desc">
-                    OpenClaw state JSON object stored cleanly under agent_configs in Supabase.
+                    Pre-configured autonomous tool engine powered by state-of-the-art AI reasoning models.
                   </p>
 
-                  <div className="memory-file-box">
-                    <div className="memory-file-title">
-                      <FileText size={12} />
-                      <span>openclawState.json</span>
+                  <div className="telemetry-stats-list">
+                    <div className="telemetry-stat-row">
+                      <span>Agent Core</span>
+                      <span className="text-white font-medium">{playgroundDeployment.agentName}</span>
                     </div>
-                    <pre className="memory-file-body">{openclawState}</pre>
+                    <div className="telemetry-stat-row">
+                      <span>Execution Mode</span>
+                      <span className="text-emerald-400 font-medium flex items-center gap-1">
+                        <Zap size={12} fill="currentColor" /> Autonomous Autopilot
+                      </span>
+                    </div>
+                    <div className="telemetry-stat-row">
+                      <span>Memory & Privacy</span>
+                      <span className="text-sky-300 font-medium flex items-center gap-1">
+                        <ShieldCheck size={12} /> AES-256 Encrypted
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -2082,28 +2095,69 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
                 <div className="state-pane-section">
                   <div className="state-section-header">
-                    <Activity size={14} className="text-violet-400" />
-                    <h3>Agent Performance & Status</h3>
+                    <Zap size={14} className="text-emerald-400" />
+                    <h3>Active Agent Skills</h3>
                   </div>
-                  
-                  <div className="telemetry-stats-list">
-                    <div className="telemetry-stat-row">
-                      <span>AI Model Engine</span>
-                      <span className="text-violet-300 font-mono">Claude 5 / DeepSeek V4</span>
+                  <div className="flex flex-col gap-2 mt-1">
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-200">
+                      <Globe size={14} className="text-sky-400 flex-shrink-0" />
+                      <span>Web Scraping & Real-time Live Search</span>
                     </div>
-                    <div className="telemetry-stat-row">
-                      <span>Agent Status</span>
-                      <span className="text-emerald-400 font-mono">Online & Ready</span>
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-200">
+                      <Code size={14} className="text-violet-400 flex-shrink-0" />
+                      <span>Automated Code Refactoring & Git Ops</span>
                     </div>
-                    <div className="telemetry-stat-row">
-                      <span>Response Latency</span>
-                      <span className="text-sky-300 font-mono">0.8s Superfast</span>
-                    </div>
-                    <div className="telemetry-stat-row">
-                      <span>Execution Cost</span>
-                      <span className="text-amber-300 font-mono">1 Credit / Turn</span>
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-200">
+                      <Brain size={14} className="text-amber-400 flex-shrink-0" />
+                      <span>Deep Multi-Step Reasoning Core</span>
                     </div>
                   </div>
+                </div>
+
+                <div className="state-pane-divider" />
+
+                {/* Advanced Developer State Toggle */}
+                <div className="state-pane-section">
+                  <button
+                    className="flex items-center justify-between w-full py-2.5 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-400 hover:text-white hover:bg-white/10 transition-all font-medium"
+                    onClick={() => setShowAdvancedState(!showAdvancedState)}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Settings2 size={13} className="text-sky-400" />
+                      <span>Advanced System Specs & Sync</span>
+                    </span>
+                    <ChevronRight
+                      size={13}
+                      className={`transform transition-transform ${showAdvancedState ? 'rotate-90' : ''}`}
+                    />
+                  </button>
+
+                  {showAdvancedState && (
+                    <div className="mt-3 space-y-3 animate-fade-in">
+                      <div className="memory-file-box">
+                        <div className="memory-file-title">
+                          <Database size={12} className="text-violet-400" />
+                          <span>Supabase Database Sync (openclawState.json)</span>
+                        </div>
+                        <pre className="memory-file-body">{openclawState}</pre>
+                      </div>
+
+                      <div className="telemetry-stats-list">
+                        <div className="telemetry-stat-row">
+                          <span>AI Engine Core</span>
+                          <span className="text-violet-300 font-mono">Claude 5 / DeepSeek V4</span>
+                        </div>
+                        <div className="telemetry-stat-row">
+                          <span>Response Latency</span>
+                          <span className="text-sky-300 font-mono">0.8s Superfast</span>
+                        </div>
+                        <div className="telemetry-stat-row">
+                          <span>Worker Node</span>
+                          <span className="text-gray-400 font-mono">{playgroundDeployment.ipAddress}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
