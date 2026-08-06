@@ -25,58 +25,75 @@ export async function POST(req: Request) {
     const userId = session.user.id;
 
     const body = await req.json();
-    const { messages, systemPrompt: customSystemPrompt } = body as {
-      messages: Array<{ role: string; content: string }>;
+    const { messages, systemPrompt: customSystemPrompt, model: requestedModel } = body as {
+      messages?: Array<{ role: string; content: string }>;
+      prompt?: string;
       systemPrompt?: string;
+      model?: string;
     };
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: 'Messages array is required' }, { status: 400 });
+    let userPrompt = '';
+    if (messages && Array.isArray(messages) && messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      userPrompt = latestMessage.content || '';
+    } else if (body.prompt && typeof body.prompt === 'string') {
+      userPrompt = body.prompt;
     }
 
-    const latestMessage = messages[messages.length - 1];
-    const userPrompt = latestMessage.content || '';
+    if (!userPrompt) {
+      return NextResponse.json({ error: 'Prompt or non-empty messages array is required' }, { status: 400 });
+    }
 
-    // 2. Database Lookup (Neon + Drizzle) for user credit balance & agent configs
+    // 2. User & Agent Config Lookup (Neon + Drizzle)
     const userRecord = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    const creditBalance = userRecord.length > 0 ? userRecord[0].creditBalance : 0;
+    const user = userRecord[0];
+
+    const creditBalance = user ? user.creditBalance : 0;
+    const isPaid = user ? Boolean(user.isPaid) : false;
 
     const configRecord = await db.select().from(agentConfigs).where(eq(agentConfigs.userId, userId)).limit(1);
-    let encryptedApiKey = '';
+    let encryptedApiKey = configRecord.length > 0 ? (configRecord[0].encryptedApiKey || '') : '';
     let openclawState: any = null;
 
-    if (configRecord.length > 0) {
-      encryptedApiKey = configRecord[0].encryptedApiKey || '';
-      if (configRecord[0].openclawState) {
-        try {
-          openclawState = typeof configRecord[0].openclawState === 'string'
-            ? JSON.parse(configRecord[0].openclawState)
-            : configRecord[0].openclawState;
-        } catch {
-          openclawState = { raw: configRecord[0].openclawState };
-        }
+    if (configRecord.length > 0 && configRecord[0].openclawState) {
+      try {
+        openclawState = typeof configRecord[0].openclawState === 'string'
+          ? JSON.parse(configRecord[0].openclawState)
+          : configRecord[0].openclawState;
+      } catch {
+        openclawState = { raw: configRecord[0].openclawState };
       }
     }
 
-    const isBYOK = Boolean(encryptedApiKey && encryptedApiKey.trim().length > 0);
+    const isByok = Boolean((user && user.isByok) || (encryptedApiKey && encryptedApiKey.trim().length > 0));
 
-    // 3. Credit Verification: If creditBalance <= 0 and user is not BYOK, return 402
-    if (creditBalance <= 0 && !isBYOK) {
+    // 3. Credit & BYOK Check: If creditBalance <= 0 AND isByok is false -> 402 Payment Required
+    if (creditBalance <= 0 && !isByok) {
       return NextResponse.json(
-        {
-          error: 'Payment Required',
-          code: 'INSUFFICIENT_CREDITS',
-          details: 'Your credit balance is 0. Top up $10 (1,000 credits) or configure your own API key (BYOK) to continue.'
-        },
+        { error: 'Free trial completed. Please upgrade your account or enter your own API key to continue.' },
         { status: 402 }
       );
     }
 
-    // 4. Key Decryption: Decrypt stored API key using decryptApiKey or fallback
-    let apiKey = '';
-    if (isBYOK) {
+    // 4. Smart Model Routing & Safeguards
+    let selectedModel = '';
+    let maxSteps = 5;
+
+    if (!isPaid && !isByok) {
+      // Free Tier Users
+      selectedModel = 'deepseek/deepseek-r1';
+      maxSteps = 5;
+    } else {
+      // Paid / BYOK Users
+      selectedModel = requestedModel || 'anthropic/claude-3-5-sonnet';
+      maxSteps = 15;
+    }
+
+    // 5. Key Resolution
+    let targetApiKey = '';
+    if (isByok && encryptedApiKey) {
       try {
-        apiKey = decryptApiKey(encryptedApiKey);
+        targetApiKey = decryptApiKey(encryptedApiKey);
       } catch (cryptoErr: any) {
         console.error('[Crypto Error] Failed to decrypt user stored API key:', cryptoErr.message);
         return NextResponse.json(
@@ -85,12 +102,13 @@ export async function POST(req: Request) {
         );
       }
     } else {
-      apiKey = process.env.OPENAI_API_KEY || '';
+      targetApiKey = process.env.PLATFORM_OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || '';
     }
 
-    // 5. Worker Execution Call to Hetzner VM / Container Backend
+    // 6. Dispatch to Hetzner Worker
     const workerUrl = process.env.OPENCLAW_WORKER_URL || 'http://5.78.197.8:8080';
     const internalSecret = process.env.INTERNAL_API_SECRET || 'your_super_secret_token_123';
+    const systemPrompt = customSystemPrompt || 'You are an autonomous OpenClaw AI agent working on behalf of the user.';
 
     let workerResponse: Response;
     try {
@@ -101,10 +119,12 @@ export async function POST(req: Request) {
           'Authorization': `Bearer ${internalSecret}`,
         },
         body: JSON.stringify({
-          userId,
+          userId: userId,
           prompt: userPrompt,
-          apiKey,
-          systemPrompt: customSystemPrompt || 'You are an autonomous OpenClaw AI agent working on behalf of the user.',
+          apiKey: targetApiKey,
+          model: selectedModel,
+          maxSteps: maxSteps,
+          systemPrompt: systemPrompt,
           openclawState
         }),
       });
@@ -131,10 +151,11 @@ export async function POST(req: Request) {
 
     const workerResult = await workerResponse.json();
 
-    // 6. Credit Deduction & Persistent State Sync
+    // 7. Atomic Deduction & Persistent State Sync
     if (workerResult.success) {
-      // Deduct 1 credit atomically if user is using platform credits (non-BYOK)
-      if (!isBYOK && creditBalance > 0) {
+      // Upon receiving a successful response from the worker, if the user is using platform credits (!isByok),
+      // atomically decrement 1 credit from creditBalance in Neon via Drizzle ORM
+      if (!isByok) {
         try {
           await db
             .update(users)
@@ -173,7 +194,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Stream logs & output back to client for real-time console rendering
+    // Stream logs & output back to client
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {

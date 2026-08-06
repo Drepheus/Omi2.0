@@ -6,7 +6,9 @@ export const users = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
-  creditBalance: integer('credit_balance').notNull().default(0),
+  creditBalance: integer('credit_balance').notNull().default(3),
+  isPaid: boolean('is_paid').notNull().default(false),
+  isByok: boolean('is_byok').notNull().default(false),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
 });
