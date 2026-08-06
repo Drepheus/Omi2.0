@@ -52,13 +52,13 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
-import { ThinkingOrb } from 'thinking-orbs';
-export type OrbState = "idle" | "thinking" | "analyzing" | "composing" | "executing" | "complete" | "error";
+import { ThinkingOrb, OrbState } from 'thinking-orbs';
 import { ShinyText } from '@/components/typography/shiny-text';
 import BorderGlow from '@/components/ui/border-glow';
 import { Orb } from "@/components/visuals/orb";
 
 import './AgentsPage.css';
+import '@/components/onboarding/onboarding-wizard.css';
 
 interface Agent {
   id: string;
@@ -1334,62 +1334,76 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
 
             {setupMode === 'choice' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+              <div className="consumer-cards-grid my-4">
                 {/* Option 1: Quick Setup */}
                 <div
-                  className="onboarding-option-card border border-white/15 bg-[#0f0f14] hover:bg-[#14141c] hover:border-white/30 rounded-3xl p-7 flex flex-col justify-between cursor-pointer transition-all duration-300 shadow-xl group"
+                  className="consumer-card group"
                   onClick={() => {
                     const defaultAgent = agentCatalog[0];
                     handleTriggerDeployment(defaultAgent);
                   }}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs uppercase tracking-wider font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Recommended • Single Click
+                    <div className="card-top">
+                      <div className="card-icon-wrapper group-hover:border-emerald-500/40 group-hover:bg-emerald-500/10 transition-all">
+                        <Zap size={24} className="text-emerald-400" />
+                      </div>
+                      <span className="consumer-badge border-emerald-500/30 text-emerald-300 bg-emerald-500/10 font-medium">
+                        RECOMMENDED • SINGLE CLICK
                       </span>
-                      <Zap size={22} className="text-emerald-400 group-hover:scale-110 transition-transform" />
                     </div>
 
-                    <h3 className="text-xl font-medium text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                    <h3 className="card-title group-hover:text-emerald-300 transition-colors">
                       Quick Setup
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed mb-6">
+                    <p className="card-subtitle">
                       Launch a pre-configured autonomous agent loaded with top web scraping, code fixing, & database optimization skills in seconds.
                     </p>
                   </div>
 
-                  <button className="w-full py-3.5 px-4 rounded-xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-2 shadow-lg group-hover:bg-emerald-300 transition-colors">
-                    <Zap size={16} fill="currentColor" />
-                    <span>Quick Deploy Agent</span>
-                  </button>
+                  <div className="card-select-footer flex items-center justify-between mt-auto pt-4 border-t border-white/10">
+                    <span className="select-tag flex items-center gap-1.5 text-xs text-white/50 font-light">
+                      <Zap size={13} className="text-emerald-400" /> Instant Agent Deployment
+                    </span>
+                    <button className="omi-next-btn py-2.5 px-4 text-xs font-semibold flex items-center gap-2 bg-white text-black hover:bg-emerald-300 border-none transition-all shadow-lg rounded-xl">
+                      <Zap size={14} fill="currentColor" />
+                      <span>Quick Deploy Agent</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Option 2: Custom Agent Setup (Advanced) */}
                 <div
-                  className="onboarding-option-card border border-white/15 bg-[#0f0f14] hover:bg-[#14141c] hover:border-white/30 rounded-3xl p-7 flex flex-col justify-between cursor-pointer transition-all duration-300 shadow-xl group"
+                  className="consumer-card group"
                   onClick={() => setSetupMode('custom')}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xs uppercase tracking-wider font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                        Advanced • Full Control
+                    <div className="card-top">
+                      <div className="card-icon-wrapper group-hover:border-sky-500/40 group-hover:bg-sky-500/10 transition-all">
+                        <Bot size={24} className="text-sky-400" />
+                      </div>
+                      <span className="consumer-badge border-sky-500/30 text-sky-300 bg-sky-500/10 font-medium">
+                        ADVANCED • FULL CONTROL
                       </span>
-                      <Bot size={22} className="text-sky-400 group-hover:scale-110 transition-transform" />
                     </div>
 
-                    <h3 className="text-xl font-medium text-white mb-2 group-hover:text-sky-300 transition-colors">
+                    <h3 className="card-title group-hover:text-sky-300 transition-colors">
                       Custom Agent Setup (Advanced)
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed mb-6">
+                    <p className="card-subtitle">
                       Custom-prompt your agent from scratch. Select underlying engine models (Claude 5, OpenClaw 2.0, Hermes 4, DeepSeek V4) and inject specific instruction loops.
                     </p>
                   </div>
 
-                  <button className="w-full py-3.5 px-4 rounded-xl bg-white/10 text-white font-semibold text-sm border border-white/20 flex items-center justify-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
-                    <Sparkles size={16} />
-                    <span>Create with Custom Prompt</span>
-                  </button>
+                  <div className="card-select-footer flex items-center justify-between mt-auto pt-4 border-t border-white/10">
+                    <span className="select-tag flex items-center gap-1.5 text-xs text-white/50 font-light">
+                      <Sparkles size={13} className="text-sky-400" /> Custom Engine & Prompting
+                    </span>
+                    <button className="omi-next-btn py-2.5 px-4 text-xs font-semibold flex items-center gap-2 text-white bg-white/10 hover:bg-white hover:text-black border border-white/20 transition-all shadow-lg rounded-xl">
+                      <Sparkles size={14} />
+                      <span>Create with Custom Prompt</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
