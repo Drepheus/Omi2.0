@@ -12,6 +12,7 @@ import {
   Activity,
   ChevronRight,
   Plus,
+  Wrench,
   Settings,
   Terminal,
   Globe,
@@ -88,6 +89,7 @@ interface Deployment {
   cpu: number;
   memory: number;
   deployedAt: string;
+  skills?: Array<{ id: string; name: string; file: string; description: string; addedAt: string }>;
 }
 
 interface Message {
@@ -232,7 +234,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   // Dashboard & Deployments State
-  const [mainTab, setMainTab] = useState<'overview' | 'create' | 'templates'>('create');
+  const [mainTab, setMainTab] = useState<'overview' | 'create' | 'templates' | 'assist'>('create');
   const [setupMode, setSetupMode] = useState<'choice' | 'custom'>('choice');
   const [deployExecMode, setDeployExecMode] = useState<'cloud' | 'byok'>('cloud');
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
@@ -241,6 +243,105 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [showSelectRunningModal, setShowSelectRunningModal] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
   const [selectedPromptModel, setSelectedPromptModel] = useState('claude-code');
+
+  // Skill Installation & Attachment State
+  const [showNoRunningAgentModal, setShowNoRunningAgentModal] = useState(false);
+  const [showAttachSkillModal, setShowAttachSkillModal] = useState(false);
+  const [selectedSkillTemplate, setSelectedSkillTemplate] = useState<Agent | null>(null);
+  const [selectedTargetAgentId, setSelectedTargetAgentId] = useState<string>('');
+  const [isAttachingSkill, setIsAttachingSkill] = useState(false);
+  const [attachSuccessMessage, setAttachSuccessMessage] = useState<string | null>(null);
+
+  // Omi Assist AI Companion State
+  const [assistMessages, setAssistMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([
+    {
+      role: 'assistant',
+      content: "Hello! I'm your Omi Assist AI Companion. How can I help you deploy agents, attach skills to running workspaces, configure BYOK keys, or manage SaaS credits today?"
+    }
+  ]);
+  const [assistInput, setAssistInput] = useState('');
+
+  const handleTriggerAddSkill = (agent: Agent) => {
+    setSelectedSkillTemplate(agent);
+    setAttachSuccessMessage(null);
+    const activeAgents = deployments.filter(d => d.status === 'running');
+    if (activeAgents.length === 0) {
+      setShowNoRunningAgentModal(true);
+    } else {
+      setSelectedTargetAgentId(activeAgents[0].id);
+      setShowAttachSkillModal(true);
+    }
+  };
+
+  const handleConfirmAttachSkill = () => {
+    if (!selectedSkillTemplate || !selectedTargetAgentId) return;
+    setIsAttachingSkill(true);
+
+    setTimeout(() => {
+      const newSkill = {
+        id: selectedSkillTemplate.id,
+        name: selectedSkillTemplate.name,
+        file: selectedSkillTemplate.skillFile,
+        description: selectedSkillTemplate.description,
+        addedAt: new Date().toLocaleTimeString()
+      };
+
+      setDeployments(prev => prev.map(dep => {
+        if (dep.id === selectedTargetAgentId) {
+          const existingSkills = dep.skills || [];
+          if (existingSkills.some(s => s.id === newSkill.id)) {
+            return dep;
+          }
+          return {
+            ...dep,
+            skills: [...existingSkills, newSkill]
+          };
+        }
+        return dep;
+      }));
+
+      if (playgroundDeployment && playgroundDeployment.id === selectedTargetAgentId) {
+        setPlaygroundDeployment(prev => prev ? {
+          ...prev,
+          skills: [...(prev.skills || []).filter(s => s.id !== newSkill.id), newSkill]
+        } : null);
+      }
+
+      setIsAttachingSkill(false);
+      const targetAgentName = deployments.find(d => d.id === selectedTargetAgentId)?.agentName || 'Agent';
+      setAttachSuccessMessage(`Skill "${selectedSkillTemplate.skillFile}" attached cleanly to ${targetAgentName}!`);
+    }, 600);
+  };
+
+  const handleSendAssistMessage = (inputPrompt?: string) => {
+    const promptText = inputPrompt || assistInput;
+    if (!promptText.trim()) return;
+
+    const userMsg = { role: 'user' as const, content: promptText };
+    setAssistMessages(prev => [...prev, userMsg]);
+    if (!inputPrompt) setAssistInput('');
+
+    const lower = promptText.toLowerCase();
+    let reply = '';
+
+    if (lower.includes('deploy') || lower.includes('create') || lower.includes('setup')) {
+      reply = `To deploy an autonomous AI agent:\n\n1. Click **Create Agent Studio** in the left menu.\n2. Choose **Quick Setup** for instant 1-click launch loaded with top web scraping & coding skills.\n3. Or select **Custom Agent Setup** to enter your custom automation prompt and choose your engine model (Claude 5, OpenClaw 2.0, Hermes 4, DeepSeek V4).`;
+    } else if (lower.includes('skill') || lower.includes('template')) {
+      reply = `Skills are pre-packaged task capabilities (like \`claude-5-code.md\` or \`openclaw-web-scraper.md\`).\n\nTo attach a skill:\n1. Ensure you have an active running agent workspace.\n2. Open the **Templates & Prebuilt** tab.\n3. Click **Add Skill to Agent** on any skill card and select your target agent.\n4. View and manage all attached skills inside your Agent Playground under the **Installed Skills** tab!`;
+    } else if (lower.includes('byok') || lower.includes('key') || lower.includes('api key')) {
+      reply = `BYOK (Bring Your Own Key) allows you to use your custom OpenAI, Anthropic, or OpenRouter API keys.\n\n- Your API keys are encrypted server-side using native **AES-256 encryption**.\n- When BYOK is enabled, your agent execution does **NOT** deduct any platform SaaS credits.`;
+    } else if (lower.includes('credit') || lower.includes('free trial') || lower.includes('paid')) {
+      reply = `Omi includes **3 free SaaS credits** upon signup!\n\n- Executing cloud agent tasks costs **1 credit per turn**.\n- BYOK users execute with 0 credit deduction.\n- You can add credits anytime by clicking **Add Credits** in your workspace header.`;
+    } else if (lower.includes('model') || lower.includes('engine') || lower.includes('deepseek') || lower.includes('claude')) {
+      reply = `Omi supports industry-leading reasoning engines:\n\n- **Claude 5 Sonnet**: Top terminal software engineering & repo refactoring.\n- **OpenClaw 2.0 Engine**: Stateful headless web scraping & data crawling.\n- **Nous Hermes 4**: Complex multi-turn decision trees & reasoning.\n- **DeepSeek V4 & R1**: Step-by-step mathematical reasoning & analysis.`;
+    } else {
+      reply = `I'm here to guide your Omi workspace experience! You can ask me about:\n\n• **Deploying agents** in 1-click\n• **Attaching skills** to your running workspaces\n• **BYOK & AES-256 Key Encryption**\n• **SaaS Credit balance & billing**\n• **Engine models** (Claude 5, OpenClaw 2.0, DeepSeek V4)`;
+    }
+
+    setTimeout(() => {
+      setAssistMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    }, 350);
+  };
 
   const promptStarters = [
     {
@@ -312,7 +413,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [showPlayground, setShowPlayground] = useState(false);
   const [playgroundDeployment, setPlaygroundDeployment] = useState<Deployment | null>(null);
   const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
-  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs'>('chat');
+  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs' | 'skills'>('chat');
   const [sessions, setSessions] = useState<Array<{ id: string; agentId: string; title: string; createdAt: string }>>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activityTimeline, setActivityTimeline] = useState<Array<{ id: string; title: string; desc: string; time: string; type: string }>>([]);
@@ -893,6 +994,14 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             <Layers size={18} className="sidebar-icon" />
             <span className="sidebar-label">Templates & Prebuilt</span>
           </button>
+
+          <button
+            className={`sidebar-item ${mainTab === 'assist' ? 'active' : ''}`}
+            onClick={() => setMainTab('assist')}
+          >
+            <Sparkles size={18} className="sidebar-icon text-amber-400" />
+            <span className="sidebar-label">Omi Assist Companion</span>
+          </button>
         </div>
 
         {mainTab === 'templates' && (
@@ -1367,9 +1476,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     <span className="select-tag flex items-center gap-1.5 text-xs text-white/50 font-light">
                       <Zap size={13} className="text-emerald-400" /> Instant Agent Deployment
                     </span>
-                    <button className="omi-next-btn py-2.5 px-4 text-xs font-semibold flex items-center gap-2 bg-white text-black hover:bg-emerald-300 border-none transition-all shadow-lg rounded-xl">
-                      <Zap size={14} fill="currentColor" />
-                      <span>Quick Deploy Agent</span>
+                    <button
+                      className="py-2.5 px-4 text-xs font-bold flex items-center gap-2 bg-white hover:bg-emerald-300 border-none transition-all shadow-lg rounded-xl cursor-pointer"
+                      style={{ color: '#000000' }}
+                    >
+                      <Zap size={14} fill="currentColor" style={{ color: '#000000' }} />
+                      <span style={{ color: '#000000', fontWeight: 700 }}>Quick Deploy Agent</span>
                     </button>
                   </div>
                 </div>
@@ -1536,15 +1648,104 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       className="agent-deploy-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleTriggerDeployment(agent);
+                        handleTriggerAddSkill(agent);
                       }}
                     >
-                      <Play size={12} fill="currentColor" />
+                      <Plus size={13} />
                       <span>Add Skill to Agent</span>
                     </button>
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {mainTab === 'assist' && (
+          <section className="agent-section max-w-4xl mx-auto">
+            <div className="agent-section-header mb-6">
+              <div>
+                <h2 className="agent-section-title flex items-center gap-2">
+                  <Sparkles className="text-amber-400" size={24} />
+                  Omi Assist AI Companion
+                </h2>
+                <p className="agent-section-subtitle">
+                  Ask questions about deploying agents, attaching skills, BYOK keys, credits, or workflow automation.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-[#0f0f14] border border-white/15 backdrop-blur-xl shadow-2xl flex flex-col min-h-[500px]">
+              {/* Starters Pills */}
+              <div className="mb-4 pb-4 border-b border-white/10">
+                <span className="text-xs text-gray-400 block mb-2 font-medium">Suggested Questions:</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleSendAssistMessage("How do I deploy an agent in 1-click?")}
+                    className="text-xs py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Zap size={13} className="text-emerald-400" />
+                    <span>How to deploy an agent?</span>
+                  </button>
+                  <button
+                    onClick={() => handleSendAssistMessage("How do I attach skills to my running agents?")}
+                    className="text-xs py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Wrench size={13} className="text-sky-400" />
+                    <span>How to attach skills?</span>
+                  </button>
+                  <button
+                    onClick={() => handleSendAssistMessage("What is BYOK (Bring Your Own Key)?")}
+                    className="text-xs py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Key size={13} className="text-amber-400" />
+                    <span>What is BYOK?</span>
+                  </button>
+                  <button
+                    onClick={() => handleSendAssistMessage("How do platform credits work?")}
+                    className="text-xs py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Coins size={13} className="text-violet-400" />
+                    <span>How credits work?</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Chat Thread */}
+              <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 max-h-[380px]">
+                {assistMessages.map((msg, idx) => (
+                  <div key={idx} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                    {msg.role === 'assistant' && (
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                        <Sparkles size={16} />
+                      </div>
+                    )}
+                    <div className={`p-3.5 rounded-2xl max-w-xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-white text-black font-medium rounded-tr-none' : 'bg-white/5 border border-white/10 text-gray-200 rounded-tl-none whitespace-pre-wrap'}`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Input Bar */}
+              <div className="flex items-center gap-2 mt-auto pt-3 border-t border-white/10">
+                <input
+                  type="text"
+                  className="flex-1 bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-amber-400/50 transition-colors"
+                  placeholder="Ask Omi Assist anything about your workspace..."
+                  value={assistInput}
+                  onChange={e => setAssistInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSendAssistMessage()}
+                />
+                <button
+                  onClick={() => handleSendAssistMessage()}
+                  disabled={!assistInput.trim()}
+                  className="px-5 py-3 rounded-xl bg-amber-400 text-black font-bold text-sm flex items-center gap-2 hover:bg-amber-300 disabled:opacity-50 transition-all cursor-pointer shadow-lg"
+                >
+                  <Send size={15} />
+                  <span>Ask</span>
+                </button>
+              </div>
             </div>
           </section>
         )}
@@ -1697,6 +1898,130 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         </div>
       )}
 
+      {/* No Active Running Agents Modal */}
+      {showNoRunningAgentModal && (
+        <div className="agent-modal-overlay" onClick={() => setShowNoRunningAgentModal(false)}>
+          <div className="agent-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px' }}>
+            <button className="agent-modal-close" onClick={() => setShowNoRunningAgentModal(false)}>✕</button>
+            <div className="agent-modal-header text-center">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-3 text-amber-400">
+                <AlertTriangle size={28} />
+              </div>
+              <h2 className="text-xl font-medium text-white">No Active Agents Running</h2>
+              <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                Skill templates like <strong className="text-white">"{selectedSkillTemplate?.name}"</strong> must be attached to an active running agent workspace. You don't have any active agent processes deployed right now.
+              </p>
+            </div>
+
+            <div className="agent-modal-footer flex items-center gap-3">
+              <button className="agent-btn agent-btn-secondary flex-1" onClick={() => setShowNoRunningAgentModal(false)}>
+                Cancel
+              </button>
+              <button
+                className="agent-btn agent-btn-primary flex-1 bg-emerald-500 text-black hover:bg-emerald-400 font-semibold cursor-pointer"
+                onClick={() => {
+                  setShowNoRunningAgentModal(false);
+                  setMainTab('create');
+                }}
+              >
+                <Zap size={15} />
+                Create & Deploy Agent
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Attach Skill to Agent Workspace Modal */}
+      {showAttachSkillModal && selectedSkillTemplate && (
+        <div className="agent-modal-overlay" onClick={() => setShowAttachSkillModal(false)}>
+          <div className="agent-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <button className="agent-modal-close" onClick={() => setShowAttachSkillModal(false)}>✕</button>
+            <div className="agent-modal-header">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-2">
+                <Wrench size={24} />
+              </div>
+              <h2>Attach Skill to Agent Workspace</h2>
+              <p className="text-xs text-gray-400 mt-1">
+                Install <strong className="text-white">{selectedSkillTemplate.name}</strong> (<code className="text-sky-300">{selectedSkillTemplate.skillFile}</code>) to an active running agent:
+              </p>
+            </div>
+
+            <div className="agent-modal-body space-y-3 py-2">
+              {attachSuccessMessage ? (
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex flex-col items-center text-center space-y-3">
+                  <CheckCircle2 size={32} className="text-emerald-400" />
+                  <span className="font-semibold text-sm text-white">{attachSuccessMessage}</span>
+                  <button
+                    className="px-4 py-2 rounded-xl bg-emerald-500 text-black font-semibold text-xs flex items-center gap-1.5 hover:bg-emerald-400 transition-colors shadow-lg cursor-pointer"
+                    onClick={() => {
+                      setShowAttachSkillModal(false);
+                      const targetDep = deployments.find(d => d.id === selectedTargetAgentId);
+                      if (targetDep) {
+                        openPlayground(targetDep);
+                        setPlaygroundTab('skills');
+                      }
+                    }}
+                  >
+                    <Play size={13} fill="currentColor" />
+                    <span>Open Agent Workspace & View Skills</span>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <label className="text-xs font-medium text-gray-300 block mb-1">Select Target Running Agent Workspace:</label>
+                  {deployments.filter(d => d.status === 'running').map(dep => (
+                    <div
+                      key={dep.id}
+                      onClick={() => setSelectedTargetAgentId(dep.id)}
+                      className={`p-3 rounded-xl border cursor-pointer flex items-center justify-between transition-all ${selectedTargetAgentId === dep.id ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-emerald-400">
+                          {renderAgentIcon(dep.agentId, "w-4 h-4")}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold text-white">{dep.agentName}</h4>
+                          <p className="text-[11px] text-gray-400 font-mono">{dep.ipAddress} • {dep.skills?.length || 0} skills mounted</p>
+                        </div>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedTargetAgentId === dep.id ? 'border-emerald-400 bg-emerald-500' : 'border-white/30'}`}>
+                        {selectedTargetAgentId === dep.id && <div className="w-2 h-2 rounded-full bg-black" />}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+
+            {!attachSuccessMessage && (
+              <div className="agent-modal-footer flex items-center gap-3">
+                <button className="agent-btn agent-btn-secondary" onClick={() => setShowAttachSkillModal(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="agent-btn agent-btn-primary flex items-center gap-1.5 bg-emerald-500 text-black hover:bg-emerald-400 font-semibold cursor-pointer"
+                  onClick={handleConfirmAttachSkill}
+                  disabled={isAttachingSkill}
+                >
+                  {isAttachingSkill ? (
+                    <>
+                      <Loader2 className="animate-spin" size={15} />
+                      Installing Skill...
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={15} />
+                      Attach Skill to Selected Agent
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Stateful Agent Chat Playground Workspace */}
       {showPlayground && playgroundDeployment && (
         <div className="playground-overlay" onClick={() => setShowPlayground(false)}>
@@ -1774,6 +2099,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                   >
                     <Activity size={14} />
                     <span>Activity Timeline</span>
+                  </button>
+                  <button
+                    className={`playground-tab-btn ${playgroundTab === 'skills' ? 'active' : ''}`}
+                    onClick={() => setPlaygroundTab('skills')}
+                  >
+                    <Wrench size={14} />
+                    <span>Installed Skills ({playgroundDeployment.skills?.length || 0})</span>
                   </button>
                   <button
                     className={`playground-tab-btn ${playgroundTab === 'logs' ? 'active' : ''}`}
@@ -2045,6 +2377,68 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       ) : (
                         <div className="text-center p-8 text-gray-400 text-sm">
                           No recent agent activity events recorded. Submit a prompt to start monitoring.
+                        </div>
+                      )}
+                    </div>
+                  ) : playgroundTab === 'skills' ? (
+                    <div className="skills-tab-wrapper p-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-white">Mounted Agent Skills & Tools</h3>
+                          <p className="text-xs text-gray-400">Pre-packaged capabilities active inside {playgroundDeployment.agentName}'s execution environment.</p>
+                        </div>
+                        <button
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-1.5 cursor-pointer"
+                          onClick={() => {
+                            setShowPlayground(false);
+                            setMainTab('templates');
+                          }}
+                        >
+                          <Plus size={13} />
+                          <span>Browse Skill Templates</span>
+                        </button>
+                      </div>
+
+                      {playgroundDeployment.skills && playgroundDeployment.skills.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                          {playgroundDeployment.skills.map((s) => (
+                            <div key={s.id} className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-2">
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center gap-1">
+                                    <FileText size={11} />
+                                    {s.file}
+                                  </span>
+                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                    <CheckCircle2 size={11} />
+                                    Active & Mounted
+                                  </span>
+                                </div>
+                                <h4 className="text-sm font-medium text-white mb-1">{s.name}</h4>
+                                <p className="text-xs text-gray-400 leading-relaxed">{s.description}</p>
+                              </div>
+                              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                                <span>Attached: {s.addedAt}</span>
+                                <span className="text-emerald-400 font-mono">Status: Ready</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 px-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                          <Wrench size={36} className="mx-auto text-gray-400 mb-3" />
+                          <h4 className="text-base font-medium text-white mb-1">No Additional Skills Mounted Yet</h4>
+                          <p className="text-xs text-gray-400 max-w-sm mx-auto mb-4">You haven't attached any custom skill templates to this workspace. Browse our templates library to expand your agent's capabilities.</p>
+                          <button
+                            className="px-4 py-2 rounded-xl bg-emerald-500 text-black font-semibold text-xs flex items-center gap-1.5 mx-auto hover:bg-emerald-400 transition-colors shadow-lg cursor-pointer"
+                            onClick={() => {
+                              setShowPlayground(false);
+                              setMainTab('templates');
+                            }}
+                          >
+                            <Plus size={14} />
+                            <span>Browse & Add Skills</span>
+                          </button>
                         </div>
                       )}
                     </div>
