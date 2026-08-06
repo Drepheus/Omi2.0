@@ -232,6 +232,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   // Dashboard & Deployments State
   const [mainTab, setMainTab] = useState<'overview' | 'create' | 'templates'>('create');
   const [setupMode, setSetupMode] = useState<'choice' | 'custom'>('choice');
+  const [deployExecMode, setDeployExecMode] = useState<'cloud' | 'byok'>('cloud');
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
@@ -933,14 +934,64 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         <div className="agent-sidebar-divider" />
 
         <div className="agent-quick-stats">
-          <div className="agent-quick-stat">
-            <Play size={14} style={{ color: '#10b981' }} />
-            <span>{runningCount} Running</span>
+          <div
+            className={`agent-quick-stat-card ${runningCount > 0 ? 'active-running' : ''}`}
+            onClick={() => {
+              const runningDepts = deployments.filter(d => d.status === 'running');
+              if (runningDepts.length > 0) {
+                openPlayground(runningDepts[0]);
+              } else {
+                setMainTab('overview');
+              }
+            }}
+            title={runningCount > 0 ? "Click to open active agent playground" : "Click to view overview"}
+          >
+            <div className="stat-card-top flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${runningCount > 0 ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]' : 'bg-gray-600'}`} />
+                <span className="font-medium text-sm text-white">{runningCount} Running</span>
+              </div>
+              <Play size={14} className={runningCount > 0 ? 'text-emerald-400' : 'text-gray-500'} />
+            </div>
+            {runningCount > 0 && (
+              <span className="text-[11px] text-emerald-400/80 mt-1 block">Click to open workspace →</span>
+            )}
           </div>
-          <div className="agent-quick-stat">
-            <Square size={14} style={{ color: '#6b7280' }} />
-            <span>{stoppedCount} Stopped</span>
+
+          <div
+            className="agent-quick-stat-card"
+            onClick={() => setMainTab('overview')}
+            title="Click to view all instances on Overview"
+          >
+            <div className="stat-card-top flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-gray-500" />
+                <span className="font-medium text-sm text-gray-300">{stoppedCount} Stopped</span>
+              </div>
+              <Square size={14} className="text-gray-500" />
+            </div>
+            <span className="text-[11px] text-gray-400 mt-1 block">Click to view overview →</span>
           </div>
+
+          {/* Running Agents Quick Links Sub-list */}
+          {deployments.filter(d => d.status === 'running').length > 0 && (
+            <div className="running-agents-quick-list mt-2 space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-gray-400 px-1 font-semibold block">Active Sessions</span>
+              {deployments.filter(d => d.status === 'running').map(dep => (
+                <button
+                  key={dep.id}
+                  onClick={() => openPlayground(dep)}
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between transition-colors group"
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-xs text-gray-200 group-hover:text-white truncate font-medium">{dep.agentName}</span>
+                  </div>
+                  <ChevronRight size={12} className="text-gray-400 group-hover:text-white shrink-0" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="agent-credits-panel">
@@ -1482,16 +1533,47 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <span className="agent-modal-icon-wrapper">
                 {renderAgentIcon(selectedAgent.id, "w-10 h-10 text-gray-200")}
               </span>
-              <h2>Attach {selectedAgent.name} Skill to Agent</h2>
-              <p>Add pre-packaged <code>{selectedAgent.skillFile}</code> capabilities to your running agent instance.</p>
+              <h2>Deploy {selectedAgent.name}</h2>
+              <p>Autonomous AI agent ready to execute web scraping, real-time code fixes, document creation, and multi-step tasks.</p>
             </div>
-            <div className="agent-modal-body">
-              {selectedAgent.id === 'openclaw' ? (
-                <>
+
+            <div className="agent-modal-body space-y-4">
+              <div className="agent-modal-field">
+                <label className="text-xs font-medium text-gray-300 mb-1 block">Execution Engine & Credentials</label>
+                <div className="grid grid-cols-2 gap-3 mb-2">
+                  <button
+                    type="button"
+                    className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all ${deployExecMode === 'cloud' ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}
+                    onClick={() => setDeployExecMode('cloud')}
+                  >
+                    <Zap size={14} className={deployExecMode === 'cloud' ? 'text-emerald-400' : ''} />
+                    <span>Cloud Managed (Default)</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all ${deployExecMode === 'byok' ? 'bg-sky-500/15 border-sky-500/40 text-sky-300' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'}`}
+                    onClick={() => setDeployExecMode('byok')}
+                  >
+                    <Key size={14} className={deployExecMode === 'byok' ? 'text-sky-400' : ''} />
+                    <span>Custom API Key (BYOK)</span>
+                  </button>
+                </div>
+              </div>
+
+              {deployExecMode === 'cloud' ? (
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2.5">
+                  <Zap size={16} className="shrink-0 text-emerald-400 mt-0.5" />
+                  <div>
+                    <span className="font-semibold block text-emerald-200 mb-0.5">Omi Managed Cloud Execution</span>
+                    <span>Runs instantly on Omi high-speed serverless cloud infrastructure. Uses your included SaaS credits — zero API key required.</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
                   <div className="agent-modal-field">
                     <label>
                       <Key size={14} style={{ display: 'inline', marginRight: 4 }} />
-                      OpenAI API Key
+                      Custom OpenAI / Anthropic API Key
                     </label>
                     <input
                       type="password"
@@ -1500,38 +1582,15 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
                     />
-                    <span className="field-hint">Your API Key is encrypted server-side with AES-256 before storage.</span>
+                    <span className="field-hint">Your API Key is encrypted server-side with AES-256 before execution.</span>
                   </div>
-
-                  <div className="agent-modal-field">
-                    <label>
-                      <FileText size={14} style={{ display: 'inline', marginRight: 4 }} />
-                      OpenClaw State (JSON)
-                    </label>
-                    <textarea
-                      className="agent-modal-textarea font-mono text-xs"
-                      value={openclawState}
-                      onChange={(e) => setOpenclawState(e.target.value)}
-                      rows={6}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="agent-modal-field">
-                    <label>Worker Container Specs (Railway Multi-Tenant Pool)</label>
-                    <select className="agent-modal-select">
-                      <option>Railway Micro Container (0.5 vCPU, 512MB RAM)</option>
-                      <option>Railway Standard Worker (1 vCPU, 1GB RAM)</option>
-                    </select>
-                    <span className="field-hint">Runs on the shared multi-tenant worker pool hosted on Railway.</span>
-                  </div>
-                  <div className="agent-modal-field">
-                    <label>Deployment Name</label>
-                    <input type="text" className="agent-modal-input" placeholder={`${selectedAgent.name}-dep-1`} />
-                  </div>
-                </>
+                </div>
               )}
+
+              <div className="agent-modal-field">
+                <label>Deployment Name</label>
+                <input type="text" className="agent-modal-input" placeholder={`${selectedAgent.name.toLowerCase().replace(/\s+/g, '-')}-instance`} />
+              </div>
             </div>
             <div className="agent-modal-footer">
               <button className="agent-btn agent-btn-secondary" onClick={() => setShowDeployModal(false)}>
@@ -1570,11 +1629,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     {playgroundDeployment.agentName} Workspace
                     <span className="playground-header-badge">
                       <span className="pulsing-dot" />
-                      Railway Worker Node
+                      Omi Managed Cloud Engine
                     </span>
                   </div>
                   <div className="playground-header-subtitle">
-                    {playgroundDeployment.ipAddress} • Celery Node: {playgroundDeployment.vmName}
+                    {playgroundDeployment.ipAddress} • Cloud Node: {playgroundDeployment.vmName}
                   </div>
                 </div>
               </div>
