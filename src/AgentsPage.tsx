@@ -102,9 +102,9 @@ interface Message {
 const agentCatalog: Agent[] = [
   {
     id: 'claude-code',
-    name: 'Claude 5 Code CLI Engine',
+    name: 'Omi Autonomous Agent',
     skillFile: 'claude-5-code.md',
-    framework: 'Claude 5 Sonnet',
+    framework: 'Omi Code Core',
     icon: 'coder',
     description: 'Terminal-native autonomous software engineer for repo refactoring, git diffs, and automated bug fixing loops.',
     type: 'Code & Dev',
@@ -116,9 +116,9 @@ const agentCatalog: Agent[] = [
   },
   {
     id: 'openclaw',
-    name: 'OpenClaw Web Scraper & Intelligence',
+    name: 'Omi Web & Intelligence Agent',
     skillFile: 'openclaw-web-scraper.md',
-    framework: 'OpenClaw 2.0 Engine',
+    framework: 'Omi Web Engine',
     icon: 'openclaw',
     description: 'Stateful containerized web scraper & crawler for headless page parsing and multi-source research synthesis.',
     type: 'Web & Scraping',
@@ -130,9 +130,9 @@ const agentCatalog: Agent[] = [
   },
   {
     id: 'hermes-4',
-    name: 'Hermes 4 Deep Reasoning Core',
+    name: 'Omi Deep Reasoning Agent',
     skillFile: 'hermes-4-reasoning.md',
-    framework: 'Nous Hermes 4',
+    framework: 'Omi Reasoning Core',
     icon: 'hermes',
     description: 'Multi-turn chain-of-thought solving, complex function calling, and structured decision tree verification.',
     type: 'Reasoning',
@@ -143,24 +143,65 @@ const agentCatalog: Agent[] = [
     isTrending: true
   },
   {
+    id: 'super-hermes',
+    name: 'Omi Super-Hermes Skill Agent',
+    skillFile: 'super-hermes.md',
+    framework: 'Hermes Atlas / Cranot',
+    icon: 'hermes',
+    description: 'Extended multi-agent tools for deep code inspection, memory graph indexing, complex task decomposition, and multi-step execution.',
+    type: 'Reasoning & Dev',
+    status: 'idle',
+    category: 'reasoning',
+    tags: ['super-hermes.md', 'task-decomposition', 'memory-graph', 'deep-inspection'],
+    runsCount: '12.3k runs',
+    isTrending: true
+  },
+  {
+    id: 'youtube-skills',
+    name: 'Omi YouTube Intelligence Agent',
+    skillFile: 'youtube-skills.md',
+    framework: 'Hermes Atlas / ZeroPointRepo',
+    icon: 'openclaw',
+    description: 'Automated YouTube video transcript extraction, channel analytics, comment sentiment mining, and content outline generation.',
+    type: 'Web & Media',
+    status: 'idle',
+    category: 'web-scraping',
+    tags: ['youtube-skills.md', 'transcript-extract', 'sentiment-mining', 'video-analytics'],
+    runsCount: '8.1k runs',
+    isTrending: true
+  },
+  {
+    id: 'wondelai-skills',
+    name: 'Omi Wondelai Multi-Tool Agent',
+    skillFile: 'wondelai-skills.md',
+    framework: 'Hermes Atlas / Wondelai',
+    icon: 'hermes',
+    description: 'Multi-modal agent skill suite for web data extraction, document processing, and task automation loops.',
+    type: 'Automation & Skills',
+    status: 'idle',
+    category: 'code-dev',
+    tags: ['wondelai-skills.md', 'hermes-atlas', 'multi-tool', 'automation'],
+    runsCount: '5.4k runs',
+    isTrending: true
+  },
+  {
     id: 'deepseek-v4',
-    name: 'DeepSeek V4 Thought Analyst',
+    name: 'Omi Thought Analyst Agent',
     skillFile: 'deepseek-v4-cot.md',
-    framework: 'DeepSeek V4 Core',
+    framework: 'Omi Analysis Core',
     icon: 'researcher',
     description: 'Step-by-step mathematical reasoning, statistical synthesis, and full chain-of-thought trace outputs.',
     type: 'Reasoning',
     status: 'idle',
     category: 'reasoning',
     tags: ['deepseek-v4.md', 'thought-trace.md', 'math-solving', 'analytics'],
-    runsCount: '9.6k runs',
-    isTrending: true
+    runsCount: '9.6k runs'
   },
   {
     id: 'browser-use',
-    name: 'Browser-Use Stealth Automator',
+    name: 'Omi Web Automator Agent',
     skillFile: 'browser-use-stealth.md',
-    framework: 'Browser-Use Stealth 2.0',
+    framework: 'Omi Stealth Engine',
     icon: 'agentzero',
     description: 'Automated web session navigation, form submissions, authenticated workflow tasks, and visual UI checks.',
     type: 'Web & Scraping',
@@ -171,9 +212,9 @@ const agentCatalog: Agent[] = [
   },
   {
     id: 'alloydb-postgres',
-    name: 'PostgreSQL & Supabase Data Agent',
+    name: 'Omi Data & SQL Agent',
     skillFile: 'supabase-postgres-data.md',
-    framework: 'PostgreSQL / Supabase V4',
+    framework: 'Omi Postgres Core',
     icon: 'agentzero',
     description: 'Schema exploration, automated SQL query generation, table metrics auditing, and Drizzle ORM pipeline ops.',
     type: 'Data & SQL',
@@ -189,10 +230,13 @@ const initialDeployments: Deployment[] = [];
 const renderAgentIcon = (id: string, className = "w-5 h-5") => {
   switch (id) {
     case 'openclaw':
+    case 'youtube-skills':
       return <Globe className={className} />;
     case 'claude-code':
       return <Code className={className} />;
     case 'hermes-4':
+    case 'super-hermes':
+    case 'wondelai-skills':
       return <Bot className={className} />;
     case 'deepseek-v4':
       return <Activity className={className} />;
