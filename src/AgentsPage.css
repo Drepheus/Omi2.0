@@ -28,12 +28,18 @@
 .agent-dashboard-bg {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle 900px at 50% -50px, rgba(255, 255, 255, 0.06), transparent 70%),
-    radial-gradient(circle 600px at 80% 500px, rgba(200, 200, 200, 0.04), transparent 60%),
-    #0a0a0a;
+  background: #0a0a0a;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+}
+
+.agent-dashboard-bg .orb-background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 /* Omi Animated Silver Neon Light Border around Prompt Studio */

@@ -56,6 +56,7 @@ import { ThinkingOrb } from 'thinking-orbs';
 export type OrbState = "idle" | "thinking" | "analyzing" | "composing" | "executing" | "complete" | "error";
 import { ShinyText } from '@/components/typography/shiny-text';
 import BorderGlow from '@/components/ui/border-glow';
+import { Orb } from "@/components/visuals/orb";
 
 import './AgentsPage.css';
 
@@ -833,7 +834,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="agent-dashboard">
-      <div className="agent-dashboard-bg" />
+      <div className="agent-dashboard-bg">
+        <div className="orb-background">
+          <Orb hue={220} hoverIntensity={0.3} rotateOnHover forceHoverState={false} />
+        </div>
+      </div>
 
       {/* Sidebar */}
       <aside className={`agent-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
@@ -1724,13 +1729,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                         {playgroundMessages.length === 0 ? (
                           <div className="empty-playground-orb-stage text-center py-12 px-6 flex flex-col items-center justify-center border border-white/10 rounded-2xl bg-white/[0.02] my-4">
                             <div className="mb-4">
-                              <ThinkingOrb state="idle" size={72} theme="dark" />
+                              <ThinkingOrb state="listening" size={64} theme="dark" />
                             </div>
                             <h4 className="text-lg font-light text-white mb-1">
                               {playgroundDeployment.agentName} is Online & Ready
                             </h4>
                             <p className="text-xs text-gray-400 max-w-sm mb-4">
-                              Agent instance is listening on Celery Worker Node ({playgroundDeployment.ipAddress}). Send a prompt or command below to execute.
+                              Cloud agent instance active on serverless node ({playgroundDeployment.ipAddress}). Send a prompt or command below to execute.
                             </p>
                           </div>
                         ) : (
