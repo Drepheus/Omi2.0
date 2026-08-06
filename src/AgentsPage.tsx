@@ -52,7 +52,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
-import { ThinkingOrb, OrbState } from 'thinking-orbs';
+import { ThinkingOrb } from 'thinking-orbs';
+export type OrbState = "idle" | "thinking" | "analyzing" | "composing" | "executing" | "complete" | "error";
 import { ShinyText } from '@/components/typography/shiny-text';
 import BorderGlow from '@/components/ui/border-glow';
 
@@ -229,7 +230,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   };
 
   // Dashboard & Deployments State
-  const [mainTab, setMainTab] = useState<'overview' | 'templates'>('overview');
+  const [mainTab, setMainTab] = useState<'overview' | 'create' | 'templates'>('create');
+  const [setupMode, setSetupMode] = useState<'choice' | 'custom'>('choice');
   const [deployments, setDeployments] = useState<Deployment[]>(initialDeployments);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [showDeployModal, setShowDeployModal] = useState(false);
@@ -1254,83 +1256,155 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
         {mainTab === 'create' && (
           <section className="agent-section max-w-4xl mx-auto">
-            <div className="mb-6">
-              <h2 className="text-2xl font-light text-white mb-1">Build & Launch Custom AI Agent</h2>
-              <p className="text-sm text-gray-400">Describe what you want your agent to automate or select a ready starter below.</p>
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-light text-white mb-1">Build & Launch Custom AI Agent</h2>
+                <p className="text-sm text-gray-400">Choose instant single-click setup or custom-prompt your agent capabilities.</p>
+              </div>
+              {setupMode === 'custom' && (
+                <button
+                  className="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 transition-colors"
+                  onClick={() => setSetupMode('choice')}
+                >
+                  <RotateCcw size={13} />
+                  <span>Back to Setup Options</span>
+                </button>
+              )}
             </div>
 
-            {/* Interactive Agent Creation Studio with React Bits BorderGlow Component */}
-            <BorderGlow
-              edgeSensitivity={30}
-              glowColor="0 0 90"
-              backgroundColor="#0f0f14"
-              borderRadius={24}
-              glowRadius={35}
-              glowIntensity={1.2}
-              coneSpread={25}
-              animated={true}
-              autoRevolve={true}
-              colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
-              className="w-full mb-8"
-            >
-              <div className="studio-inner-card">
-                <div className="studio-header">
+            {setupMode === 'choice' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                {/* Option 1: Quick Setup */}
+                <div
+                  className="onboarding-option-card border border-white/15 bg-[#0f0f14] hover:bg-[#14141c] hover:border-white/30 rounded-3xl p-7 flex flex-col justify-between cursor-pointer transition-all duration-300 shadow-xl group"
+                  onClick={() => {
+                    const defaultAgent = agentCatalog[0];
+                    handleTriggerDeployment(defaultAgent);
+                  }}
+                >
                   <div>
-                    <h3 className="studio-title">Prompt & Agent Automation Studio</h3>
-                    <p className="studio-subtitle">Select your underlying engine model and prompt your autonomous tool loop.</p>
-                  </div>
-                </div>
-
-                {/* Custom Prompt Box (matching user's attached design) */}
-                <div className="prompt-input-box">
-                  <textarea
-                    value={customPrompt}
-                    onChange={e => setCustomPrompt(e.target.value)}
-                    placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
-                    className="prompt-textarea"
-                    rows={4}
-                  />
-                  <div className="prompt-box-footer">
-                    <div className="studio-model-selector">
-                      {agentCatalog.slice(0, 4).map(model => (
-                        <button
-                          key={model.id}
-                          onClick={() => setSelectedPromptModel(model.id)}
-                          className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
-                        >
-                          <span>{model.framework}</span>
-                        </button>
-                      ))}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs uppercase tracking-wider font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Recommended • Single Click
+                      </span>
+                      <Zap size={22} className="text-emerald-400 group-hover:scale-110 transition-transform" />
                     </div>
 
-                    <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
-                      <Sparkles size={16} />
-                      <span>Launch Agent</span>
-                    </button>
+                    <h3 className="text-xl font-medium text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                      Quick Setup
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed mb-6">
+                      Launch a pre-configured autonomous agent loaded with top web scraping, code fixing, & database optimization skills in seconds.
+                    </p>
                   </div>
+
+                  <button className="w-full py-3.5 px-4 rounded-xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-2 shadow-lg group-hover:bg-emerald-300 transition-colors">
+                    <Zap size={16} fill="currentColor" />
+                    <span>Quick Deploy Agent</span>
+                  </button>
                 </div>
 
-                {/* Sleek Pill Starters (matching attached image) */}
-                <div className="prompt-starters-pills-row">
-                  {promptStarters.map(starter => {
-                    const Icon = starter.icon;
-                    return (
-                      <button
-                        key={starter.id}
-                        onClick={() => {
-                          setCustomPrompt(starter.prompt);
-                          setSelectedPromptModel(starter.modelId);
-                        }}
-                        className="omi-starter-pill"
-                      >
-                        <Icon size={14} className="starter-pill-icon" />
-                        <span>{starter.title}</span>
-                      </button>
-                    );
-                  })}
+                {/* Option 2: Custom Agent Setup (Advanced) */}
+                <div
+                  className="onboarding-option-card border border-white/15 bg-[#0f0f14] hover:bg-[#14141c] hover:border-white/30 rounded-3xl p-7 flex flex-col justify-between cursor-pointer transition-all duration-300 shadow-xl group"
+                  onClick={() => setSetupMode('custom')}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs uppercase tracking-wider font-semibold px-3 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                        Advanced • Full Control
+                      </span>
+                      <Bot size={22} className="text-sky-400 group-hover:scale-110 transition-transform" />
+                    </div>
+
+                    <h3 className="text-xl font-medium text-white mb-2 group-hover:text-sky-300 transition-colors">
+                      Custom Agent Setup (Advanced)
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed mb-6">
+                      Custom-prompt your agent from scratch. Select underlying engine models (Claude 5, OpenClaw 2.0, Hermes 4, DeepSeek V4) and inject specific instruction loops.
+                    </p>
+                  </div>
+
+                  <button className="w-full py-3.5 px-4 rounded-xl bg-white/10 text-white font-semibold text-sm border border-white/20 flex items-center justify-center gap-2 group-hover:bg-white group-hover:text-black transition-all">
+                    <Sparkles size={16} />
+                    <span>Create with Custom Prompt</span>
+                  </button>
                 </div>
               </div>
-            </BorderGlow>
+            ) : (
+              /* Interactive Custom Agent Creation Studio */
+              <BorderGlow
+                edgeSensitivity={30}
+                glowColor="0 0 90"
+                backgroundColor="#0f0f14"
+                borderRadius={24}
+                glowRadius={35}
+                glowIntensity={1.2}
+                coneSpread={25}
+                animated={true}
+                autoRevolve={true}
+                colors={['#ffffff', '#e0e0e0', '#a8a8a8']}
+                className="w-full mb-8"
+              >
+                <div className="studio-inner-card">
+                  <div className="studio-header">
+                    <div>
+                      <h3 className="studio-title">Prompt & Agent Automation Studio</h3>
+                      <p className="studio-subtitle">Select your underlying engine model and prompt your autonomous tool loop.</p>
+                    </div>
+                  </div>
+
+                  {/* Custom Prompt Box */}
+                  <div className="prompt-input-box">
+                    <textarea
+                      value={customPrompt}
+                      onChange={e => setCustomPrompt(e.target.value)}
+                      placeholder="Describe what you want your custom AI agent to automate (e.g. 'Crawl competitor pricing and email a weekly summary report...')"
+                      className="prompt-textarea"
+                      rows={4}
+                    />
+                    <div className="prompt-box-footer">
+                      <div className="studio-model-selector">
+                        {agentCatalog.slice(0, 4).map(model => (
+                          <button
+                            key={model.id}
+                            onClick={() => setSelectedPromptModel(model.id)}
+                            className={`model-selector-btn ${selectedPromptModel === model.id ? 'active' : ''}`}
+                          >
+                            <span>{model.framework}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button onClick={handleLaunchCustomPrompt} className="omi-generate-btn">
+                        <Sparkles size={16} />
+                        <span>Launch Agent</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Sleek Pill Starters */}
+                  <div className="prompt-starters-pills-row">
+                    {promptStarters.map(starter => {
+                      const Icon = starter.icon;
+                      return (
+                        <button
+                          key={starter.id}
+                          onClick={() => {
+                            setCustomPrompt(starter.prompt);
+                            setSelectedPromptModel(starter.modelId);
+                          }}
+                          className="omi-starter-pill"
+                        >
+                          <Icon size={14} className="starter-pill-icon" />
+                          <span>{starter.title}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </BorderGlow>
+            )}
           </section>
         )}
 
@@ -1389,7 +1463,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       }}
                     >
                       <Play size={12} fill="currentColor" />
-                      <span>Deploy Skill Template</span>
+                      <span>Add Skill to Agent</span>
                     </button>
                   </div>
                 </div>
@@ -1408,8 +1482,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               <span className="agent-modal-icon-wrapper">
                 {renderAgentIcon(selectedAgent.id, "w-10 h-10 text-gray-200")}
               </span>
-              <h2>Deploy {selectedAgent.name}</h2>
-              <p>{selectedAgent.description}</p>
+              <h2>Attach {selectedAgent.name} Skill to Agent</h2>
+              <p>Add pre-packaged <code>{selectedAgent.skillFile}</code> capabilities to your running agent instance.</p>
             </div>
             <div className="agent-modal-body">
               {selectedAgent.id === 'openclaw' ? (
@@ -1588,7 +1662,20 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
                       {/* Message Thread */}
                       <div className="chat-thread">
-                        {playgroundMessages.map((msg, index) => (
+                        {playgroundMessages.length === 0 ? (
+                          <div className="empty-playground-orb-stage text-center py-12 px-6 flex flex-col items-center justify-center border border-white/10 rounded-2xl bg-white/[0.02] my-4">
+                            <div className="mb-4">
+                              <ThinkingOrb state="idle" size={72} theme="dark" />
+                            </div>
+                            <h4 className="text-lg font-light text-white mb-1">
+                              {playgroundDeployment.agentName} is Online & Ready
+                            </h4>
+                            <p className="text-xs text-gray-400 max-w-sm mb-4">
+                              Agent instance is listening on Celery Worker Node ({playgroundDeployment.ipAddress}). Send a prompt or command below to execute.
+                            </p>
+                          </div>
+                        ) : (
+                          playgroundMessages.map((msg, index) => (
                           <div key={index} className={`chat-message-row ${msg.role}`}>
                             <div className="message-avatar">
                               {msg.role === 'user' ? (
@@ -1693,11 +1780,12 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                                     <div className="message-balloon">
                                       <p>{msg.content}</p>
                                     </div>
-                                  </>
-                                )}
-                              </div>
-                          </div>
-                        ))}
+                                   </>
+                                 )}
+                               </div>
+                           </div>
+                         ))
+                        )}
                         <div ref={chatEndRef} />
                       </div>
 

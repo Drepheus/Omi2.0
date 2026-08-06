@@ -123,7 +123,7 @@ export function OnboardingWizard() {
     }, 3400);
 
     setTimeout(() => {
-      router.push("/agents");
+      router.push("/agents?tab=create");
     }, 5000);
   };
 
