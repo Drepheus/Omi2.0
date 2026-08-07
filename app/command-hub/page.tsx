@@ -1,5 +1,5 @@
-import CommandHub from '@/src/CommandHub';
+import { redirect } from 'next/navigation';
 
 export default function CommandHubPage() {
-  return <CommandHub />;
+  redirect('/agents');
 }

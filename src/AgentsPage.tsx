@@ -722,7 +722,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     setPlaygroundMessages([
       {
         role: 'assistant',
-        content: `👋 Hello! I am your ${dep.agentName}. My cloud execution core is active and ready for tasks. How can I help you today?`,
+        content: `Hello! I am your ${dep.agentName}. My cloud execution core is active and ready for tasks. How can I help you today?`,
         reasoning: 'System: Autopilot core initialized & ready.'
       }
     ]);

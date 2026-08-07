@@ -158,12 +158,8 @@ export default function OmiChatPage() {
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
-    if (!user && !isGuestMode) {
-      router.push('/login');
-      return;
-    }
-    setIsLoaded(true);
-  }, [user, isGuestMode, router]);
+    router.replace('/agents');
+  }, [router]);
 
   // Update scroll button visibility
   const updateScrollButtons = useCallback(() => {
