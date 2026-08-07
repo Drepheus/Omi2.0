@@ -25,10 +25,8 @@ const GlowingDotsNav: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Don't show on landing page ('/') or login page ('/login')
-    if (pathname === '/' || pathname === '/login') {
-        return null;
-    }
+    // Hide bottom navigation orbs from view (code preserved for future use)
+    return null;
 
     return (
         <div className="glowing-dots-nav-container">
