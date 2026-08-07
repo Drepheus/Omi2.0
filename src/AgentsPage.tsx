@@ -463,15 +463,40 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
   const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs' | 'skills' | 'integrations'>('chat');
 
-  // Fading Sample Prompts for Playground
-  const samplePrompts = [
-    "Extract competitor pricing matrix into a structured JSON dataset",
-    "Refactor codebase for performance and generate a clean git diff patch",
-    "Mine YouTube video transcripts for sentiment & key insights",
-    "Inspect PostgreSQL schema bloat and generate optimized Drizzle indexes",
-    "Automate stealth browser navigation to check user onboarding flows",
-    "Decompose complex multi-step tasks into autonomous execution loops"
-  ];
+  // Category-Aware Fading Sample Prompts for Playground
+  const getSamplePromptsForAgent = (agent?: Deployment | null) => {
+    const category = agent?.agentId ? agentCatalog.find(a => a.id === agent.agentId)?.category : 'general';
+
+    if (category === 'code' || agent?.agentId?.includes('code') || agent?.agentId?.includes('developer')) {
+      return [
+        "Refactor codebase for performance and generate a clean git diff patch",
+        "Inspect PostgreSQL schema bloat and generate optimized Drizzle indexes",
+        "Build a REST API endpoint with Zod request validation & unit tests",
+        "Automate stealth browser navigation to check user onboarding flows",
+        "Audit React components for accessibility & state re-render bottlenecks"
+      ];
+    }
+
+    if (category === 'media' || agent?.agentId?.includes('youtube') || agent?.agentId?.includes('content')) {
+      return [
+        "Mine YouTube video transcripts for sentiment & key product insights",
+        "Repurpose podcast transcript into a 5-part LinkedIn post series",
+        "Analyze social engagement metrics & generate weekly content calendar",
+        "Extract key interview takeaways into a high-converting email newsletter"
+      ];
+    }
+
+    // Default Prompts for Business Owners, Entrepreneurs, & Freelancers
+    return [
+      "Analyze competitor pricing & draft a market expansion strategy",
+      "Draft a high-converting client proposal & detailed Statement of Work (SOW)",
+      "Summarize customer support tickets and rank top 5 feature requests",
+      "Audit marketing ad spend ROI & generate lead follow-up automation steps",
+      "Review monthly cash flow data & draft an executive investor update"
+    ];
+  };
+
+  const samplePrompts = getSamplePromptsForAgent(playgroundDeployment);
   const [samplePromptIndex, setSamplePromptIndex] = useState(0);
   const [samplePromptFade, setSamplePromptFade] = useState(true);
 
@@ -489,6 +514,21 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   // Collapsible Sidebars State
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isRightPaneCollapsed, setIsRightPaneCollapsed] = useState(false);
+
+  // Action Task Confirmation Modal State
+  const [hasConfirmedFirstAction, setHasConfirmedFirstAction] = useState(false);
+  const [showActionConfirmModal, setShowActionConfirmModal] = useState(false);
+  const [pendingActionPrompt, setPendingActionPrompt] = useState<string | null>(null);
+
+  const checkIsActionTask = (prompt: string): boolean => {
+    const text = prompt.toLowerCase();
+    const actionKeywords = [
+      'refactor', 'scrape', 'crawl', 'extract', 'build', 'execute', 'deploy',
+      'create', 'run', 'database', 'query', 'export', 'generate', 'sow',
+      'proposal', 'analyze', 'audit', 'mine', 'patch', 'optimize', 'script', 'code'
+    ];
+    return actionKeywords.some(kw => text.includes(kw));
+  };
 
   const [sessions, setSessions] = useState<Array<{ id: string; agentId: string; title: string; createdAt: string }>>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
@@ -755,28 +795,37 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }
   };
 
-  const handleRunAgentTurn = async () => {
-    if (!consoleInput.trim() || isConsoleExecuting) return;
+  const handleRunAgentTurn = async (overridePrompt?: string, forceIsAction?: boolean) => {
+    const userPrompt = overridePrompt || consoleInput;
+    if (!userPrompt.trim() || isConsoleExecuting) return;
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
     }
 
-    const userPrompt = consoleInput;
+    const isAction = forceIsAction !== undefined ? forceIsAction : checkIsActionTask(userPrompt);
+
+    // If it's an action task and user hasn't confirmed first action yet, trigger confirmation modal
+    if (isAction && !hasConfirmedFirstAction && forceIsAction === undefined) {
+      setPendingActionPrompt(userPrompt);
+      setShowActionConfirmModal(true);
+      return;
+    }
+
     const currentAgentId = playgroundDeployment?.agentId || 'openclaw';
     const currentAgentName = playgroundDeployment?.agentName || 'OpenClaw';
 
     setConsoleInput('');
     setExecutionError(null);
     setIsConsoleExecuting(true);
-    setConsoleLogs(`⚡ [${currentAgentName} Initializing] Starting execution turn...`);
+    setConsoleLogs(`⚡ [${currentAgentName} Initializing] ${isAction ? 'Starting Action Task execution turn...' : 'Processing Free Conversational query...'}`);
 
     // Log Activity Event
     setActivityTimeline(prev => [
       {
         id: `act_${Date.now()}`,
         title: `Submitted Query to ${currentAgentName}`,
-        desc: `Prompt: "${userPrompt.slice(0, 40)}${userPrompt.length > 40 ? '...' : ''}"`,
+        desc: `Prompt: "${userPrompt.slice(0, 40)}${userPrompt.length > 40 ? '...' : ''}" (${isAction ? 'Action Task' : 'Free Chat'})`,
         time: new Date().toLocaleTimeString(),
         type: 'user'
       },
@@ -807,7 +856,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     const assistantIndex = newMessages.length;
     setPlaygroundMessages(prev => [
       ...prev,
-      { role: 'assistant', content: '', reasoning: '⚡ Booting reasoning core...', isStreaming: true }
+      { role: 'assistant', content: '', reasoning: isAction ? '⚡ Booting reasoning & action task core...' : '💬 Formulating conversational response...', isStreaming: true }
     ]);
     setExpandedReasoningIndex(assistantIndex);
 
@@ -823,7 +872,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         signal: controller.signal,
         body: JSON.stringify({
           messages: [{ role: 'user', content: userPrompt }],
-          agentId: currentAgentId
+          agentId: currentAgentId,
+          isActionTask: isAction
         }),
       });
 
@@ -929,7 +979,9 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         ]);
       }
 
-      setCredits(prev => Math.max(0, prev - 1));
+      if (isAction) {
+        setCredits(prev => Math.max(0, prev - 1));
+      }
       await fetchAgentConfig();
 
     } catch (err: any) {
@@ -2465,7 +2517,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                         ) : (
                           <button
                             className="chat-send-btn"
-                            onClick={handleRunAgentTurn}
+                            onClick={() => handleRunAgentTurn()}
                             disabled={!consoleInput.trim()}
                           >
                             <Send size={16} />
@@ -2796,6 +2848,74 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showActionConfirmModal && (
+        <div className="agent-modal-overlay" onClick={() => setShowActionConfirmModal(false)}>
+          <div className="agent-modal-card p-6 max-w-md text-left" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                <Zap size={24} />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-white">Autonomous Action Task</h3>
+                <p className="text-xs text-gray-400">Tool execution & cloud task turn</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-300 leading-relaxed mb-4">
+              Your prompt requests an <strong className="text-white">autonomous action task</strong> requiring tool execution. This will consume <strong className="text-amber-400">1 SaaS credit</strong> from your balance.
+              <br /><br />
+              <span className="text-emerald-400 font-medium">💬 Simple conversational chatting with Omi Agent is always 100% FREE!</span>
+            </p>
+
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-gray-300 font-mono mb-5 truncate">
+              "{pendingActionPrompt}"
+            </div>
+
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="checkbox"
+                id="dontAskAgain"
+                className="rounded accent-emerald-500 cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.checked) setHasConfirmedFirstAction(true);
+                }}
+              />
+              <label htmlFor="dontAskAgain" className="text-xs text-gray-400 cursor-pointer select-none">
+                Don't ask me again for action tasks in this session
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-all shadow-lg cursor-pointer"
+                onClick={() => {
+                  setHasConfirmedFirstAction(true);
+                  setShowActionConfirmModal(false);
+                  if (pendingActionPrompt) {
+                    handleRunAgentTurn(pendingActionPrompt, true);
+                    setPendingActionPrompt(null);
+                  }
+                }}
+              >
+                Confirm & Execute Task (1 Credit)
+              </button>
+              <button
+                className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 font-medium text-xs transition-colors cursor-pointer"
+                onClick={() => {
+                  setShowActionConfirmModal(false);
+                  if (pendingActionPrompt) {
+                    handleRunAgentTurn(pendingActionPrompt, false);
+                    setPendingActionPrompt(null);
+                  }
+                }}
+              >
+                Ask as Free Chat
+              </button>
             </div>
           </div>
         </div>

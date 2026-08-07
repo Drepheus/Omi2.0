@@ -25,11 +25,12 @@ export async function POST(req: Request) {
     const userId = session.user.id;
 
     const body = await req.json();
-    const { messages, systemPrompt: customSystemPrompt, model: requestedModel } = body as {
+    const { messages, systemPrompt: customSystemPrompt, model: requestedModel, isActionTask = false } = body as {
       messages?: Array<{ role: string; content: string }>;
       prompt?: string;
       systemPrompt?: string;
       model?: string;
+      isActionTask?: boolean;
     };
 
     let userPrompt = '';
@@ -67,10 +68,10 @@ export async function POST(req: Request) {
 
     const isByok = Boolean((user && user.isByok) || (encryptedApiKey && encryptedApiKey.trim().length > 0));
 
-    // 3. Credit & BYOK Check: If creditBalance <= 0 AND isByok is false -> 402 Payment Required
-    if (creditBalance <= 0 && !isByok) {
+    // 3. Credit Check: If executing an Action Task (isActionTask: true) AND creditBalance <= 0 AND isByok is false -> 402 Payment Required
+    if (isActionTask && creditBalance <= 0 && !isByok) {
       return NextResponse.json(
-        { error: 'Free trial completed. Please upgrade your account or enter your own API key to continue.' },
+        { error: 'Action Task Execution requires credits. You have 0 credits remaining. Upgrade or enter your API key to proceed.' },
         { status: 402 }
       );
     }
@@ -173,8 +174,8 @@ export async function POST(req: Request) {
       directTextResponse = routerJson.choices?.[0]?.message?.content || 'Omi Agent task execution completed.';
     }
 
-    // 7. Atomic Credit Deduction & State Sync
-    if (!isByok) {
+    // 7. Atomic Credit Deduction (Only for Action Tasks on Platform SaaS Credits)
+    if (isActionTask && !isByok) {
       try {
         await db
           .update(users)
