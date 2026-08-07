@@ -2307,19 +2307,55 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       {/* Message Thread */}
                       <div className="chat-thread">
                         {playgroundMessages.length === 0 ? (
-                          <div className="empty-playground-orb-stage text-center py-12 px-6 flex flex-col items-center justify-center border border-white/10 rounded-2xl bg-white/[0.02] my-4">
+                          <div className="empty-playground-orb-stage text-center py-10 px-6 flex flex-col items-center justify-center border border-white/10 rounded-2xl bg-white/[0.02] my-4">
                             <div className="mb-4">
                               <ThinkingOrb state="listening" size={64} theme="dark" />
                             </div>
-                            <h4 className="text-lg font-light text-white mb-1">
-                              {playgroundDeployment.agentName} is Online & Ready
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-3">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              Omi Autonomous Agent is Online & Ready
+                            </div>
+                            <h4 className="text-base font-medium text-white mb-1">
+                              {playgroundDeployment.agentName} Workspace
                             </h4>
                             <p className="text-xs text-gray-400 max-w-sm mb-4">
-                              Cloud agent instance active on serverless node ({playgroundDeployment.ipAddress}). Send a prompt or command below to execute.
+                              Cloud agent instance active on Omi Managed Engine. Send a prompt or command below to execute autonomous tasks.
                             </p>
                           </div>
                         ) : (
-                          playgroundMessages.map((msg, index) => (
+                          <>
+                            <div className="playground-active-orb-banner flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/10 mb-3">
+                              <div className="flex items-center gap-3">
+                                <ThinkingOrb
+                                  state={isConsoleExecuting ? getAgentOrbState(true, consoleLogs) : 'listening'}
+                                  size={64}
+                                  theme="dark"
+                                />
+                                <div>
+                                  <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                                    <span className={`w-2 h-2 rounded-full ${isConsoleExecuting ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
+                                    {isConsoleExecuting
+                                      ? getAgentOrbLabel(getAgentOrbState(true, consoleLogs), playgroundDeployment.agentName)
+                                      : `${playgroundDeployment.agentName} is Online & Ready`}
+                                  </div>
+                                  <span className="text-[11px] text-gray-400 font-mono">
+                                    {isConsoleExecuting ? 'Processing autonomous execution turn...' : 'Awaiting prompt instructions'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {isConsoleExecuting && (
+                                <button
+                                  className="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                                  onClick={handleCancelAgentTurn}
+                                >
+                                  <Square size={11} fill="currentColor" />
+                                  <span>Stop</span>
+                                </button>
+                              )}
+                            </div>
+
+                            {playgroundMessages.map((msg, index) => (
                           <div key={index} className={`chat-message-row ${msg.role}`}>
                             <div className="message-avatar">
                               {msg.role === 'user' ? (
@@ -2429,7 +2465,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                                </div>
                            </div>
                          ))
-                        )}
+                        }</>
+                         )}
                         <div ref={chatEndRef} />
                       </div>
 
