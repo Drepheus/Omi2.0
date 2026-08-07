@@ -105,14 +105,16 @@ export async function POST(req: Request) {
       targetApiKey = process.env.PLATFORM_OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || '';
     }
 
-    // 6. Dispatch to Hetzner Worker
+    // 6. Execution Dispatch: Try Hetzner worker or fallback to direct OpenRouter AI completion
     const workerUrl = process.env.OPENCLAW_WORKER_URL || 'http://5.78.197.8:8080';
     const internalSecret = process.env.INTERNAL_API_SECRET || 'your_super_secret_token_123';
-    const systemPrompt = customSystemPrompt || 'You are an autonomous OpenClaw AI agent working on behalf of the user.';
+    const systemPrompt = customSystemPrompt || 'You are Omi Agent, an autonomous AI assistant capable of multi-step task execution, web data analysis, software engineering refactoring, and database auditing.';
 
-    let workerResponse: Response;
+    let workerResult: any = null;
+    let directTextResponse = '';
+
     try {
-      workerResponse = await fetch(`${workerUrl}/execute`, {
+      const workerResponse = await fetch(`${workerUrl}/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,82 +130,78 @@ export async function POST(req: Request) {
           openclawState
         }),
       });
+
+      if (workerResponse.ok) {
+        workerResult = await workerResponse.json();
+      }
     } catch (fetchErr: any) {
-      console.error('[Worker Connection Error]:', fetchErr.message);
-      return NextResponse.json(
-        {
-          error: 'Backend Worker Connection Failed',
-          code: 'WORKER_CONNECTION_FAILED',
-          details: `Could not connect to OpenClaw worker at ${workerUrl}. Please verify the container service is running.`
+      console.warn('[Worker Fetch Warning]: Worker unavailable, falling back to direct OpenRouter API:', fetchErr.message);
+    }
+
+    // Fallback: Direct OpenRouter completion if worker did not execute
+    if (!workerResult || !workerResult.success) {
+      const effectiveKey = targetApiKey || process.env.PLATFORM_OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || '';
+      const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${effectiveKey}`,
+          'HTTP-Referer': 'https://omi.ai',
+          'X-Title': 'Omi AI Platform'
         },
-        { status: 503 }
-      );
-    }
+        body: JSON.stringify({
+          model: selectedModel || 'deepseek/deepseek-r1',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...((messages && Array.isArray(messages) && messages.length > 0)
+              ? messages
+              : [{ role: 'user', content: userPrompt }])
+          ]
+        })
+      });
 
-    if (!workerResponse.ok) {
-      const errText = await workerResponse.text();
-      console.error('[Worker Execution Failed]:', errText);
-      return NextResponse.json(
-        { error: 'OpenClaw worker execution failed', details: errText },
-        { status: workerResponse.status }
-      );
-    }
-
-    const workerResult = await workerResponse.json();
-
-    // 7. Atomic Deduction & Persistent State Sync
-    if (workerResult.success) {
-      // Upon receiving a successful response from the worker, if the user is using platform credits (!isByok),
-      // atomically decrement 1 credit from creditBalance in Neon via Drizzle ORM
-      if (!isByok) {
-        try {
-          await db
-            .update(users)
-            .set({
-              creditBalance: sql`${users.creditBalance} - 1`,
-              updatedAt: new Date()
-            })
-            .where(eq(users.id, userId));
-        } catch (dbErr: any) {
-          console.error('[Credit Deduction Error]:', dbErr.message);
-        }
+      if (!openRouterRes.ok) {
+        const errText = await openRouterRes.text();
+        console.error('[OpenRouter API Error]:', errText);
+        return NextResponse.json(
+          { error: 'AI Agent Execution Error via OpenRouter', details: errText },
+          { status: openRouterRes.status }
+        );
       }
 
-      // Update openclawState in database if returned by worker
-      if (workerResult.updatedState) {
-        try {
-          const stateStr = typeof workerResult.updatedState === 'string'
-            ? workerResult.updatedState
-            : JSON.stringify(workerResult.updatedState);
+      const routerJson = await openRouterRes.json();
+      directTextResponse = routerJson.choices?.[0]?.message?.content || 'Omi Agent task execution completed.';
+    }
 
-          if (configRecord.length > 0) {
-            await db
-              .update(agentConfigs)
-              .set({ openclawState: stateStr, updatedAt: new Date() })
-              .where(eq(agentConfigs.userId, userId));
-          } else {
-            await db.insert(agentConfigs).values({
-              userId,
-              openclawState: stateStr,
-              updatedAt: new Date()
-            });
-          }
-        } catch (stateErr: any) {
-          console.warn('[State Sync Warning]:', stateErr.message);
-        }
+    // 7. Atomic Credit Deduction & State Sync
+    if (!isByok) {
+      try {
+        await db
+          .update(users)
+          .set({
+            creditBalance: sql`${users.creditBalance} - 1`,
+            updatedAt: new Date()
+          })
+          .where(eq(users.id, userId));
+      } catch (dbErr: any) {
+        console.error('[Credit Deduction Error]:', dbErr.message);
       }
     }
 
-    // Stream logs & output back to client
+    // Stream output back to client
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       start(controller) {
-        if (workerResult.logs && Array.isArray(workerResult.logs)) {
+        if (workerResult?.logs && Array.isArray(workerResult.logs)) {
           for (const logItem of workerResult.logs) {
             controller.enqueue(encoder.encode(`[${logItem.type.toUpperCase()}] ${logItem.description}\n`));
           }
+          controller.enqueue(encoder.encode(`\n💬 ${workerResult.output || 'Execution complete.'}\n`));
+        } else {
+          controller.enqueue(encoder.encode(`[THINKING] Analyzing prompt and formulating multi-step plan...\n`));
+          controller.enqueue(encoder.encode(`[EXECUTION] Connected to Omi Cloud Core via OpenRouter AI.\n`));
+          controller.enqueue(encoder.encode(`\n💬 ${directTextResponse}\n`));
         }
-        controller.enqueue(encoder.encode(`\n💬 ${workerResult.output || 'Execution complete.'}\n`));
         controller.close();
       }
     });

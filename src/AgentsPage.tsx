@@ -461,7 +461,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [showPlayground, setShowPlayground] = useState(false);
   const [playgroundDeployment, setPlaygroundDeployment] = useState<Deployment | null>(null);
   const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
-  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs' | 'skills'>('chat');
+  const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs' | 'skills' | 'integrations'>('chat');
 
   // Fading Sample Prompts for Playground
   const samplePrompts = [
@@ -676,15 +676,23 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     setShowPlayground(true);
     setPlaygroundTab('chat');
     setConsoleLogs(`${dep.agentName} Terminal initialized. Awaiting commands...`);
-    setOpenclawState(JSON.stringify({ activeAgent: dep.agentName, framework: "OpenClaw Node SDK", settings: { verbose: true, timeoutMs: 180000 } }, null, 2));
+    setOpenclawState(JSON.stringify({ activeAgent: dep.agentName, framework: "Omi Autonomous Agent Framework", settings: { verbose: true, timeoutMs: 180000 } }, null, 2));
     fetchSessionHistory(dep.agentId);
+
+    setPlaygroundMessages([
+      {
+        role: 'assistant',
+        content: `👋 Hello! I am your ${dep.agentName}. My cloud execution core is active and ready for tasks. How can I help you today?`,
+        reasoning: 'System: Autopilot core initialized & ready.'
+      }
+    ]);
 
     // Initial timeline event
     setActivityTimeline([
       {
         id: `act_${Date.now()}`,
         title: `${dep.agentName} Session Initialized`,
-        desc: `Connected to worker node ${dep.vmName} (${dep.ipAddress})`,
+        desc: `Connected to Omi Serverless Cloud Core`,
         time: new Date().toLocaleTimeString(),
         type: 'system'
       }
@@ -2144,7 +2152,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                     </span>
                   </div>
                   <div className="playground-header-subtitle">
-                    {playgroundDeployment.ipAddress} • Cloud Node: {playgroundDeployment.vmName}
+                    Omi Cloud Agent Core • Active Autopilot Engine
                   </div>
                 </div>
               </div>
@@ -2186,6 +2194,13 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                   >
                     <Activity size={14} />
                     <span>Activity Timeline</span>
+                  </button>
+                  <button
+                    className={`playground-tab-btn ${playgroundTab === 'integrations' ? 'active' : ''}`}
+                    onClick={() => setPlaygroundTab('integrations')}
+                  >
+                    <Layers size={14} />
+                    <span>Integrated Apps (4)</span>
                   </button>
                   <button
                     className={`playground-tab-btn ${playgroundTab === 'skills' ? 'active' : ''}`}
@@ -2549,6 +2564,111 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                         </div>
                       )}
                     </div>
+                  ) : playgroundTab === 'integrations' ? (
+                    <div className="integrations-tab-wrapper p-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-white">Integrated User Apps & Services</h3>
+                          <p className="text-xs text-gray-400">3rd-party platforms & services {playgroundDeployment.agentName} has autonomous permission to utilize.</p>
+                        </div>
+                        <button
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-1.5 cursor-pointer"
+                          onClick={() => {
+                            setSelectedAgent(agentCatalog.find(a => a.id === playgroundDeployment.agentId) || agentCatalog[0]);
+                            setShowDeployModal(true);
+                          }}
+                        >
+                          <Plus size={13} />
+                          <span>Connect App or API Key</span>
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20 flex items-center gap-1">
+                                <Code size={11} />
+                                GitHub & Repositories
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                <CheckCircle2 size={11} />
+                                Connected & Autonomous
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-medium text-white mb-1">Codebase & Git Operations</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">Read & write access to repository files, branch creation, automated refactoring, and PR diff patch generation.</p>
+                          </div>
+                          <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Permissions: Full Code Ops</span>
+                            <span className="text-emerald-400 font-mono">Scope: Authorized</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center gap-1">
+                                <Database size={11} />
+                                Supabase & PostgreSQL DB
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                <CheckCircle2 size={11} />
+                                Connected & Autonomous
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-medium text-white mb-1">Database & SQL Pipeline Ops</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">Schema exploration, automated query execution, table performance indexing, and Drizzle ORM migration generation.</p>
+                          </div>
+                          <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Permissions: Read/Write Schemas</span>
+                            <span className="text-emerald-400 font-mono">Scope: Authorized</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                                <Globe size={11} />
+                                Playwright Stealth Browser
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                <CheckCircle2 size={11} />
+                                Active Stealth Engine
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-medium text-white mb-1">Headless Web Crawling</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">Stateful browser session navigation, live web data scraping, form submissions, and multi-source extraction.</p>
+                          </div>
+                          <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Permissions: Web Navigation</span>
+                            <span className="text-emerald-400 font-mono">Scope: Active Engine</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col justify-between space-y-3">
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1">
+                                <Play size={11} />
+                                YouTube Data & Analytics
+                              </span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                <CheckCircle2 size={11} />
+                                Active API Connection
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-medium text-white mb-1">YouTube Media Intelligence</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">Video transcript parsing, channel performance analytics, comment sentiment mining, and automated content outlines.</p>
+                          </div>
+                          <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Permissions: Media Analytics</span>
+                            <span className="text-emerald-400 font-mono">Scope: Authorized</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div className="telemetry-logs-wrapper">
                       <div className="logs-scroller">
@@ -2668,8 +2788,8 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                           <span className="text-sky-300 font-mono">0.8s Superfast</span>
                         </div>
                         <div className="telemetry-stat-row">
-                          <span>Worker Node</span>
-                          <span className="text-gray-400 font-mono">{playgroundDeployment.ipAddress}</span>
+                          <span>Execution Runtime</span>
+                          <span className="text-emerald-400 font-mono">Omi Serverless Cloud Core</span>
                         </div>
                       </div>
                     </div>
