@@ -2908,5 +2908,187 @@
   }
 }
 
+/* Sleek Collapsible Main Left Sidebar */
+.agent-sidebar {
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.agent-sidebar.collapsed {
+  width: 68px !important;
+  min-width: 68px !important;
+}
+
+.agent-sidebar.collapsed .agent-logo-text,
+.agent-sidebar.collapsed .sidebar-label,
+.agent-sidebar.collapsed .agent-search-container,
+.agent-sidebar.collapsed .agent-category-label,
+.agent-sidebar.collapsed .agent-category-count,
+.agent-sidebar.collapsed .agent-credits-panel,
+.agent-sidebar.collapsed .nav-section-title,
+.agent-sidebar.collapsed .sidebar-cta-wrapper span {
+  display: none !important;
+}
+
+.agent-sidebar.collapsed .sidebar-item,
+.agent-sidebar.collapsed .agent-category-btn,
+.agent-sidebar.collapsed .sidebar-create-cta {
+  justify-content: center !important;
+  padding: 10px !important;
+}
+
+.agent-sidebar.collapsed .sidebar-icon,
+.agent-sidebar.collapsed .agent-category-icon {
+  margin-right: 0 !important;
+}
+
+/* Sleek Collapsible Agent Playground Right Overview Pane */
+.playground-state-pane {
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.playground-state-pane.collapsed {
+  width: 48px !important;
+  min-width: 48px !important;
+  padding: 6px 4px !important;
+  overflow: hidden !important;
+}
+
+.playground-state-pane.collapsed .state-pane-section,
+.playground-state-pane.collapsed .state-pane-divider {
+  display: none !important;
+}
+
+.playground-body.right-pane-collapsed .playground-workspace-pane {
+  flex: 1 !important;
+  border-right: none !important;
+}
+
+/* Mobile & Mobile Landscape Responsiveness for Agent Playground */
+@media (max-width: 768px) {
+  .playground-overlay {
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .playground-window {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .playground-body {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  .playground-workspace-pane {
+    width: 100% !important;
+    max-width: 100vw !important;
+    flex: 1 !important;
+    border-right: none !important;
+    overflow-x: hidden !important;
+  }
+
+  .playground-state-pane {
+    display: none !important;
+  }
+
+  .playground-header {
+    flex-wrap: nowrap !important;
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .playground-header-info {
+    min-width: 0 !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+
+  .playground-header-title {
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .playground-header-badge {
+    display: none !important;
+  }
+
+  .playground-header-credits span {
+    display: none !important;
+  }
+
+  .playground-header-credits {
+    padding: 2px 6px !important;
+  }
+
+  .chat-thread {
+    padding: 10px !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  .chat-message-row {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .chat-input-bar {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Mobile Landscape Orientation Mode Adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .playground-window {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  .playground-header {
+    padding: 4px 10px !important;
+    min-height: 36px !important;
+  }
+
+  .playground-tabs {
+    padding: 2px 6px 0 !important;
+  }
+
+  .playground-tab-btn {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .chat-thread {
+    padding: 6px 10px !important;
+    gap: 8px !important;
+  }
+
+  .empty-playground-orb-stage {
+    padding: 8px 12px !important;
+    margin: 4px 0 !important;
+  }
+
+  .chat-input-bar {
+    padding: 4px 8px !important;
+  }
+}
+
 
 

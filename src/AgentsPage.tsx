@@ -51,7 +51,11 @@ import {
   AlertTriangle,
   History,
   RotateCcw,
-  CheckCircle2
+  CheckCircle2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen
 } from 'lucide-react';
 
 import { ThinkingOrb, OrbState } from 'thinking-orbs';
@@ -481,6 +485,11 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
     }, 4000);
     return () => clearInterval(interval);
   }, [samplePrompts.length]);
+
+  // Collapsible Sidebars State
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isRightPaneCollapsed, setIsRightPaneCollapsed] = useState(false);
+
   const [sessions, setSessions] = useState<Array<{ id: string; agentId: string; title: string; createdAt: string }>>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activityTimeline, setActivityTimeline] = useState<Array<{ id: string; title: string; desc: string; time: string; type: string }>>([]);
@@ -1010,15 +1019,24 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Sidebar */}
-      <aside className={`agent-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
-        <div className="agent-sidebar-header">
+      <aside className={`agent-sidebar ${isSidebarOpen ? 'mobile-open' : ''} ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="agent-sidebar-header flex items-center justify-between">
           <div className="agent-logo" onClick={onClose}>
             <span className="agent-logo-lucide"><Sparkles size={20} className="text-white" /></span>
             <span className="agent-logo-text">OMI AI</span>
           </div>
-          <button className="agent-sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}>
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              className="sidebar-collapse-btn hidden sm:flex items-center justify-center p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/10 cursor-pointer"
+              onClick={() => setIsSidebarCollapsed(prev => !prev)}
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isSidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            </button>
+            <button className="agent-sidebar-close-btn" onClick={() => setIsSidebarOpen(false)}>
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Prominent Sidebar CTA for Create Agent */}
@@ -2150,7 +2168,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
 
             {/* Split Body */}
-            <div className="playground-body">
+            <div className={`playground-body ${isRightPaneCollapsed ? 'right-pane-collapsed' : ''}`}>
               {/* Left Pane (70%): Chat & Logs Workspace */}
               <div className="playground-workspace-pane">
                 {/* Navigation Tabs */}
@@ -2543,7 +2561,22 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
               </div>
 
               {/* Right Pane (30%): Consumer Agent Overview & Capabilities */}
-              <div className="playground-state-pane">
+              <div className={`playground-state-pane ${isRightPaneCollapsed ? 'collapsed' : ''}`}>
+                <div className="flex items-center justify-between p-2.5 border-b border-white/10 mb-2">
+                  {!isRightPaneCollapsed && (
+                    <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <Sparkles size={13} className="text-violet-400" />
+                      Agent Overview
+                    </span>
+                  )}
+                  <button
+                    className="pane-collapse-toggle-btn p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors border border-white/10 ml-auto cursor-pointer"
+                    onClick={() => setIsRightPaneCollapsed(prev => !prev)}
+                    title={isRightPaneCollapsed ? "Expand Agent Overview Pane" : "Collapse Agent Overview Pane"}
+                  >
+                    {isRightPaneCollapsed ? <PanelRightOpen size={15} /> : <PanelRightClose size={15} />}
+                  </button>
+                </div>
                 <div className="state-pane-section">
                   <div className="state-section-header">
                     <Sparkles size={14} className="text-violet-400" />
