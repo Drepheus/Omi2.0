@@ -16,7 +16,7 @@ interface StickyHeaderProps {
 export function StickyHeader({
     title,
     icon,
-    backLink = "/command-hub",
+    backLink = "/agents",
     backLabel = "Command Hub",
     actionLabel,
     onAction,

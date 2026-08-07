@@ -8,7 +8,7 @@ import { useGuestMode } from "@/context/guest-mode-context";
 export function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/command-hub';
+  const redirectTo = searchParams.get('redirect') || '/agents';
   const { data: session, isPending } = useSession();
   const { setGuestMode } = useGuestMode();
   const [authError, setAuthError] = useState<string | null>(null);

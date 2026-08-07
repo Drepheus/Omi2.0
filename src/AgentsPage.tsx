@@ -458,6 +458,29 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   const [playgroundDeployment, setPlaygroundDeployment] = useState<Deployment | null>(null);
   const [playgroundMessages, setPlaygroundMessages] = useState<Message[]>([]);
   const [playgroundTab, setPlaygroundTab] = useState<'chat' | 'activity' | 'logs' | 'skills'>('chat');
+
+  // Fading Sample Prompts for Playground
+  const samplePrompts = [
+    "Extract competitor pricing matrix into a structured JSON dataset",
+    "Refactor codebase for performance and generate a clean git diff patch",
+    "Mine YouTube video transcripts for sentiment & key insights",
+    "Inspect PostgreSQL schema bloat and generate optimized Drizzle indexes",
+    "Automate stealth browser navigation to check user onboarding flows",
+    "Decompose complex multi-step tasks into autonomous execution loops"
+  ];
+  const [samplePromptIndex, setSamplePromptIndex] = useState(0);
+  const [samplePromptFade, setSamplePromptFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSamplePromptFade(false);
+      setTimeout(() => {
+        setSamplePromptIndex(prev => (prev + 1) % samplePrompts.length);
+        setSamplePromptFade(true);
+      }, 400);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [samplePrompts.length]);
   const [sessions, setSessions] = useState<Array<{ id: string; agentId: string; title: string; createdAt: string }>>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [activityTimeline, setActivityTimeline] = useState<Array<{ id: string; title: string; desc: string; time: string; type: string }>>([]);
@@ -983,9 +1006,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
   return (
     <div className="agent-dashboard">
       <div className="agent-dashboard-bg">
-        <div className="orb-background">
-          <Orb hue={220} hoverIntensity={0.3} rotateOnHover forceHoverState={false} />
-        </div>
+        {/* Navigation background Orb hidden */}
       </div>
 
       {/* Sidebar */}
@@ -2367,6 +2388,26 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                           </div>
                         </div>
                       )}
+
+                      {/* Fading Sample Prompts Bar */}
+                      <div className="px-3 py-2 bg-white/[0.02] border-t border-white/10 flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center gap-2 overflow-hidden flex-1 mr-2">
+                          <Sparkles size={13} className="text-amber-400 shrink-0 animate-pulse" />
+                          <span className="text-[10px] font-mono text-gray-400 uppercase tracking-wider shrink-0 hidden sm:inline">Sample Task:</span>
+                          <button
+                            onClick={() => setConsoleInput(samplePrompts[samplePromptIndex])}
+                            className="text-left text-xs font-light text-gray-200 hover:text-emerald-300 transition-all truncate bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded-lg cursor-pointer"
+                            style={{
+                              opacity: samplePromptFade ? 1 : 0,
+                              transform: samplePromptFade ? 'translateY(0)' : 'translateY(4px)',
+                              transition: 'opacity 0.4s ease, transform 0.4s ease'
+                            }}
+                          >
+                            "{samplePrompts[samplePromptIndex]}"
+                          </button>
+                        </div>
+                        <span className="text-[10px] text-emerald-400/80 font-mono shrink-0 hidden md:inline">Click to load</span>
+                      </div>
 
                       {/* Chat Input */}
                       <div className="chat-input-bar">

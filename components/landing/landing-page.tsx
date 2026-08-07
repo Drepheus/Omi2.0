@@ -15,7 +15,7 @@ export function LandingPage() {
 
   useEffect(() => {
     if (session) {
-      router.replace("/command-hub");
+      router.replace("/agents");
     }
   }, [session, router]);
 

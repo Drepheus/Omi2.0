@@ -11,8 +11,8 @@ export default function AuthRedirectPage() {
     const storedRedirect = sessionStorage.getItem('authRedirect');
     sessionStorage.removeItem('authRedirect');
     
-    // Redirect to stored URL or default to command-hub
-    const redirectTo = storedRedirect || '/command-hub';
+    // Redirect to stored URL or default to agents
+    const redirectTo = storedRedirect || '/agents';
     router.replace(redirectTo);
   }, [router]);
 
