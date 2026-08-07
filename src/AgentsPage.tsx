@@ -1472,10 +1472,10 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
 
         {mainTab === 'create' && (
           <section className="agent-section max-w-4xl mx-auto">
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-2 sm:mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-light text-white mb-1">Build & Launch Custom AI Agent</h2>
-                <p className="text-sm text-gray-400">Choose instant single-click setup or custom-prompt your agent capabilities.</p>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-light text-white mb-0.5">Build & Launch Custom AI Agent</h2>
+                <p className="text-xs sm:text-sm text-gray-400 hidden xs:block">Choose instant single-click setup or custom-prompt your agent capabilities.</p>
               </div>
               {setupMode === 'custom' && (
                 <button
@@ -1489,7 +1489,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             </div>
 
             {setupMode === 'choice' ? (
-              <div className="consumer-cards-grid my-4">
+              <div className="consumer-cards-grid my-2 sm:my-4">
                 {/* Option 1: Quick Setup */}
                 <div
                   className="consumer-card group"
@@ -1644,58 +1644,62 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
         {mainTab === 'templates' && (
           /* Available Skill Templates & Tools Section */
           <section className="agent-section">
-            <div className="agent-section-header">
+            <div className="agent-section-header mb-4">
               <div>
                 <h2 className="agent-section-title">Trending Skill Templates & Tools</h2>
                 <p className="agent-section-subtitle">
-                  Deploy pre-packaged <code>.md</code> skills and autonomous tool loops powered by Claude 5, OpenClaw 2.0, Hermes 4, & DeepSeek V4.
+                  Attach pre-packaged <code>.md</code> skills and autonomous tool loops directly to your running agent workspaces.
                 </p>
               </div>
             </div>
 
-            <div className="agent-catalog">
+            <div className="consumer-cards-grid my-4">
               {filteredAgents.map(agent => (
                 <div
                   key={agent.id}
-                  className={`agent-catalog-card ${selectedAgent?.id === agent.id ? 'selected' : ''}`}
+                  className={`consumer-card ${selectedAgent?.id === agent.id ? 'selected' : ''} group`}
                   onClick={() => setSelectedAgent(agent)}
                 >
-                  <div className="agent-catalog-card-header">
-                    <div className="agent-skill-file-badge">
-                      <FileText size={13} className="text-sky-400" />
-                      <span>{agent.skillFile}</span>
+                  <div>
+                    <div className="card-top">
+                      <div className="card-icon-wrapper group-hover:border-emerald-500/40 group-hover:bg-emerald-500/10 transition-all">
+                        {renderAgentIcon(agent.id, "w-6 h-6 text-emerald-400")}
+                      </div>
+                      <span className="consumer-badge border-sky-500/30 text-sky-300 bg-sky-500/10 font-mono font-medium flex items-center gap-1">
+                        <FileText size={11} className="text-sky-400" />
+                        {agent.skillFile}
+                      </span>
                     </div>
-                    <span className="agent-framework-badge">{agent.framework}</span>
+
+                    <h3 className="card-title text-white group-hover:text-emerald-300 transition-colors flex items-center justify-between">
+                      <span>{agent.name}</span>
+                    </h3>
+
+                    <p className="card-subtitle">
+                      {agent.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {agent.tags.map(tag => (
+                        <span key={tag} className="text-[11px] px-2 py-0.5 rounded-md bg-white/5 text-white/70 border border-white/10 font-mono">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="agent-catalog-card-title-row">
-                    <span className="agent-catalog-icon-wrapper">
-                      {renderAgentIcon(agent.id, "w-6 h-6 text-gray-100")}
+                  <div className="card-select-footer flex items-center justify-between mt-auto pt-3.5 border-t border-white/10">
+                    <span className="select-tag flex items-center gap-1.5 text-xs text-white/50 font-light">
+                      <Bot size={13} className="text-violet-400" /> {agent.framework}
                     </span>
-                    <div>
-                      <h3 className="agent-catalog-name">{agent.name}</h3>
-                      <span className="agent-runs-count">{agent.runsCount}</span>
-                    </div>
-                  </div>
-
-                  <p className="agent-catalog-desc">{agent.description}</p>
-
-                  <div className="agent-catalog-tags">
-                    {agent.tags.map(tag => (
-                      <span key={tag} className="agent-tag">{tag}</span>
-                    ))}
-                  </div>
-
-                  <div className="agent-catalog-card-footer">
-                    <span className="agent-catalog-type">{agent.type}</span>
                     <button
-                      className="agent-deploy-btn"
+                      className="py-2 px-3.5 text-xs font-semibold flex items-center gap-1.5 text-white bg-white/10 hover:bg-emerald-400 hover:text-black border border-white/20 transition-all shadow-md rounded-xl cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleTriggerAddSkill(agent);
                       }}
                     >
-                      <Plus size={13} />
+                      <Plus size={14} />
                       <span>Add Skill to Agent</span>
                     </button>
                   </div>

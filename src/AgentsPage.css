@@ -2783,5 +2783,86 @@
   font-weight: 500;
 }
 
+/* Mobile Responsive Compact Spacing for Create Agent Studio & Cards */
+@media (max-width: 640px) {
+  .agent-main {
+    padding: 12px 14px !important;
+  }
+
+  .agent-topbar {
+    margin-bottom: 10px !important;
+  }
+
+  .agent-topbar-title {
+    font-size: 1.15rem !important;
+  }
+
+  .agent-topbar-subtitle {
+    display: none !important;
+  }
+
+  .agent-section {
+    padding: 0 !important;
+  }
+
+  .agent-section-header {
+    margin-bottom: 8px !important;
+  }
+
+  .agent-section-title {
+    font-size: 1rem !important;
+  }
+
+  .agent-section-subtitle {
+    display: none !important;
+  }
+
+  .consumer-cards-grid {
+    gap: 10px !important;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .consumer-card {
+    padding: 1rem 1.15rem !important;
+    min-height: auto !important;
+    border-radius: 16px !important;
+  }
+
+  .card-top {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .card-icon-wrapper {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+
+  .consumer-badge {
+    font-size: 0.65rem !important;
+    padding: 0.2rem 0.5rem !important;
+  }
+
+  .card-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .card-subtitle {
+    font-size: 0.775rem !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.35 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .card-select-footer {
+    padding-top: 0.4rem !important;
+  }
+}
+
 
 
