@@ -1,7 +1,8 @@
 .glowing-dots-nav-container {
     position: fixed;
-    bottom: 80px;
-    right: 24px;
+    bottom: 24px;
+    left: 24px;
+    right: auto;
     display: flex;
     gap: 16px;
     z-index: 9999;

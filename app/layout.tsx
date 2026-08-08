@@ -58,7 +58,7 @@ export default function RootLayout({
 
         <AppProviders>
           {children}
-          {/* <GlowingDotsNav /> */}
+          <GlowingDotsNav />
         </AppProviders>
       </body>
     </html>

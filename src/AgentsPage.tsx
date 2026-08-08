@@ -1106,7 +1106,7 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
             onClick={() => setMainTab('create')}
           >
             <PlusCircle size={17} />
-            <span>Create Custom Agent</span>
+            <span>Create Agent</span>
             <Sparkles size={14} className="ml-auto text-amber-300 opacity-80" />
           </button>
         </div>
@@ -1660,6 +1660,53 @@ export default function AgentsPage({ onClose }: { onClose?: () => void }) {
                       <Sparkles size={14} />
                       <span>Create with Custom Prompt</span>
                     </button>
+                  </div>
+                </div>
+
+                {/* Desktop Live Social Proof Activity Stream */}
+                <div className="hidden md:block mt-6 pt-5 border-t border-white/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      Live Community Agent Deployments
+                    </span>
+                    <span className="text-[11px] text-gray-500 font-mono">Updated Real-Time</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="p-3.5 rounded-xl bg-[#0e0e14]/85 backdrop-blur-xl border border-white/10 flex items-center justify-between shadow-xl">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 shrink-0">
+                          <Globe size={16} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs text-gray-200 truncate font-medium">
+                            <strong className="text-white font-semibold">Alex M.</strong> deployed <span className="text-sky-300 font-medium">Omi Autonomous Research Agent</span>
+                          </p>
+                          <span className="text-[10px] text-gray-500 block">2 mins ago</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0 ml-2">
+                        Active
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-[#0e0e14]/85 backdrop-blur-xl border border-white/10 flex items-center justify-between shadow-xl">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
+                          <Bot size={16} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs text-gray-200 truncate font-medium">
+                            <strong className="text-white font-semibold">Sarah K.</strong> created <span className="text-emerald-300 font-medium">Custom Omi E-Commerce Scraping Agent</span>
+                          </p>
+                          <span className="text-[10px] text-gray-500 block">4 mins ago</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0 ml-2">
+                        Active
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

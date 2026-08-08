@@ -12,21 +12,18 @@ interface DotItem {
 }
 
 const dots: DotItem[] = [
+    { id: 'agents', label: 'Agents Studio', path: '/agents', color: '#00FF9D' },
+    { id: 'command-hub', label: 'Omi Playground (Command Hub)', path: '/command-hub', color: '#9D00FF' },
     { id: 'chat', label: 'AI Chat', path: '/chat', color: '#00C8FF' },
     { id: 'search', label: 'AI Search', path: '/web-search', color: '#00FF9D' },
     { id: 'media', label: 'AI Media Studio', path: '/media-studio', color: '#FF00D4' },
     { id: 'workflows', label: 'AI Workflows', path: '/ai-workflows', color: '#FFE600' },
     { id: 'custom', label: 'Custom Omis', path: '/custom-omis', color: '#9D00FF' },
-    { id: 'google', label: 'Google AI', path: '/google-ai-studio', color: '#4285F4' },
-    { id: 'replicate', label: 'Replicate', path: '/replicate-studio', color: '#C0C0C0' },
 ];
 
 const GlowingDotsNav: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
-
-    // Hide bottom navigation orbs from view (code preserved for future use)
-    return null;
 
     return (
         <div className="glowing-dots-nav-container">
