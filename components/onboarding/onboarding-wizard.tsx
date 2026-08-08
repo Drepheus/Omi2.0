@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Orb } from "@/components/visuals/orb";
 import { ShinyText } from "@/components/typography/shiny-text";
@@ -81,9 +81,24 @@ export function OnboardingWizard() {
     { text: "Agent core ready! Launching your workspace dashboard...", icon: Sparkles }
   ];
 
+  useEffect(() => {
+    // Intercept browser back button to navigate steps gracefully without reloading
+    const handlePopState = () => {
+      if (step > 1) {
+        setStep(1);
+      } else {
+        router.push('/');
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [step, router]);
+
   const handleNext = () => {
     if (step < 2) {
-      setStep(prev => prev + 1);
+      window.history.pushState({ step: 2 }, "", window.location.href);
+      setStep(2);
     } else {
       startBufferAndLaunch();
     }
@@ -91,7 +106,9 @@ export function OnboardingWizard() {
 
   const handleBack = () => {
     if (step > 1) {
-      setStep(prev => prev - 1);
+      setStep(1);
+    } else {
+      router.push('/');
     }
   };
 
@@ -279,12 +296,10 @@ export function OnboardingWizard() {
 
           {/* Action Controls */}
           <div className="omi-step-actions">
-            {step > 1 ? (
-              <button onClick={handleBack} className="omi-back-btn">
-                <ArrowLeft size={16} />
-                <span>Back</span>
-              </button>
-            ) : <div />}
+            <button onClick={handleBack} className="omi-back-btn">
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
 
             <button onClick={handleNext} className="omi-next-btn">
               <ShinyText
